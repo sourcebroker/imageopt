@@ -157,11 +157,10 @@ abstract class ImageManipulationProvider extends AbstractService
             $senderName = $this->getAllConfiguration()->getOption('limits.notification.sender.name');
 
             if ($email != '' && $senderEmail != '' && GeneralUtility::validEmail($email) && GeneralUtility::validEmail($senderEmail)) {
-                $mail = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
-
+                $mail = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Mail\MailMessage::class);
                 $mail->setSubject($title)
-                    ->setFrom(array($senderEmail => $senderName ? $senderName : 'Imageopt Notifications'))
-                    ->setTo(array($email))
+                    ->setFrom([$senderEmail => ($senderName ? $senderName : 'Imageopt Notifications')])
+                    ->setTo([$email])
                     ->setBody($message)
                     ->send();
             }

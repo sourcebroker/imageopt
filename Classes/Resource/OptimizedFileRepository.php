@@ -59,7 +59,7 @@ class OptimizedFileRepository
      */
     public function add($filePath, $sizeBefore, $sizeAfter = null, $providerWinner = '', $status = false, $providerResults = '')
     {
-        return $this->databaseConnection->exec_INSERTquery('tx_imageopt_images', array(
+        return $this->databaseConnection->exec_INSERTquery('tx_imageopt_images', [
             'pid' => 0,
             'optimized' => $status,
             'optimization_bytes' => $sizeBefore - $sizeAfter,
@@ -71,7 +71,7 @@ class OptimizedFileRepository
             'path' => $filePath,
             'tstamp' => $GLOBALS['EXEC_TIME'],
             'crdate' => $GLOBALS['EXEC_TIME']
-        ));
+        ]);
     }
 
     /**

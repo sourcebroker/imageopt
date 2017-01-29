@@ -119,10 +119,10 @@ class ImageManipulationProviderBaseKraken extends ImageManipulationProviderBaseR
         $response = json_decode($responseFromAPI['response'], true);
 
         if ($response === null) {
-            $result = array (
+            $result = [
                 'success' => false,
                 'providerError' => 'cURL Error: ' . $responseFromAPI['error']
-            );
+            ];
         } else {
             if ($responseFromAPI['http_code'] == 429) {
                 $this->deactivateService();

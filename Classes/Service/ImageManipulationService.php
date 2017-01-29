@@ -198,7 +198,7 @@ class ImageManipulationService
                 $optimizeSuccess = false;
                 $fileSizeAfterOptimization = $fileSizeBeforeOptimization;
                 $providerWinner = '';
-                $theBestOptimizedImage = 'No optimized';
+                $theBestOptimizedImage = 'Not optimized.';
 
                 // $optimizationResults['imageOptimizationProviderWinnerKey'] !== null
                 // Means that at least one provider succeeded and returned file smaller than original.

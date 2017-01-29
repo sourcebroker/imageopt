@@ -45,10 +45,10 @@ class ImageManipulationProviderBaseTinypng extends ImageManipulationProviderBase
      */
     public function upload($inputImageAbsolutePath, $options = []) {
         if (!file_exists($inputImageAbsolutePath)) {
-            return array(
+            return [
                 'success' => false,
                 'error' => 'File `' . $inputImageAbsolutePath . '` does not exist'
-            );
+            ];
         }
 
         $result = self::request(file_get_contents($inputImageAbsolutePath), $this->settings['url']['upload']);
@@ -77,7 +77,7 @@ class ImageManipulationProviderBaseTinypng extends ImageManipulationProviderBase
         if (!is_array($headers)) {
             $headers = explode("\r\n", $headers);
         }
-        $result = array();
+        $result = [];
         foreach ($headers as $header) {
             if (empty($header)) continue;
             $split = explode(":", $header, 2);
