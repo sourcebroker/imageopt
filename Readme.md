@@ -36,46 +36,47 @@ Default configuration is read automaticly:
     
         directories =
     
-        limits {
-            notification {
-                sender {
-                    email =
-                    name =
-                }
-                reciver {
-                    email =
-                    name =
-                }
-                disable = 0
-            }
-        }
-    
         default {
-            kraken {
-                apikey =
-                apipass =
-                enabled = 0
-                notificationLimitEmail < tx_imageopt.notificationLimitEmail
-                disableNotificationLimit < tx_imageopt.disableNotificationLimit
-                options {
-                    lossy = true
+        
+            limits {
+                notification {
+                    sender {
+                        email =
+                        name =
+                    }
+                    reciver {
+                        email =
+                        name =
+                    }
+                    disable = 0
                 }
             }
-            tinypng {
-                apikey =
-                apipass =
-                enabled = 0
-                notificationLimitEmail < tx_imageopt.notificationLimitEmail
-                disableNotificationLimit < tx_imageopt.disableNotificationLimit
-            }
-            imageoptim {
-                apikey =
-                apipass =
-                enabled = 0
-                notificationLimitEmail < tx_imageopt.notificationLimitEmail
-                disableNotificationLimit < tx_imageopt.disableNotificationLimit
-                options {
-                    lossy = true
+            
+            providers {
+                
+                kraken {
+                    apikey =
+                    apipass =
+                    enabled = 0
+                    limits < tx_imageopt.default.limits
+                    options {
+                        lossy = true
+                    }
+                }
+                tinypng {
+                    apikey =
+                    apipass =
+                    enabled = 0
+                    limits < tx_imageopt.default.limits
+                }
+                imageoptim {
+                    apikey =
+                    apipass =
+                    enabled = 0
+                    limits < tx_imageopt.default.limits
+                    options {
+                        lossy = true
+                    }
                 }
             }
         }
@@ -83,11 +84,11 @@ Default configuration is read automaticly:
         providers {
     
             jpg {
-                kraken < tx_imageopt.default.kraken
+                kraken < tx_imageopt.default.providers.kraken
     
-                tinypng < tx_imageopt.default.tinypng
+                tinypng < tx_imageopt.default.providers.tinypng
     
-                imageoptim < tx_imageopt.default.imageoptim
+                imageoptim < tx_imageopt.default.providers.imageoptim
     
                 jpegoptim {
                     command = {executable} {tempFile} -o
@@ -111,11 +112,11 @@ Default configuration is read automaticly:
             }
     
             gif {
-                kraken < tx_imageopt.default.kraken
+                kraken < tx_imageopt.default.providers.kraken
     
-                tinypng < tx_imageopt.default.tinypng
+                tinypng < tx_imageopt.default.providers.tinypng
     
-                imageoptim < tx_imageopt.default.imageoptim
+                imageoptim < tx_imageopt.default.providers.imageoptim
     
                 gifsicle {
                     command = {executable} --batch --optimize=3 {tempFile}
@@ -124,11 +125,11 @@ Default configuration is read automaticly:
             }
     
             png {
-                kraken < tx_imageopt.default.kraken
+                kraken < tx_imageopt.default.providers.kraken
     
-                tinypng < tx_imageopt.default.tinypng
+                tinypng < tx_imageopt.default.providers.tinypng
     
-                imageoptim < tx_imageopt.default.imageoptim
+                imageoptim < tx_imageopt.default.providers.imageoptim
     
                 optipng {
                     command = {executable} {tempFile}
@@ -155,40 +156,52 @@ If you would like to run only Kraken.io then put this config in you PageTS.
 
     tx_imageopt {
     
-        adminEmail = test@gmail.com
-        notificationLimitEmail = test@gmail.com
-    
         default {
+        
+            limits {
+                notification {
+                    sender {
+                        email = test@gmail.com
+                        name = Admin
+                    }
+                    reciver {
+                        email = test@gmail.com
+                        name = Admin
+                    }
+                    disable = 1
+                }
+            }
+                
             kraken {
                 apikey = 9d41f741e4df359db85936865e3afaaa
                 apipass = df666c5ea90490b0f1ce2b473bdb6ba9bd1f903f
                 enabled = 1
-                notificationLimitEmail < tx_imageopt.notificationLimitEmail
-                disableNotificationLimit < tx_imageopt.disableNotificationLimit
+                limits < tx_imageopt.default.limits
             }
         }
     
         providers {
             jpg >
             jpg {
-                kraken < tx_imageopt.default.kraken
+                kraken < tx_imageopt.default.providers.kraken
             }
             gif >
             gif {
-                kraken < tx_imageopt.default.kraken
+                kraken < tx_imageopt.default.providers.kraken
             }
             png >
             png {
-                kraken < tx_imageopt.default.kraken
+                kraken < tx_imageopt.default.providers.kraken
             }
         }
     }
 
 
-### Technical note
+
+### Technical notes
 
 * The original images, for example in folder fileadmin/, uploads/ are not optmized. Only already resized 
-  images are optmized, so for FAL that would be files form "\_processed\_/" folder of file storage.
+  images are optmized, so for FAL that would be files form "\_processed\_/" folder of file storages.
 * Be aware that there are two xclasses to make TYPO3 to process images even if there is no need (because
   for example the requested image size is the same as original). Thanks to that xclasses the original images 
   do not have to be optimized.
@@ -197,8 +210,8 @@ If you would like to run only Kraken.io then put this config in you PageTS.
   is set to 1.
   You can reset the "tx_imageopt_optimized" flag with command
   ``php ./typo3/cli_dispatch.phpsh extbase imageopt:resetoptimizationflag``
-* If you enable more than one image optimizer than all are run and the best optimized image choosed.  
-* There is table "tx_imageopt_images" where the statistics and winning image manipulation optmimizer is stored.  
+* If you enable more than one image optimizer provider then all runs and the best optimized image is choosed.  
+* There is table "tx_imageopt_images" where the statistics and winning image optmimizer is stored.  
 
 ### Usage
 
