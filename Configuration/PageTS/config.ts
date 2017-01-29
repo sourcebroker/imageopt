@@ -2,46 +2,48 @@ tx_imageopt {
 
     directories =
 
-    limits {
-        notification {
-            sender {
-                email =
-                name =
-            }
-            reciver {
-                email =
-                name =
-            }
-            disable = 0
-        }
-    }
-
     default {
-        kraken {
-            apikey =
-            apipass =
-            enabled = 0
-            notificationLimitEmail < tx_imageopt.notificationLimitEmail
-            disableNotificationLimit < tx_imageopt.disableNotificationLimit
-            options {
-                lossy = true
+
+        limits {
+            notification {
+                sender {
+                    email =
+                    name =
+                }
+                reciver {
+                    email =
+                    name =
+                }
+                disable = 0
             }
         }
-        tinypng {
-            apikey =
-            apipass =
-            enabled = 0
-            notificationLimitEmail < tx_imageopt.notificationLimitEmail
-            disableNotificationLimit < tx_imageopt.disableNotificationLimit
-        }
-        imageoptim {
-            apikey =
-            apipass =
-            enabled = 0
-            notificationLimitEmail < tx_imageopt.notificationLimitEmail
-            disableNotificationLimit < tx_imageopt.disableNotificationLimit
-            options {
-                lossy = true
+
+        providers {
+            kraken {
+                apikey =
+                apipass =
+                enabled = 0
+                limits < tx_imageopt.default.limits
+                options {
+                    lossy = true
+                }
+            }
+
+            tinypng {
+                apikey =
+                apipass =
+                enabled = 0
+                limits < tx_imageopt.default.limits
+            }
+
+            imageoptim {
+                apikey =
+                apipass =
+                enabled = 0
+                limits < tx_imageopt.default.limits
+                options {
+                    lossy = true
+                }
             }
         }
     }
@@ -49,11 +51,11 @@ tx_imageopt {
     providers {
 
         jpg {
-            kraken < tx_imageopt.default.kraken
+            kraken < tx_imageopt.default.providers.kraken
 
-            tinypng < tx_imageopt.default.tinypng
+            tinypng < tx_imageopt.default.providers.tinypng
 
-            imageoptim < tx_imageopt.default.imageoptim
+            imageoptim < tx_imageopt.default.providers.imageoptim
 
             jpegoptim {
                 command = {executable} {tempFile} -o
@@ -77,11 +79,11 @@ tx_imageopt {
         }
 
         gif {
-            kraken < tx_imageopt.default.kraken
+            kraken < tx_imageopt.default.providers.kraken
 
-            tinypng < tx_imageopt.default.tinypng
+            tinypng < tx_imageopt.default.providers.tinypng
 
-            imageoptim < tx_imageopt.default.imageoptim
+            imageoptim < tx_imageopt.default.providers.imageoptim
 
             gifsicle {
                 command = {executable} --batch --optimize=3 {tempFile}
@@ -90,11 +92,11 @@ tx_imageopt {
         }
 
         png {
-            kraken < tx_imageopt.default.kraken
+            kraken < tx_imageopt.default.providers.kraken
 
-            tinypng < tx_imageopt.default.tinypng
+            tinypng < tx_imageopt.default.providers.tinypng
 
-            imageoptim < tx_imageopt.default.imageoptim
+            imageoptim < tx_imageopt.default.providers.imageoptim
 
             optipng {
                 command = {executable} {tempFile}
