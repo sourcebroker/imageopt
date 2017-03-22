@@ -215,7 +215,7 @@ class ImageManipulationService
                         $this->falProcessedFileRepository->update($processedFal);
                         $optimizeSuccess = true;
                         $providerWinner = $optimizationResults['providerOptimizationWinnerKey'];
-                        $theBestOptimizedImage = $processedFal->getIdentifier();
+                        $theBestOptimizedImage = $processedFal->getPublicUrl();
                     }
                     unlink($theBestOptimizedImage);
                 }
