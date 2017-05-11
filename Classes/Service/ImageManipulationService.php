@@ -217,7 +217,7 @@ class ImageManipulationService
                         $providerWinner = $optimizationResults['providerOptimizationWinnerKey'];
                         $theBestOptimizedImage = $processedFal->getPublicUrl();
                     }
-                    unlink($theBestOptimizedImage);
+                    unlink(PATH_site . $theBestOptimizedImage);
                 }
 
                 //TODO - do better cli log
