@@ -52,13 +52,29 @@ class ImageManipulationProviderBaseShell extends ImageManipulationProvider
             $this->shellExecutableCommand = $this->configuration->getOption('command');
         }
 
+        $selectedQuality = '';
+        $quality = (int)$this->configuration->getOption('options.quality');
+        $qualityOptions = $this->configuration->getOption('options.qualityOptions');
+        if ($quality && is_array($qualityOptions)) {
+            if (isset($qualityOptions[$quality])) {
+                $selectedQuality = $qualityOptions[$quality];
+            } else {
+                foreach ($qualityOptions as $qualityOptionKey => $qualityOption) {
+                    if ((int)$qualityOptionKey > $quality) {
+                        $selectedQuality = $qualityOption;
+                        break;
+                    }
+                }
+            }
+        }
+
         if ($this->shellExecutableCommand !== null) {
             $temporaryFileToBeOptimized = $this->createTemporaryCopy($inputImageAbsolutePath);
 
             if ($temporaryFileToBeOptimized) {
                 $shellCommand = str_replace(
-                    ['{executable}', '{tempFile}'],
-                    [$this->getServiceInfo()['exec'], escapeshellarg($temporaryFileToBeOptimized)],
+                    ['{executable}', '{tempFile}', '{quality}'],
+                    [$this->getServiceInfo()['exec'], escapeshellarg($temporaryFileToBeOptimized), $selectedQuality],
                     $this->shellExecutableCommand);
 
                 exec($shellCommand, $out, $commandStatus);
