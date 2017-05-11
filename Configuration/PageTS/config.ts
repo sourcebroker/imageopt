@@ -18,6 +18,10 @@ tx_imageopt {
             }
         }
 
+        options {
+            quality = 85
+        }
+
         providers {
             kraken {
                 apikey =
@@ -58,8 +62,33 @@ tx_imageopt {
             imageoptim < tx_imageopt.default.providers.imageoptim
 
             jpegoptim {
-                command = {executable} {tempFile} -o
+                command = {executable} {tempFile} -o --strip-all {quality}
                 enabled = 1
+                options{
+                    quality < tx_imageopt.default.options.quality
+                    qualityOptions{
+                        5 = --max=5
+                        10 = --max=10
+                        15 = --max=15
+                        20 = --max=20
+                        25 = --max=25
+                        30 = --max=30
+                        35 = --max=35
+                        40 = --max=40
+                        45 = --max=45
+                        50 = --max=50
+                        55 = --max=55
+                        60 = --max=60
+                        65 = --max=65
+                        70 = --max=70
+                        75 = --max=75
+                        80 = --max=80
+                        85 = --max=85
+                        90 = --max=90
+                        95 = --max=95
+                        100 = --max=100
+                    }
+                }
             }
 
             jpegrescan {
@@ -99,8 +128,33 @@ tx_imageopt {
             imageoptim < tx_imageopt.default.providers.imageoptim
 
             optipng {
-                command = {executable} {tempFile}
+                command = {executable} {tempFile} -strip {quality}
                 enabled = 1
+                options{
+                    quality < tx_imageopt.default.options.quality
+                    qualityOptions{
+                        5 = -o7
+                        10 = -o7
+                        15 = -o7
+                        20 = -o6
+                        25 = -o6
+                        30 = -o6
+                        35 = -o5
+                        40 = -o5
+                        45 = -o5
+                        50 = -o4
+                        55 = -o4
+                        60 = -o4
+                        65 = -o3
+                        70 = -o3
+                        75 = -o3
+                        80 = -o2
+                        85 = -o2
+                        90 = -o2
+                        95 = -o1
+                        100 = -o0
+                    }
+                }
             }
 
             pngcrush {
