@@ -26,6 +26,7 @@ namespace SourceBroker\Imageopt\Providers;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Service\AbstractService;
+use TYPO3\CMS\Core\Utility\CommandUtility;
 
 /**
  * Class ImageManipulationProviderBaseShell
@@ -72,21 +73,29 @@ class ImageManipulationProviderBaseShell extends ImageManipulationProvider
             $temporaryFileToBeOptimized = $this->createTemporaryCopy($inputImageAbsolutePath);
 
             if ($temporaryFileToBeOptimized) {
-                $shellCommand = str_replace(
-                    ['{executable}', '{tempFile}', '{quality}'],
-                    [$this->getServiceInfo()['exec'], escapeshellarg($temporaryFileToBeOptimized), $selectedQuality],
-                    $this->shellExecutableCommand);
+                $exec = $this->getServiceInfo()['exec'];
+                $executable = CommandUtility::getCommand($exec);
+                if ($executable) {
+                    $shellCommand = str_replace(
+                        ['{executable}', '{tempFile}', '{quality}'],
+                        [$executable, escapeshellarg($temporaryFileToBeOptimized), $selectedQuality],
+                        $this->shellExecutableCommand
+                    );
 
-                exec($shellCommand, $out, $commandStatus);
+                    exec($shellCommand, $out, $commandStatus);
 
-                $this->optimizationResult['optimizedFileAbsPath'] = $temporaryFileToBeOptimized;
-                $this->optimizationResult['providerCommand'] = $shellCommand;
+                    $this->optimizationResult['optimizedFileAbsPath'] = $temporaryFileToBeOptimized;
+                    $this->optimizationResult['providerCommand'] = $shellCommand;
 
-                if ($commandStatus === 0) {
-                    $this->optimizationResult['success'] = true;
+                    if ($commandStatus === 0) {
+                        $this->optimizationResult['success'] = true;
+                    } else {
+                        $this->optimizationResult['success'] = false;
+                        $this->optimizationResult['providerError'] = $out;
+                    }
                 } else {
                     $this->optimizationResult['success'] = false;
-                    $this->optimizationResult['providerError'] = $out;
+                    $this->optimizationResult['providerError'] = $exec . ' can\'t be found.';
                 }
             }
         } else {
