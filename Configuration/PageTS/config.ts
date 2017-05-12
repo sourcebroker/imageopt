@@ -128,7 +128,7 @@ tx_imageopt {
             imageoptim < tx_imageopt.default.providers.imageoptim
 
             optipng {
-                command = {executable} {tempFile} -strip {quality}
+                command = {executable} {tempFile} -strip "all" {quality}
                 enabled = 1
                 options{
                     quality < tx_imageopt.default.options.quality
