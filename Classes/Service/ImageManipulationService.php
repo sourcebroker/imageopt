@@ -62,11 +62,11 @@ class ImageManipulationService
     ];
 
     /**
-     * List of temporary files
+     * Temp file Prefix
      *
-     * @var array
+     * @var string
      */
-    private $tempFiles = [];
+    private $tempFilePrefix = 'tx_imageopt';
 
     /**
      * Is registered shutdown function
@@ -99,16 +99,16 @@ class ImageManipulationService
     }
 
     /**
-     * Delete registered temporary files
+     * Delete all temporary files
      *
      * @return void
      */
     public function unlinkTempFiles()
     {
-        foreach ($this->tempFiles as $absFile) {
-            @unlink($absFile);
+        $typo3temp = PATH_site . 'typo3temp/';
+        foreach (glob($typo3temp . $this->tempFilePrefix . '*') as $tempFile) {
+            @unlink($tempFile);
         }
-        $this->tempFiles = [];
     }
 
     /**
@@ -195,7 +195,6 @@ class ImageManipulationService
 
                 // default values for $optimizedFileRepository->add
                 $fileSizeAfterOptimization = null;
-                $optimizeSuccess = false;
                 $fileSizeAfterOptimization = $fileSizeBeforeOptimization;
                 $providerWinner = '';
                 $theBestOptimizedImage = 'Not optimized.';
@@ -209,16 +208,15 @@ class ImageManipulationService
                     if ($width > 0 && $height > 0) {
                         $fileSizeAfterOptimization = filesize($theBestOptimizedImage);
                         $processedFal->updateWithLocalFile($theBestOptimizedImage);
-                        $processedFal->updateProperties([
-                            'tx_imageopt_optimized' => 1
-                        ]);
-                        $this->falProcessedFileRepository->update($processedFal);
-                        $optimizeSuccess = true;
                         $providerWinner = $optimizationResults['providerOptimizationWinnerKey'];
                         $theBestOptimizedImage = $processedFal->getPublicUrl();
                     }
-                    unlink(PATH_site . $theBestOptimizedImage);
                 }
+                // We set optimize always even if there was no real gain. Otherwise we'll try to optimize it in next loop.
+                $processedFal->updateProperties([
+                    'tx_imageopt_optimized' => 1
+                ]);
+                $this->falProcessedFileRepository->update($processedFal);
 
                 //TODO - do better cli log
                 $percentage = number_format(round(($fileSizeBeforeOptimization - $fileSizeAfterOptimization) * 100 / $fileSizeBeforeOptimization, 2), 2, '.', '');
@@ -229,7 +227,7 @@ class ImageManipulationService
                     $fileSizeBeforeOptimization,
                     $fileSizeAfterOptimization,
                     $providerWinner,
-                    $optimizeSuccess,
+                    true,
                     $optimizationResults
                 );
             }
@@ -326,12 +324,11 @@ class ImageManipulationService
      */
     protected function createTempFile()
     {
-        $tempFile = GeneralUtility::tempnam('tx_imageopt');
-
-        $this->tempFiles[] = $tempFile;
+        $tempFile = GeneralUtility::tempnam($this->tempFilePrefix);
 
         if (!$this->isRegisteredShutdownFunction) {
             register_shutdown_function([$this, 'unlinkTempFiles']);
+            $this->isRegisteredShutdownFunction = true;
         }
 
         return $tempFile;
