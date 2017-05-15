@@ -162,6 +162,7 @@ class ImageManipulationProviderBaseKraken extends ImageManipulationProviderBaseR
         $temporaryFileToBeOptimized = $this->createTemporaryCopy($inputImageAbsolutePath);
 
         $this->optimizationResult['success'] = false;
+        $this->optimizationResult['providerName'] = $this->name;
 
         if ($temporaryFileToBeOptimized) {
             if ($this->configuration->getOption('apikey') != '' && $this->configuration->getOption('apipass') != '') {

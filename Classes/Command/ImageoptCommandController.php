@@ -15,33 +15,76 @@ namespace SourceBroker\Imageopt\Command;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
+use SourceBroker\Imageopt\Resource\OptimizedFileRepository;
+use SourceBroker\Imageopt\Service\ImageManipulationService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
-/**
- * @package SourceBroker\OptimiseImages\Command
- */
-class ImageoptCommandController extends CommandController
+class ImageoptCommandController extends BaseCommandController
 {
-    /*
-     * Number of images to process in one cron run
-     */
-    protected $numberOfImagesToProcess = 20;
-
     /**
      * Injection of Image Manipulation Service Object
      *
-     * @var \SourceBroker\Imageopt\Service\ImageManipulationService
-     * @inject
+     * @var ImageManipulationService
      */
     protected $imageManipulationService;
 
     /**
-     * Optimise all TYPO3 processed images
+     * Injection of Image Manipulation Service Object
      *
+     * @var OptimizedFileRepository
      */
-    public function optimizeImagesCommand()
+    protected $optimizedFileRepository;
+
+    /**
+     * The time of starting command
+     * @var integer
+     */
+    protected $taskExecutionStartTime = null;
+
+    public function __construct()
     {
-        $this->imageManipulationService->optimizeImages($this->numberOfImagesToProcess);
+        $this->taskExecutionStartTime = $GLOBALS['EXEC_TIME'];
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->imageManipulationService = $objectManager->get(ImageManipulationService::class);
+        $this->optimizedFileRepository = $objectManager->get(OptimizedFileRepository::class);
+    }
+
+    /**
+     * Optimise all TYPO3 processed images
+     * @param int $numberOfImagesToProcess The number of images to process on single task call
+     */
+    public function optimizeImagesCommand($numberOfImagesToProcess = 20)
+    {
+        $this->imageManipulationService->optimizeImages($numberOfImagesToProcess);
+        $results = $this->optimizedFileRepository->getAllExecutedFrom($this->taskExecutionStartTime);
+        $message = [];
+        if (count($results)) {
+            foreach ((array)$results as $result) {
+                $providersResults = unserialize($result['provider_results']);
+                $providersScore = [];
+                $success = $percentageWinner = $percentage = 0;
+                foreach ((array)$providersResults['providerOptimizationResults'] as $optimizationResult) {
+                    if ((int)$optimizationResult['success'] === 1) {
+                        $success++;
+                        $percentage = number_format(round(($result['file_size_before'] - $optimizationResult['optimizedFileSize']) * 100 / $result['file_size_before'],
+                            2), 2, '.', '');
+                        $providersScore[] = $optimizationResult['providerName'] . ' - ' . $percentage . '%';
+                    } else {
+                        $providersScore[] = $optimizationResult['providerName'] . ' - failed';
+                    }
+                    if ((int)$optimizationResult['winner'] === 1) {
+                        $percentageWinner = $percentage;
+                    }
+                }
+                $providersScore = implode(', ', $providersScore);
+                $message[] = $percentageWinner . '% - ' . $result['path'] . ' | Providers Status: ' . $success . ' out of ' . count($providersResults['providerOptimizationResults']) . ' finished successfully (' . $providersScore . ')';
+            }
+        } else {
+            $message[] = 'All images are optimized.';
+        }
+        $this->setSchedulerTaskMessage($message, 'Result');
+        $this->setConsoleTaskMessage($message);
     }
 
     /**
