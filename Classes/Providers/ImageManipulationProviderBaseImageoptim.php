@@ -110,6 +110,7 @@ class ImageManipulationProviderBaseImageoptim extends ImageManipulationProviderB
         $temporaryFileToBeOptimized = $this->createTemporaryCopy($inputImageAbsolutePath);
 
         $this->optimizationResult['success'] = false;
+        $this->optimizationResult['providerName'] = $this->name;
 
         if ($temporaryFileToBeOptimized) {
             if ($this->configuration->getOption('apikey') != '') {

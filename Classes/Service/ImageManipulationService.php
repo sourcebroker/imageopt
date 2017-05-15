@@ -25,8 +25,11 @@
 
 namespace SourceBroker\Imageopt\Service;
 
+use SourceBroker\Imageopt\Configuration\PluginConfiguration;
 use SourceBroker\Imageopt\Resource\OptimizedFileRepository;
+use SourceBroker\Imageopt\Resource\ProcessedFileRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Image Manipulation Service
@@ -36,18 +39,23 @@ class ImageManipulationService
     /**
      * The FAL processed file repository
      *
-     * @var \SourceBroker\Imageopt\Resource\ProcessedFileRepository
-     * @inject
+     * @var ProcessedFileRepository
      */
     protected $falProcessedFileRepository;
 
     /**
      * Plugin configuration
      *
-     * @var \SourceBroker\Imageopt\Configuration\PluginConfiguration
-     * @inject
+     * @var PluginConfiguration
      */
     public $configuration;
+
+    /**
+     * Injection of Image Manipulation Service Object
+     *
+     * @var OptimizedFileRepository
+     */
+    protected $optimizedFileRepository;
 
     /**
      * Allowed file extensions
@@ -86,6 +94,14 @@ class ImageManipulationService
         'jpg' => 'jpg',
         'png' => 'png',
     ];
+
+    public function __construct()
+    {
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->optimizedFileRepository = $objectManager->get(OptimizedFileRepository::class);
+        $this->configuration = $objectManager->get(PluginConfiguration::class);
+        $this->falProcessedFileRepository = $objectManager->get(ProcessedFileRepository::class);
+    }
 
     /**
      * Images optimization
@@ -135,7 +151,7 @@ class ImageManipulationService
                 if ($imageManipulationProvider->isEnabled()) {
                     $theBestOptimizedImage = $this->createTempFile();
                     $providerOptimizationResult = $imageManipulationProvider->optimize($inputImageAbsolutePath);
-                    $providerOptimizationResult['providerName'] = $imageManipulationProviderKey;
+                    $providerOptimizationResult['providerClass'] = $imageManipulationProviderKey;
                     $providerOptimizationResult['serviceError'] = implode('; ', $imageManipulationProvider->getErrorMsgArray());
                     $providerOptimizationResult['optimizedFileSize'] = filesize($providerOptimizationResult['optimizedFileAbsPath']);
                     $providerOptimizationResult['winner'] = false;
@@ -183,14 +199,13 @@ class ImageManipulationService
      */
     public function optimizeFalProcessedFile($notOptimizedFileRaw)
     {
-        $optimizedFileRepository = new OptimizedFileRepository();
         $processedFal = $this->falProcessedFileRepository->getDomainObject($notOptimizedFileRaw);
         $sourceFile = $processedFal->getForLocalProcessing(false);
         if (file_exists($sourceFile)) {
             $fileSizeBeforeOptimization = filesize($sourceFile);
             $optimizationResults = $this->optimize($sourceFile);
 
-            // default values for $optimizedFileRepository->add
+            // default values for $this->optimizedFileRepository->add
             $fileSizeAfterOptimization = null;
             $fileSizeAfterOptimization = $fileSizeBeforeOptimization;
             $providerWinner = '';
@@ -215,7 +230,7 @@ class ImageManipulationService
             ]);
             $this->falProcessedFileRepository->update($processedFal);
 
-            $optimizedFileRepository->add(
+            $this->optimizedFileRepository->add(
                 $theBestOptimizedImage,
                 $fileSizeBeforeOptimization,
                 $fileSizeAfterOptimization,
@@ -241,7 +256,6 @@ class ImageManipulationService
     {
         $directories = explode(',', preg_replace('/\s+/', '', $this->configuration->getOption('directories')));
 
-        $optimizedFileRepository = new OptimizedFileRepository();
         $countOfFilesFound = 0;
 
         foreach ($directories as $directoryWithExtensions) {
@@ -265,7 +279,7 @@ class ImageManipulationService
                                 $fileSizeBeforeOptimization = filesize($file->getPathname());
                                 $optimizationResults = $this->optimize($file->getPathname());
 
-                                // default values for $optimizedFileRepository->add
+                                // default values for $this->optimizedFileRepository->add
                                 $fileSizeAfterOptimization = null;
                                 $optimizeSuccess = false;
                                 $fileSizeAfterOptimization = $fileSizeBeforeOptimization;
@@ -287,7 +301,7 @@ class ImageManipulationService
                                     }
                                 }
 
-                                $optimizedFileRepository->add(
+                                $this->optimizedFileRepository->add(
                                     $file->getPathname(),
                                     $fileSizeBeforeOptimization,
                                     $fileSizeAfterOptimization,

@@ -1,19 +1,19 @@
 tx_imageopt {
-
     directories =
 
     default {
-
         limits {
             notification {
                 sender {
                     email =
                     name =
                 }
+
                 reciver {
                     email =
                     name =
                 }
+
                 disable = 0
             }
         }
@@ -53,7 +53,6 @@ tx_imageopt {
     }
 
     providers {
-
         jpg {
             kraken < tx_imageopt.default.providers.kraken
 
@@ -64,9 +63,9 @@ tx_imageopt {
             jpegoptim {
                 command = {executable} {tempFile} -o --strip-all {quality}
                 enabled = 1
-                options{
+                options {
                     quality < tx_imageopt.default.options.quality
-                    qualityOptions{
+                    qualityOptions {
                         5 = --max=5
                         10 = --max=10
                         15 = --max=15
@@ -92,7 +91,7 @@ tx_imageopt {
             }
 
             jpegrescan {
-                command = {executable} {tempFile} {tempFile}
+                command = {executable} -s {tempFile} {tempFile}
                 enabled = 1
             }
 
@@ -115,8 +114,33 @@ tx_imageopt {
             imageoptim < tx_imageopt.default.providers.imageoptim
 
             gifsicle {
-                command = {executable} --batch --optimize=3 {tempFile}
+                command = {executable} --batch {quality} {tempFile}
                 enabled = 1
+                options {
+                    quality < tx_imageopt.default.options.quality
+                    qualityOptions {
+                        5 = --optimize=3
+                        10 = --optimize=3
+                        15 = --optimize=3
+                        20 = --optimize=3
+                        25 = --optimize=3
+                        30 = --optimize=3
+                        35 = --optimize=3
+                        40 = --optimize=2
+                        45 = --optimize=2
+                        50 = --optimize=2
+                        55 = --optimize=2
+                        60 = --optimize=2
+                        65 = --optimize=2
+                        70 = --optimize=2
+                        75 = --optimize=1
+                        80 = --optimize=1
+                        85 = --optimize=1
+                        90 = --optimize=1
+                        95 = --optimize=1
+                        100 = --optimize=1
+                    }
+                }
             }
         }
 
@@ -130,9 +154,9 @@ tx_imageopt {
             optipng {
                 command = {executable} {tempFile} -strip "all" {quality}
                 enabled = 1
-                options{
+                options {
                     quality < tx_imageopt.default.options.quality
-                    qualityOptions{
+                    qualityOptions {
                         5 = -o7
                         10 = -o7
                         15 = -o7

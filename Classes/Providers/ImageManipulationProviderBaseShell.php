@@ -69,11 +69,13 @@ class ImageManipulationProviderBaseShell extends ImageManipulationProvider
             }
         }
 
+        $exec = $this->getServiceInfo()['exec'];
+        $this->optimizationResult['success'] = false;
+        $this->optimizationResult['providerName'] = $exec;
+
         if ($this->shellExecutableCommand !== null) {
             $temporaryFileToBeOptimized = $this->createTemporaryCopy($inputImageAbsolutePath);
-
             if ($temporaryFileToBeOptimized) {
-                $exec = $this->getServiceInfo()['exec'];
                 $executable = CommandUtility::getCommand($exec);
                 if ($executable) {
                     $shellCommand = str_replace(
@@ -90,11 +92,9 @@ class ImageManipulationProviderBaseShell extends ImageManipulationProvider
                     if ($commandStatus === 0) {
                         $this->optimizationResult['success'] = true;
                     } else {
-                        $this->optimizationResult['success'] = false;
                         $this->optimizationResult['providerError'] = $out;
                     }
                 } else {
-                    $this->optimizationResult['success'] = false;
                     $this->optimizationResult['providerError'] = $exec . ' can\'t be found.';
                 }
             }
