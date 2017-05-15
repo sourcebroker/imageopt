@@ -20,9 +20,6 @@ use SourceBroker\Imageopt\Service\ImageManipulationService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
-/**
- * @package SourceBroker\OptimiseImages\Command
- */
 class ImageoptCommandController extends BaseCommandController
 {
     /**
@@ -57,7 +54,7 @@ class ImageoptCommandController extends BaseCommandController
      * Optimise all TYPO3 processed images
      * @param int $numberOfImagesToProcess The number of images to process on single task call
      */
-    public function optimizeImagesCommand($numberOfImagesToProcess = 3)
+    public function optimizeImagesCommand($numberOfImagesToProcess = 20)
     {
         $this->imageManipulationService->optimizeImages($numberOfImagesToProcess);
         $results = $this->optimizedFileRepository->getAllExecutedFrom($this->taskExecutionStartTime);
@@ -66,7 +63,7 @@ class ImageoptCommandController extends BaseCommandController
             foreach ((array)$results as $result) {
                 $providersResults = unserialize($result['provider_results']);
                 $providersScore = [];
-                $success = 0;
+                $success = $percentageWinner = $percentage = 0;
                 foreach ((array)$providersResults['providerOptimizationResults'] as $optimizationResult) {
                     if ((int)$optimizationResult['success'] === 1) {
                         $success++;
@@ -76,11 +73,12 @@ class ImageoptCommandController extends BaseCommandController
                     } else {
                         $providersScore[] = $optimizationResult['providerName'] . ' - failed';
                     }
+                    if ((int)$optimizationResult['winner'] === 1) {
+                        $percentageWinner = $percentage;
+                    }
                 }
                 $providersScore = implode(', ', $providersScore);
-                $percentage = number_format(round(($result['file_size_before'] - $result['file_size_after']) * 100 / $result['file_size_before'],
-                    2), 2, '.', '');
-                $message[] = $percentage . '% - ' . $result['path'] . ' | Providers Status: ' . $success . ' out of ' . count($providersResults['providerOptimizationResults']) . ' finished successfully (' . $providersScore . ')';
+                $message[] = $percentageWinner . '% - ' . $result['path'] . ' | Providers Status: ' . $success . ' out of ' . count($providersResults['providerOptimizationResults']) . ' finished successfully (' . $providersScore . ')';
             }
         } else {
             $message[] = 'All images are optimized.';
