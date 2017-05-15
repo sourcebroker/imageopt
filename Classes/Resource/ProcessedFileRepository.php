@@ -73,7 +73,7 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
             '*',
             $this->table,
             // task_type == 'Image.Preview' are backend thumbnails. We do not want to optimise them.
-            'tx_imageopt_optimized=0 AND task_type != \'Image.Preview\' AND identifier != \'\' AND (identifier LIKE \'%.png\' OR identifier LIKE \'%.gif\' OR identifier LIKE \'%.jpg\' OR identifier LIKE \'%.jpeg\')',
+            'name IS NOT NULL AND tx_imageopt_optimized=0 AND task_type != \'Image.Preview\' AND identifier != \'\' AND (identifier LIKE \'%.png\' OR identifier LIKE \'%.gif\' OR identifier LIKE \'%.jpg\' OR identifier LIKE \'%.jpeg\')',
             '',
             '',
             intval($limit)
