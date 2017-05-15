@@ -21,6 +21,12 @@ namespace SourceBroker\Imageopt\Resource;
  */
 class OptimizedFileRepository
 {
+
+    /**
+     * @var string
+     */
+    protected $tableName = 'tx_imageopt_images';
+
     /**
      * @var \TYPO3\CMS\Core\Database\DatabaseConnection
      */
@@ -36,14 +42,24 @@ class OptimizedFileRepository
 
     /**
      * Get all optimized images
-     * 
+     *
      * @param int $limit Number of optimized images to return
      * @param int $offset
      * @return array
      */
     public function getAll($limit = 10, $offset = 0)
     {
-        return $this->databaseConnection->exec_SELECTgetRows('*', 'tx_imageopt_images', '', '', '', $offset . ',' . $limit);
+        return $this->databaseConnection->exec_SELECTgetRows('*', $this->tableName, '', '', '', $offset . ',' . $limit);
+    }
+
+    /**
+     * Get all images executed less from timestamp
+     * @param $timestamp
+     * @return array|NULL
+     */
+    public function getAllExecutedFrom($timestamp)
+    {
+        return $this->databaseConnection->exec_SELECTgetRows('*', $this->tableName, 'tstamp >= ' . (int)$timestamp);
     }
 
     /**
@@ -59,7 +75,7 @@ class OptimizedFileRepository
      */
     public function add($filePath, $sizeBefore, $sizeAfter = null, $providerWinner = '', $status = false, $providerResults = '')
     {
-        return $this->databaseConnection->exec_INSERTquery('tx_imageopt_images', [
+        return $this->databaseConnection->exec_INSERTquery($this->tableName, [
             'pid' => 0,
             'optimized' => $status,
             'optimization_bytes' => $sizeBefore - $sizeAfter,
@@ -82,6 +98,6 @@ class OptimizedFileRepository
      */
     public function remove($filePath)
     {
-        return $this->databaseConnection->exec_DELETEquery('tx_imageopt_images', "path = '" . $filePath . "'");
+        return $this->databaseConnection->exec_DELETEquery($this->tableName, "path = '" . $filePath . "'");
     }
 }

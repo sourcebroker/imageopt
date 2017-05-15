@@ -185,52 +185,46 @@ class ImageManipulationService
     {
         $optimizedFileRepository = new OptimizedFileRepository();
         $processedFal = $this->falProcessedFileRepository->getDomainObject($notOptimizedFileRaw);
-        // TODO: For some files seems like they are not processed and are getting no new name. The "name" is NULL then
-        // TODO: and prevent $processedFal->updateWithLocalFile() to run correctly. Debug problem. Find solution.
-        if ($processedFal->getName() !== NULL) {
-            $sourceFile = $processedFal->getForLocalProcessing(false);
-            if (file_exists($sourceFile)) {
-                $fileSizeBeforeOptimization = filesize($sourceFile);
-                $optimizationResults = $this->optimize($sourceFile);
+        $sourceFile = $processedFal->getForLocalProcessing(false);
+        if (file_exists($sourceFile)) {
+            $fileSizeBeforeOptimization = filesize($sourceFile);
+            $optimizationResults = $this->optimize($sourceFile);
 
-                // default values for $optimizedFileRepository->add
-                $fileSizeAfterOptimization = null;
-                $fileSizeAfterOptimization = $fileSizeBeforeOptimization;
-                $providerWinner = '';
-                $theBestOptimizedImage = 'Not optimized.';
+            // default values for $optimizedFileRepository->add
+            $fileSizeAfterOptimization = null;
+            $fileSizeAfterOptimization = $fileSizeBeforeOptimization;
+            $providerWinner = '';
+            $theBestOptimizedImage = 'Not optimized.';
 
-                // $optimizationResults['imageOptimizationProviderWinnerKey'] !== null
-                // Means that at least one provider succeeded and returned file smaller than original.
-                // If non of the provider returned smaller image or all provider failed then do nothing but store log.
-                if ($optimizationResults['providerOptimizationWinnerKey'] !== null) {
-                    $theBestOptimizedImage = $optimizationResults['providerOptimizationResults'][$optimizationResults['providerOptimizationWinnerKey']]['optimizedFileAbsPath'];
-                    list($width, $height) = getimagesize($theBestOptimizedImage);
-                    if ($width > 0 && $height > 0) {
-                        $fileSizeAfterOptimization = filesize($theBestOptimizedImage);
-                        $processedFal->updateWithLocalFile($theBestOptimizedImage);
-                        $providerWinner = $optimizationResults['providerOptimizationWinnerKey'];
-                        $theBestOptimizedImage = $processedFal->getPublicUrl();
-                    }
+            // $optimizationResults['imageOptimizationProviderWinnerKey'] !== null
+            // Means that at least one provider succeeded and returned file smaller than original.
+            // If non of the provider returned smaller image or all provider failed then do nothing but store log.
+            if ($optimizationResults['providerOptimizationWinnerKey'] !== null) {
+                $theBestOptimizedImage = $optimizationResults['providerOptimizationResults'][$optimizationResults['providerOptimizationWinnerKey']]['optimizedFileAbsPath'];
+                list($width, $height) = getimagesize($theBestOptimizedImage);
+                if ($width > 0 && $height > 0) {
+                    $fileSizeAfterOptimization = filesize($theBestOptimizedImage);
+                    $processedFal->updateWithLocalFile($theBestOptimizedImage);
+                    $providerWinner = $optimizationResults['providerOptimizationWinnerKey'];
+                    $theBestOptimizedImage = $processedFal->getPublicUrl();
                 }
-                // We set optimize always even if there was no real gain. Otherwise we'll try to optimize it in next loop.
-                $processedFal->updateProperties([
-                    'tx_imageopt_optimized' => 1
-                ]);
-                $this->falProcessedFileRepository->update($processedFal);
-
-                //TODO - do better cli log
-                $percentage = number_format(round(($fileSizeBeforeOptimization - $fileSizeAfterOptimization) * 100 / $fileSizeBeforeOptimization, 2), 2, '.', '');
-                echo($percentage . '% - ' . $theBestOptimizedImage . "\n");
-
-                $optimizedFileRepository->add(
-                    $theBestOptimizedImage,
-                    $fileSizeBeforeOptimization,
-                    $fileSizeAfterOptimization,
-                    $providerWinner,
-                    true,
-                    $optimizationResults
-                );
             }
+            // We set optimize always even if there was no real gain. Otherwise we'll try to optimize it in next loop.
+            $processedFal->updateProperties([
+                'tx_imageopt_optimized' => 1
+            ]);
+            $this->falProcessedFileRepository->update($processedFal);
+
+            $optimizedFileRepository->add(
+                $theBestOptimizedImage,
+                $fileSizeBeforeOptimization,
+                $fileSizeAfterOptimization,
+                $providerWinner,
+                true,
+                $optimizationResults
+            );
+        } else {
+            $processedFal->delete();
         }
     }
 
@@ -292,10 +286,6 @@ class ImageManipulationService
                                         }
                                     }
                                 }
-
-                                //TODO - do better cli log
-                                $percentage = number_format(round(($fileSizeBeforeOptimization - $fileSizeAfterOptimization) * 100 / $fileSizeBeforeOptimization, 2), 2, '.', '');
-                                echo($percentage . '% - ' . $file->getPathname() . "\n");
 
                                 $optimizedFileRepository->add(
                                     $file->getPathname(),
