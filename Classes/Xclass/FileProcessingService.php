@@ -49,7 +49,7 @@ class FileProcessingService extends \TYPO3\CMS\Core\Resource\Service\FileProcess
         $processedFileRepository = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\ProcessedFileRepository::class);
 
         // LOCC add neutral additionalParameters that will make the image to be processed even if not needed
-        $configuration['additionalParameters'] = ' ';
+        $configuration['additionalParameters'] .= ' ';
 
         $processedFile = $processedFileRepository->findOneByOriginalFileAndTaskTypeAndConfiguration($fileObject, $taskType, $configuration);
 
