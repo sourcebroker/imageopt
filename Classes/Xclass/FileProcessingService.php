@@ -32,7 +32,8 @@ class FileProcessingService extends \TYPO3\CMS\Core\Resource\Service\FileProcess
 
     /**
      *
-     * Xclassed because when the parameters ($configuration['additionalParameters']) are changed the hash is changed then we force processed files by File Abstraction Layer
+     * Xclassed because when the $configuration['additionalParameters'] is changed the hash is changed
+     * and we force to process file even if regulary TYPO3 would use original.
      *
      * @param Resource\FileInterface $fileObject The file object
      * @param Resource\ResourceStorage $targetStorage The storage to store the processed file in
@@ -49,7 +50,7 @@ class FileProcessingService extends \TYPO3\CMS\Core\Resource\Service\FileProcess
         $processedFileRepository = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\ProcessedFileRepository::class);
 
         // LOCC add neutral additionalParameters that will make the image to be processed even if not needed
-        $configuration['additionalParameters'] .= ' ';
+        $configuration['additionalParameters'] = 'MUST_RECREATE';
 
         $processedFile = $processedFileRepository->findOneByOriginalFileAndTaskTypeAndConfiguration($fileObject, $taskType, $configuration);
 

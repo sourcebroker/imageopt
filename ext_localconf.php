@@ -292,6 +292,10 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Core\\Resource\\Servi
     'className' => 'SourceBroker\\Imageopt\\Xclass\\FileProcessingService'
 );
 
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Frontend\\Imaging\\GifBuilder'] = array(
+    'className' => 'SourceBroker\\Imageopt\\Xclass\\GifBuilder'
+);
+
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer'] = array(
     'className' => 'SourceBroker\\Imageopt\\Xclass\\ContentObjectRenderer'
 );
