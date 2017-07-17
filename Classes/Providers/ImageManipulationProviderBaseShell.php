@@ -47,13 +47,13 @@ class ImageManipulationProviderBaseShell extends ImageManipulationProvider
      */
     public function optimize($inputImageAbsolutePath)
     {
-        if ($this->configuration->getOption('command') != '') {
-            $this->shellExecutableCommand = $this->configuration->getOption('command');
+        if ($this->config->getOption('command') != '') {
+            $this->shellExecutableCommand = $this->config->getOption('command');
         }
 
         $selectedQuality = '';
-        $quality = (int)$this->configuration->getOption('options.quality');
-        $qualityOptions = $this->configuration->getOption('options.qualityOptions');
+        $quality = (int)$this->config->getOption('options.quality');
+        $qualityOptions = $this->config->getOption('options.qualityOptions');
         if ($quality && is_array($qualityOptions)) {
             if (isset($qualityOptions[$quality])) {
                 $selectedQuality = $qualityOptions[$quality];

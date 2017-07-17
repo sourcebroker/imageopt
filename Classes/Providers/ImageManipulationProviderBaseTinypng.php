@@ -119,7 +119,7 @@ class ImageManipulationProviderBaseTinypng extends ImageManipulationProviderBase
             if ($responseFromAPI['http_code'] == 429) {
                 $this->deactivateService();
 
-                $email = $this->getConfiguration()->getOption('limits.notification.reciver.email');
+                $email = $this->getConfig()->getOption('limits.notification.reciver.email');
                 $this->sendNotificationEmail($email, 'Your limit has been exceeded',
                     'Your limit for Tinypng.com has been exceeded');
 
@@ -164,10 +164,10 @@ class ImageManipulationProviderBaseTinypng extends ImageManipulationProviderBase
         $this->optimizationResult['success'] = false;
 
         if ($temporaryFileToBeOptimized) {
-            if ($this->configuration->getOption('apikey') != '') {
+            if ($this->config->getOption('apikey') != '') {
                 $this->initialize([
                     'auth' => [
-                        'apikey' => $this->configuration->getOption('apikey')
+                        'apikey' => $this->config->getOption('apikey')
                     ],
                     'url' => [
                         'upload' => 'https://api.tinify.com/shrink'

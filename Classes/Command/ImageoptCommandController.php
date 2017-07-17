@@ -17,6 +17,7 @@ namespace SourceBroker\Imageopt\Command;
 
 use SourceBroker\Imageopt\Resource\OptimizedFileRepository;
 use SourceBroker\Imageopt\Service\ImageManipulationService;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
@@ -46,7 +47,15 @@ class ImageoptCommandController extends BaseCommandController
     {
         $this->taskExecutionStartTime = $GLOBALS['EXEC_TIME'];
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->imageManipulationService = $objectManager->get(ImageManipulationService::class);
+
+        $serviceConfig = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Service\\TypoScriptService')
+            ->convertTypoScriptArrayToPlainArray(BackendUtility::getPagesTSconfig(1));
+        if (isset($serviceConfig['tx_imageopt'])) {
+            $serviceConfig = $serviceConfig['tx_imageopt'];
+        } else {
+            $serviceConfig = [];
+        }
+        $this->imageManipulationService = $objectManager->get(ImageManipulationService::class, $serviceConfig);
         $this->optimizedFileRepository = $objectManager->get(OptimizedFileRepository::class);
     }
 

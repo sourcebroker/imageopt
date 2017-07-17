@@ -25,7 +25,7 @@
 
 namespace SourceBroker\Imageopt\Service;
 
-use SourceBroker\Imageopt\Configuration\PluginConfiguration;
+use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Resource\OptimizedFileRepository;
 use SourceBroker\Imageopt\Resource\ProcessedFileRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -46,9 +46,9 @@ class ImageManipulationService
     /**
      * Plugin configuration
      *
-     * @var PluginConfiguration
+     * @var Configurator
      */
-    public $configuration;
+    public $configurator;
 
     /**
      * Injection of Image Manipulation Service Object
@@ -95,11 +95,15 @@ class ImageManipulationService
         'png' => 'png',
     ];
 
-    public function __construct()
+    public function __construct($config = null)
     {
+        if ($config === null) {
+            throw new \Exception('Configuration not set for ImageManipulationService class');
+        }
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->optimizedFileRepository = $objectManager->get(OptimizedFileRepository::class);
-        $this->configuration = $objectManager->get(PluginConfiguration::class);
+        $this->configurator = $objectManager->get(Configurator::class);
+        $this->configuratorGlobal = $objectManager->get(Configurator::class, $config);
         $this->falProcessedFileRepository = $objectManager->get(ProcessedFileRepository::class);
     }
 
@@ -148,6 +152,13 @@ class ImageManipulationService
             /* @var \SourceBroker\Imageopt\Providers\ImageManipulationProvider $imageManipulationProvider */
             while (is_object($imageManipulationProvider = GeneralUtility::makeInstanceService('ImageOptimization' . ucfirst($fileType),
                 '', $imageManipulationProviderChain))) {
+                $providerConfig = $this->configuratorGlobal->getOption('providers.' . $imageManipulationProvider->getFileType() . '.' . $imageManipulationProvider->getName());
+                if (count($providerConfig)) {
+                    $this->configurator->setConfig($providerConfig);
+                } else {
+                    throw new \Exception('No configuration for provider found for: "providers.' . $imageManipulationProvider->getFileType() . '.' . $imageManipulationProvider->getName() . '"');
+                }
+
                 $imageManipulationProviderKey = $imageManipulationProvider->getServiceKey();
                 // add to $imageManipulationProvider[] to exclude this service for next while loop
                 $imageManipulationProviderChain[] = $imageManipulationProviderKey;
@@ -258,7 +269,7 @@ class ImageManipulationService
      */
     public function optimizeFilesInFolders($numberOfImagesToProcess)
     {
-        $directories = explode(',', preg_replace('/\s+/', '', $this->configuration->getOption('directories')));
+        $directories = explode(',', preg_replace('/\s+/', '', $this->configurator->getOption('directories')));
 
         $countOfFilesFound = 0;
 

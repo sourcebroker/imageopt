@@ -24,7 +24,7 @@
 
 namespace SourceBroker\Imageopt\Providers;
 
-use SourceBroker\Imageopt\Configuration\ImageProviderConfiguration;
+use SourceBroker\Imageopt\Configuration\Configurator;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Service\AbstractService;
@@ -35,11 +35,11 @@ use TYPO3\CMS\Core\Service\AbstractService;
 abstract class ImageManipulationProvider extends AbstractService
 {
     /**
-     * SourceBroker\Imageopt\Configuration\ImageProviderConfiguration
+     * General configuration
      *
-     * @var null|object
+     * @var null|\SourceBroker\Imageopt\Configuration\Configurator
      */
-    protected $configuration = null;
+    protected $config = null;
 
     /**
      * Result of optimization
@@ -58,21 +58,89 @@ abstract class ImageManipulationProvider extends AbstractService
      *
      * @var string
      */
-    public $fileType = '';
+    protected $fileType = '';
 
     /**
      * Provider name
      *
      * @var string
      */
-    public $name = '';
+    protected $name = '';
 
     /**
      * ImageManipulationProvider constructor
      */
     public function __construct()
     {
-        $this->setConfiguration(GeneralUtility::makeInstance(ImageProviderConfiguration::class));
+        $this->config = GeneralUtility::makeInstance(Configurator::class);
+    }
+
+    /**
+     * @return array
+     */
+    public function getOptimizationResult()
+    {
+        return $this->optimizationResult;
+    }
+
+    /**
+     * @param array $optimizationResult
+     */
+    public function setOptimizationResult($optimizationResult)
+    {
+        $this->optimizationResult = $optimizationResult;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFileType()
+    {
+        return $this->fileType;
+    }
+
+    /**
+     * @param string $fileType
+     */
+    public function setFileType($fileType)
+    {
+        $this->fileType = $fileType;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * Set configuration object for provider
+     *
+     * @return object
+     */
+    public function setConfig($config)
+    {
+        return $this->config = $config;
+    }
+
+    /**
+     * Get configuration object for provider
+     *
+     * @return object
+     */
+    public function getConfig()
+    {
+        return $this->config;
     }
 
     /**
@@ -109,41 +177,7 @@ abstract class ImageManipulationProvider extends AbstractService
      */
     public function isEnabled()
     {
-        return (bool)$this->getConfiguration()->getOption('enabled');
-    }
-
-    /**
-     * Set plugin configuration
-     *
-     * @param object $configuration SourceBroker\Imageopt\Configuration\ImageProviderConfiguration
-     */
-    public function setConfiguration($configuration)
-    {
-        $this->configuration = $configuration;
-    }
-
-    /**
-     * Get configuration for provider
-     *
-     * @return object
-     */
-    public function getConfiguration()
-    {
-        $this->configuration->setPrefix('providers.' . $this->fileType . '.' . $this->name);
-
-        return $this->configuration;
-    }
-
-    /**
-     * Get all configuration for plugin
-     *
-     * @return object
-     */
-    private function getAllConfiguration()
-    {
-        $this->configuration->setPrefix('');
-
-        return $this->configuration;
+        return (bool)$this->getConfig()->getOption('enabled');
     }
 
     /**
@@ -155,9 +189,9 @@ abstract class ImageManipulationProvider extends AbstractService
      */
     public function sendNotificationEmail($email, $title, $message)
     {
-        if (!(bool)$this->getConfiguration()->getOption('limits.notification.disable')) {
-            $senderEmail = $this->getAllConfiguration()->getOption('limits.notification.sender.email');
-            $senderName = $this->getAllConfiguration()->getOption('limits.notification.sender.name');
+        if (!(bool)$this->getConfig()->getOption('limits.notification.disable')) {
+            $senderEmail = $this->getConfig()->getOption('limits.notification.sender.email');
+            $senderName = $this->getConfig()->getOption('limits.notification.sender.name');
 
             if ($email != '' && $senderEmail != '' && GeneralUtility::validEmail($email) && GeneralUtility::validEmail($senderEmail)) {
                 $mail = GeneralUtility::makeInstance(MailMessage::class);
