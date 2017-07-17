@@ -2,3 +2,6 @@
 /typo3_src
 /index.php
 /vendor
+/typo3conf
+/typo3temp
+/uploads
