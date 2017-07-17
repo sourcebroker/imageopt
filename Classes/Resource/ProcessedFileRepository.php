@@ -1,4 +1,5 @@
 <?php
+
 namespace SourceBroker\Imageopt\Resource;
 
 /*
@@ -28,7 +29,8 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
      */
     public function countNotOptimized()
     {
-        $row = $this->databaseConnection->exec_SELECTgetSingleRow('COUNT(*) AS not_optimized_counter ', $this->table, 'tx_imageopt_optimized=0');
+        $row = $this->databaseConnection->exec_SELECTgetSingleRow('COUNT(*) AS not_optimized_counter ', $this->table,
+            'tx_imageopt_optimized=0');
         return $row['not_optimized_counter'];
     }
 
@@ -39,7 +41,8 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
      */
     public function getOptimalistationLevel()
     {
-        $row = $this->databaseConnection->exec_SELECTgetSingleRow('SUM(tx_imageopt_optimized_level) AS optimized_level_all', $this->table, 'tx_imageopt_optimized=1');
+        $row = $this->databaseConnection->exec_SELECTgetSingleRow('SUM(tx_imageopt_optimized_level) AS optimized_level_all',
+            $this->table, 'tx_imageopt_optimized=1');
         return $row['optimized_level_all'];
     }
 
@@ -58,7 +61,8 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
      */
     public function resetOptimizationFlag()
     {
-        $this->databaseConnection->exec_UPDATEquery($this->table, 'tx_imageopt_optimized=1', ['tx_imageopt_optimized' => 0]);
+        $this->databaseConnection->exec_UPDATEquery($this->table, 'tx_imageopt_optimized=1',
+            ['tx_imageopt_optimized' => 0]);
     }
 
     /**
@@ -87,7 +91,8 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
      */
     public function countOptimized()
     {
-        $row = $this->databaseConnection->exec_SELECTgetSingleRow('COUNT(*) AS optimized_counter ', $this->table, 'tx_imageopt_optimized=1');
+        $row = $this->databaseConnection->exec_SELECTgetSingleRow('COUNT(*) AS optimized_counter ', $this->table,
+            'tx_imageopt_optimized=1');
         return $row['optimized_counter'];
     }
 

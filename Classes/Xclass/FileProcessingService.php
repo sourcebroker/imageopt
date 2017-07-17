@@ -44,15 +44,20 @@ class FileProcessingService extends \TYPO3\CMS\Core\Resource\Service\FileProcess
      * @throws \InvalidArgumentException
      *
      */
-    public function processFile(Resource\FileInterface $fileObject, Resource\ResourceStorage $targetStorage, $taskType, $configuration)
-    {
+    public function processFile(
+        Resource\FileInterface $fileObject,
+        Resource\ResourceStorage $targetStorage,
+        $taskType,
+        $configuration
+    ) {
         /** @var $processedFileRepository Resource\ProcessedFileRepository */
         $processedFileRepository = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\ProcessedFileRepository::class);
 
         // LOCC add neutral additionalParameters that will make the image to be processed even if not needed
         $configuration['additionalParameters'] = 'MUST_RECREATE';
 
-        $processedFile = $processedFileRepository->findOneByOriginalFileAndTaskTypeAndConfiguration($fileObject, $taskType, $configuration);
+        $processedFile = $processedFileRepository->findOneByOriginalFileAndTaskTypeAndConfiguration($fileObject,
+            $taskType, $configuration);
 
         // set the storage of the processed file
         // Pre-process the file

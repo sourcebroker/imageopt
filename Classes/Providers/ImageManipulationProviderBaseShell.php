@@ -24,8 +24,6 @@
 
 namespace SourceBroker\Imageopt\Providers;
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Service\AbstractService;
 use TYPO3\CMS\Core\Utility\CommandUtility;
 
 /**

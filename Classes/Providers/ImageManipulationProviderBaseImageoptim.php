@@ -43,7 +43,8 @@ class ImageManipulationProviderBaseImageoptim extends ImageManipulationProviderB
      * @param array $options Additional options to optimize
      * @return array Result of optimization
      */
-    public function upload($inputImageAbsolutePath, $options = []) {
+    public function upload($inputImageAbsolutePath, $options = [])
+    {
         if (!file_exists($inputImageAbsolutePath)) {
             return [
                 'success' => false,
@@ -79,7 +80,8 @@ class ImageManipulationProviderBaseImageoptim extends ImageManipulationProviderB
      * @param array $params Additional parameters
      * @return array
      */
-    public function request($data, $url, $params = []) {
+    public function request($data, $url, $params = [])
+    {
         $options = [
             'curl' => []
         ];

@@ -32,14 +32,14 @@ interface ImageManipulationProviderBaseRemoteInterface
     /**
      * Uploading file to remote provider
      *
-     * @param $file Absolute path/file with original image
+     * @param string $file Absolute path/file with original image
      * @param array $settings Additional options to optimize
      * @return array Result of optimization
      */
-    public function upload($file, $settings = array());
+    public function upload($file, $settings = []);
 
     /**
-     * Executes request to remote server
+     * Executes request at remote server
      *
      * @param string|array $data Data of request
      * @param string $url Url to execute request

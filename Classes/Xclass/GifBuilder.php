@@ -26,8 +26,16 @@ class GifBuilder extends ParentClass
      * @return array [0]/[1] is w/h, [2] is file extension and [3] is the filename.
      * @see getImageScale(), typo3/show_item.php, fileList_ext::renderImage(), \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::getImgResource(), SC_tslib_showpic::show(), maskImageOntoImage(), copyImageOntoImage(), scale()
      */
-    public function imageMagickConvert($imagefile, $newExt = '', $w = '', $h = '', $params = '', $frame = '', $options = [], $mustCreate = false)
-    {
+    public function imageMagickConvert(
+        $imagefile,
+        $newExt = '',
+        $w = '',
+        $h = '',
+        $params = '',
+        $frame = '',
+        $options = [],
+        $mustCreate = false
+    ) {
         if ($params == 'MUST_RECREATE') {
             $params = null;
             $mustCreate = true;

@@ -43,7 +43,8 @@ class ImageManipulationProviderBaseTinypng extends ImageManipulationProviderBase
      * @param array $options Additional options to optimize
      * @return array Result of optimization
      */
-    public function upload($inputImageAbsolutePath, $options = []) {
+    public function upload($inputImageAbsolutePath, $options = [])
+    {
         if (!file_exists($inputImageAbsolutePath)) {
             return [
                 'success' => false,
@@ -73,13 +74,16 @@ class ImageManipulationProviderBaseTinypng extends ImageManipulationProviderBase
      * @param string $headers Headers from response
      * @return array Array created from headers
      */
-    protected static function parseHeaders($headers) {
+    protected static function parseHeaders($headers)
+    {
         if (!is_array($headers)) {
             $headers = explode("\r\n", $headers);
         }
         $result = [];
         foreach ($headers as $header) {
-            if (empty($header)) continue;
+            if (empty($header)) {
+                continue;
+            }
             $split = explode(":", $header, 2);
             if (count($split) === 2) {
                 $result[strtolower($split[0])] = trim($split[1]);
@@ -116,18 +120,20 @@ class ImageManipulationProviderBaseTinypng extends ImageManipulationProviderBase
                 $this->deactivateService();
 
                 $email = $this->getConfiguration()->getOption('limits.notification.reciver.email');
-                $this->sendNotificationEmail($email, 'Your limit has been exceeded', 'Your limit for Tinypng.com has been exceeded');
+                $this->sendNotificationEmail($email, 'Your limit has been exceeded',
+                    'Your limit for Tinypng.com has been exceeded');
 
                 return [
                     'success' => false,
                     'providerError' => 'Limit out'
                 ];
-            }
-            else if ($responseFromAPI['http_code'] != 201) {
-                return [
-                    'success' => false,
-                    'providerError' => 'Url HTTP code: ' . $responseFromAPI['http_code']
-                ];
+            } else {
+                if ($responseFromAPI['http_code'] != 201) {
+                    return [
+                        'success' => false,
+                        'providerError' => 'Url HTTP code: ' . $responseFromAPI['http_code']
+                    ];
+                }
             }
 
             $result = [

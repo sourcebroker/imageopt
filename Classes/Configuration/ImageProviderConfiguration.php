@@ -56,7 +56,7 @@ class ImageProviderConfiguration extends PluginConfiguration
      */
     public function getOption($name = '')
     {
-        $name = ($name != '') ? ($this->configPrefix != '') ? $this->configPrefix . '.' .$name : $name : $this->configPrefix;
+        $name = ($name != '') ? ($this->configPrefix != '') ? $this->configPrefix . '.' . $name : $name : $this->configPrefix;
 
         return parent::getOption($name);
     }

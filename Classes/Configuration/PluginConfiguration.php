@@ -25,6 +25,7 @@
 
 namespace SourceBroker\Imageopt\Configuration;
 
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -38,7 +39,7 @@ class PluginConfiguration extends Configuration
     public function __construct()
     {
         if ($this->configuration === null) {
-            $configTS = \TYPO3\CMS\Backend\Utility\BackendUtility::getPagesTSconfig(1);
+            $configTS = BackendUtility::getPagesTSconfig(1);
             $typoScriptService = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Service\\TypoScriptService');
             $configuration = $typoScriptService->convertTypoScriptArrayToPlainArray($configTS);
 
@@ -57,7 +58,8 @@ class PluginConfiguration extends Configuration
      * @param string $name Name separated by dots
      * @return array|null
      */
-    private function getNestedVar(&$context, $name) {
+    private function getNestedVar(&$context, $name)
+    {
         $pieces = explode('.', $name);
         foreach ($pieces as $piece) {
             if (!is_array($context) || !array_key_exists($piece, $context)) {
@@ -74,7 +76,8 @@ class PluginConfiguration extends Configuration
      * @param $name
      * @return string|null
      */
-    public function getOption($name) {
+    public function getOption($name)
+    {
         return $this->getNestedVar($this->configuration, $name);
     }
 }

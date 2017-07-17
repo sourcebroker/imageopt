@@ -24,6 +24,8 @@
 
 namespace SourceBroker\Imageopt\Providers;
 
+use SourceBroker\Imageopt\Configuration\ImageProviderConfiguration;
+use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Service\AbstractService;
 
@@ -70,7 +72,7 @@ abstract class ImageManipulationProvider extends AbstractService
      */
     public function __construct()
     {
-        $this->setConfiguration(GeneralUtility::makeInstance(\SourceBroker\Imageopt\Configuration\ImageProviderConfiguration::class));
+        $this->setConfiguration(GeneralUtility::makeInstance(ImageProviderConfiguration::class));
     }
 
     /**
@@ -78,7 +80,8 @@ abstract class ImageManipulationProvider extends AbstractService
      *
      * @return bool|string
      */
-    protected function getTemporaryFilename() {
+    protected function getTemporaryFilename()
+    {
         return $this->tempFile('tx_imageopt_');
     }
 
@@ -106,7 +109,7 @@ abstract class ImageManipulationProvider extends AbstractService
      */
     public function isEnabled()
     {
-        return (bool) $this->getConfiguration()->getOption('enabled');
+        return (bool)$this->getConfiguration()->getOption('enabled');
     }
 
     /**
@@ -157,7 +160,7 @@ abstract class ImageManipulationProvider extends AbstractService
             $senderName = $this->getAllConfiguration()->getOption('limits.notification.sender.name');
 
             if ($email != '' && $senderEmail != '' && GeneralUtility::validEmail($email) && GeneralUtility::validEmail($senderEmail)) {
-                $mail = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Mail\MailMessage::class);
+                $mail = GeneralUtility::makeInstance(MailMessage::class);
                 $mail->setSubject($title)
                     ->setFrom([$senderEmail => ($senderName ? $senderName : 'Imageopt Notifications')])
                     ->setTo([$email])

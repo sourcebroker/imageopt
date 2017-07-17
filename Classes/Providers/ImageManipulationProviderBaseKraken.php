@@ -43,7 +43,8 @@ class ImageManipulationProviderBaseKraken extends ImageManipulationProviderBaseR
      * @param array $options Additional options to optimize
      * @return array Result of optimization
      */
-    public function upload($inputImageAbsolutePath, $options = []) {
+    public function upload($inputImageAbsolutePath, $options = [])
+    {
         if (!file_exists($inputImageAbsolutePath)) {
             return [
                 'success' => false,
@@ -58,14 +59,14 @@ class ImageManipulationProviderBaseKraken extends ImageManipulationProviderBaseR
 
         foreach ($options as $key => $value) {
             if ($value == 'true' || $value == 'false') {
-                $options[$key] = (bool) $value;
+                $options[$key] = (bool)$value;
             }
         }
 
         $result = self::request([
-                'file' => $file,
-                'data' => json_encode(array_merge(['auth' => $this->settings['auth']], $options))
-            ],
+            'file' => $file,
+            'data' => json_encode(array_merge(['auth' => $this->settings['auth']], $options))
+        ],
             $this->settings['url']['upload'],
             ['type' => 'upload']
         );
@@ -89,7 +90,8 @@ class ImageManipulationProviderBaseKraken extends ImageManipulationProviderBaseR
      *
      * @return array
      */
-    public function status() {
+    public function status()
+    {
         $response = self::request(json_encode($this->settings['auth']), $this->settings['url']['status'], 'url');
 
         return $response;
@@ -103,7 +105,8 @@ class ImageManipulationProviderBaseKraken extends ImageManipulationProviderBaseR
      * @param array $params Additional parameters
      * @return array Result of optimization includes the response from the kraken.io
      */
-    public function request($data, $url, $params = []) {
+    public function request($data, $url, $params = [])
+    {
         $options = [
             'curl' => []
         ];
@@ -128,18 +131,20 @@ class ImageManipulationProviderBaseKraken extends ImageManipulationProviderBaseR
                 $this->deactivateService();
 
                 $email = $this->getConfiguration()->getOption('limits.notification.reciver.email');
-                $this->sendNotificationEmail($email, 'Your limit has been exceeded', 'Your limit for Kraken.io has been exceeded');
+                $this->sendNotificationEmail($email, 'Your limit has been exceeded',
+                    'Your limit for Kraken.io has been exceeded');
 
                 return [
                     'success' => false,
                     'providerError' => 'Limit out'
                 ];
-            }
-            else if ($responseFromAPI['http_code'] != 200) {
-                return [
-                    'success' => false,
-                    'providerError' => 'Url HTTP code: ' . $responseFromAPI['http_code']
-                ];
+            } else {
+                if ($responseFromAPI['http_code'] != 200) {
+                    return [
+                        'success' => false,
+                        'providerError' => 'Url HTTP code: ' . $responseFromAPI['http_code']
+                    ];
+                }
             }
 
             $result = [
@@ -178,7 +183,8 @@ class ImageManipulationProviderBaseKraken extends ImageManipulationProviderBaseR
                 ]);
                 $this->optimizationResult = array_merge(
                     $this->optimizationResult,
-                    $this->upload($temporaryFileToBeOptimized, array_merge(['wait' => true], $this->configuration->getOption('options')))
+                    $this->upload($temporaryFileToBeOptimized,
+                        array_merge(['wait' => true], $this->configuration->getOption('options')))
                 );
                 $this->optimizationResult['optimizedFileAbsPath'] = $temporaryFileToBeOptimized;
             }

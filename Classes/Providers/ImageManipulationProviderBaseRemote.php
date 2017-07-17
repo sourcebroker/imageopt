@@ -24,6 +24,8 @@
 
 namespace SourceBroker\Imageopt\Providers;
 
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+
 /**
  * ImageManipulationProviderBaseRemote
  */
@@ -52,7 +54,8 @@ class ImageManipulationProviderBaseRemote extends ImageManipulationProvider
      *
      * @param array $settings Provider settings
      */
-    public function initialize($settings) {
+    public function initialize($settings)
+    {
         $this->settings = array_merge($this->settings, $settings);
     }
 
@@ -96,19 +99,21 @@ class ImageManipulationProviderBaseRemote extends ImageManipulationProvider
         }
 
         curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.85 Safari/537.36");
+        curl_setopt($curl, CURLOPT_USERAGENT,
+            "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.85 Safari/537.36");
         curl_setopt($curl, CURLOPT_BINARYTRANSFER, 1); //kraken?
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_POST, 1);//tiny?
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         curl_setopt($curl, CURLOPT_FAILONERROR, 0);
-        curl_setopt($curl, CURLOPT_CAINFO, \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('imageopt') . 'Resources/Private/ImageManipulationProvidersAssets/cacert.pem');
+        curl_setopt($curl, CURLOPT_CAINFO,
+            ExtensionManagementUtility::extPath('imageopt') . 'Resources/Private/ImageManipulationProvidersAssets/cacert.pem');
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 1);//kraken?
         curl_setopt($curl, CURLOPT_TIMEOUT, $this->settings['timeout']);
         //curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);//imageopt?
         $response = curl_exec($curl);
 
-        $httpCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $httpCode = (int)curl_getinfo($curl, CURLINFO_HTTP_CODE);
         $headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
 
         $result = [

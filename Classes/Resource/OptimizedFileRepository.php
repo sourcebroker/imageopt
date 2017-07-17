@@ -1,4 +1,5 @@
 <?php
+
 namespace SourceBroker\Imageopt\Resource;
 
 /*
@@ -73,8 +74,14 @@ class OptimizedFileRepository
      * @param string $providerResults
      * @return bool
      */
-    public function add($filePath, $sizeBefore, $sizeAfter = null, $providerWinner = '', $status = false, $providerResults = '')
-    {
+    public function add(
+        $filePath,
+        $sizeBefore,
+        $sizeAfter = null,
+        $providerWinner = '',
+        $status = false,
+        $providerResults = ''
+    ) {
         return $this->databaseConnection->exec_INSERTquery($this->tableName, [
             'pid' => 0,
             'optimized' => $status,

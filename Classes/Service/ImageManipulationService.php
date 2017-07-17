@@ -139,12 +139,15 @@ class ImageManipulationService
         $imageOptimizationProviderWinnerKey = null;
 
         $fileType = strtolower(pathinfo($inputImageAbsolutePath)['extension']);
-        if (in_array($fileType, $this->allowExtensions) && file_exists($inputImageAbsolutePath) && filesize($inputImageAbsolutePath)) {
+        if (in_array($fileType,
+                $this->allowExtensions) && file_exists($inputImageAbsolutePath) && filesize($inputImageAbsolutePath)
+        ) {
             $fileType = $this->fileExtensionNormalisation[$fileType];
             $fileSizeBeforeOptimization = filesize($inputImageAbsolutePath);
             $imageManipulationProviderChain = [];
             /* @var \SourceBroker\Imageopt\Providers\ImageManipulationProvider $imageManipulationProvider */
-            while (is_object($imageManipulationProvider = GeneralUtility::makeInstanceService('ImageOptimization' . ucfirst($fileType), '', $imageManipulationProviderChain))) {
+            while (is_object($imageManipulationProvider = GeneralUtility::makeInstanceService('ImageOptimization' . ucfirst($fileType),
+                '', $imageManipulationProviderChain))) {
                 $imageManipulationProviderKey = $imageManipulationProvider->getServiceKey();
                 // add to $imageManipulationProvider[] to exclude this service for next while loop
                 $imageManipulationProviderChain[] = $imageManipulationProviderKey;
@@ -152,7 +155,8 @@ class ImageManipulationService
                     $theBestOptimizedImage = $this->createTempFile();
                     $providerOptimizationResult = $imageManipulationProvider->optimize($inputImageAbsolutePath);
                     $providerOptimizationResult['providerClass'] = $imageManipulationProviderKey;
-                    $providerOptimizationResult['serviceError'] = implode('; ', $imageManipulationProvider->getErrorMsgArray());
+                    $providerOptimizationResult['serviceError'] = implode('; ',
+                        $imageManipulationProvider->getErrorMsgArray());
                     $providerOptimizationResult['optimizedFileSize'] = filesize($providerOptimizationResult['optimizedFileAbsPath']);
                     $providerOptimizationResult['winner'] = false;
 
@@ -266,7 +270,8 @@ class ImageManipulationService
                     if (is_dir(PATH_site . $directory)) {
                         $directoryIterator = new \RecursiveDirectoryIterator(PATH_site . $directory);
                         $iterator = new \RecursiveIteratorIterator($directoryIterator);
-                        $regexIterator = new \RegexIterator($iterator, '/\.(' . strtolower($stringExtensions) . '|' . strtoupper($stringExtensions) . ')$/');
+                        $regexIterator = new \RegexIterator($iterator,
+                            '/\.(' . strtolower($stringExtensions) . '|' . strtoupper($stringExtensions) . ')$/');
                         $regexIterator->setFlags(\RegexIterator::USE_KEY);
 
                         foreach ($regexIterator as $file) {
