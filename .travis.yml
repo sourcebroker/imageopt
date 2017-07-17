@@ -38,6 +38,4 @@ before_script:
 
 script:
   - >
-    echo;
-    echo "Running unit tests";
-    phpunit --colors -c ./vendor/nimut/testing-framework/res/Configuration/UnitTests.xml Tests/Unit/
+    phpunit --colors -c vendor/nimut/testing-framework/res/Configuration/UnitTests.xml Tests/Unit/
