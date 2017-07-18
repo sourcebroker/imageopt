@@ -546,7 +546,7 @@ class OptimizeImageServiceTest extends UnitTestCase
      */
     public function feedServiceGlobals()
     {
-        return [
+        $GLOBALS['T3_SERVICES'] = [
             'ImageOptimizationGif' =>
                 [
                     'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderGifGifsicle' =>
