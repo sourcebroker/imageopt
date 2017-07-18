@@ -115,10 +115,10 @@ class ImageManipulationProviderBaseImageoptim extends ImageManipulationProviderB
         $this->optimizationResult['providerName'] = $this->name;
 
         if ($temporaryFileToBeOptimized) {
-            if ($this->config->getOption('apikey') != '') {
+            if ($this->getConfigurator()->getOption('apikey') != '') {
                 $this->initialize([
                     'auth' => [
-                        'apikey' => $this->config->getOption('apikey')
+                        'apikey' => $this->getConfigurator()->getOption('apikey')
                     ],
                     'url' => [
                         'upload' => 'https://im2.io'
@@ -126,7 +126,7 @@ class ImageManipulationProviderBaseImageoptim extends ImageManipulationProviderB
                 ]);
                 $this->optimizationResult = array_merge(
                     $this->optimizationResult,
-                    $this->upload($temporaryFileToBeOptimized, $this->config->getOption('options'))
+                    $this->upload($temporaryFileToBeOptimized, $this->getConfigurator()->getOption('options'))
                 );
                 $this->optimizationResult['optimizedFileAbsPath'] = $temporaryFileToBeOptimized;
             }

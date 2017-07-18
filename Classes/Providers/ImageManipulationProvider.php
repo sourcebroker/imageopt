@@ -39,7 +39,7 @@ abstract class ImageManipulationProvider extends AbstractService
      *
      * @var null|\SourceBroker\Imageopt\Configuration\Configurator
      */
-    protected $config = null;
+    protected $configurator = null;
 
     /**
      * Result of optimization
@@ -72,7 +72,7 @@ abstract class ImageManipulationProvider extends AbstractService
      */
     public function __construct()
     {
-        $this->config = GeneralUtility::makeInstance(Configurator::class);
+        $this->configurator = GeneralUtility::makeInstance(Configurator::class);
     }
 
     /**
@@ -128,9 +128,9 @@ abstract class ImageManipulationProvider extends AbstractService
      *
      * @return object
      */
-    public function setConfig($config)
+    public function setConfigurator($configurator)
     {
-        return $this->config = $config;
+        return $this->configurator = $configurator;
     }
 
     /**
@@ -138,9 +138,9 @@ abstract class ImageManipulationProvider extends AbstractService
      *
      * @return object
      */
-    public function getConfig()
+    public function getConfigurator()
     {
-        return $this->config;
+        return $this->configurator;
     }
 
     /**
@@ -177,7 +177,7 @@ abstract class ImageManipulationProvider extends AbstractService
      */
     public function isEnabled()
     {
-        return (bool)$this->getConfig()->getOption('enabled');
+        return (bool)$this->getConfigurator()->getOption('enabled');
     }
 
     /**
@@ -189,9 +189,9 @@ abstract class ImageManipulationProvider extends AbstractService
      */
     public function sendNotificationEmail($email, $title, $message)
     {
-        if (!(bool)$this->getConfig()->getOption('limits.notification.disable')) {
-            $senderEmail = $this->getConfig()->getOption('limits.notification.sender.email');
-            $senderName = $this->getConfig()->getOption('limits.notification.sender.name');
+        if (!(bool)$this->getConfigurator()->getOption('limits.notification.disable')) {
+            $senderEmail = $this->getConfigurator()->getOption('limits.notification.sender.email');
+            $senderName = $this->getConfigurator()->getOption('limits.notification.sender.name');
 
             if ($email != '' && $senderEmail != '' && GeneralUtility::validEmail($email) && GeneralUtility::validEmail($senderEmail)) {
                 $mail = GeneralUtility::makeInstance(MailMessage::class);

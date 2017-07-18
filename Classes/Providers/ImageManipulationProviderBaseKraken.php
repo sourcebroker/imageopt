@@ -130,7 +130,7 @@ class ImageManipulationProviderBaseKraken extends ImageManipulationProviderBaseR
             if ($responseFromAPI['http_code'] == 429) {
                 $this->deactivateService();
 
-                $email = $this->getConfig()->getOption('limits.notification.reciver.email');
+                $email = $this->getConfigurator()->getOption('limits.notification.reciver.email');
                 $this->sendNotificationEmail($email, 'Your limit has been exceeded',
                     'Your limit for Kraken.io has been exceeded');
 
@@ -170,11 +170,11 @@ class ImageManipulationProviderBaseKraken extends ImageManipulationProviderBaseR
         $this->optimizationResult['providerName'] = $this->name;
 
         if ($temporaryFileToBeOptimized) {
-            if ($this->config->getOption('apikey') != '' && $this->config->getOption('apipass') != '') {
+            if ($this->getConfigurator()->getOption('apikey') != '' && $this->getConfigurator()->getOption('apipass') != '') {
                 $this->initialize([
                     'auth' => [
-                        'api_key' => $this->config->getOption('apikey'),
-                        'api_secret' => $this->config->getOption('apipass')
+                        'api_key' => $this->getConfigurator()->getOption('apikey'),
+                        'api_secret' => $this->getConfigurator()->getOption('apipass')
                     ],
                     'url' => [
                         'upload' => 'https://api.kraken.io/v1/upload',
@@ -184,7 +184,7 @@ class ImageManipulationProviderBaseKraken extends ImageManipulationProviderBaseR
                 $this->optimizationResult = array_merge(
                     $this->optimizationResult,
                     $this->upload($temporaryFileToBeOptimized,
-                        array_merge(['wait' => true], $this->config->getOption('options')))
+                        array_merge(['wait' => true], $this->getConfigurator()->getOption('options')))
                 );
                 $this->optimizationResult['optimizedFileAbsPath'] = $temporaryFileToBeOptimized;
             }
