@@ -22,7 +22,9 @@ class ConfiguratorTest extends UnitTestCase
     public function configuratorOptionsAreCorrectlyReturned($given, $expected)
     {
         /** @var \SourceBroker\Imageopt\Configuration\Configurator $configurator */
-        $configurator = $this->getMockBuilder(Configurator::class)->setMethods(['dummy'])->getMock();
+        $configurator = $this->getMockBuilder(Configurator::class)
+            ->setMethods(null)
+            ->getMock();
         $configurator->setConfig($this->staticTsConfig());
         $this->assertEquals($expected, $configurator->getOption($given));
     }
