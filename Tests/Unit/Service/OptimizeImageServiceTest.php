@@ -31,10 +31,10 @@ class OptimizeImageServiceTest extends UnitTestCase
 
         $this->feedServiceGlobals();
 
-        $imageForTesting = realpath(__DIR__ . '/../../Fixture/OptimizeImageService/' . $image);
+        $imageForTesting = realpath(__DIR__ . '/../../Fixture/Unit/OptimizeImageService/' . $image);
         $originalFileSize = filesize($imageForTesting);
         if (file_exists($imageForTesting)) {
-            $results = $optimizeImageService->optimize(realpath(__DIR__ . '/../../Fixture/OptimizeImageService/' . $image));
+            $results = $optimizeImageService->optimize($imageForTesting);
             $optimizedFileSize = filesize($results['providerOptimizationResults'][$results['providerOptimizationWinnerKey']]['optimizedFileAbsPath']);
             $this->assertGreaterThan($optimizedFileSize, $originalFileSize);
         } else {
@@ -546,8 +546,305 @@ class OptimizeImageServiceTest extends UnitTestCase
      */
     public function feedServiceGlobals()
     {
-        define('TYPO3_MODE', 'BE');
-        require(__DIR__ . '/../../../ext_localconf.php');
+        return [
+            'ImageOptimizationGif' =>
+                [
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderGifGifsicle' =>
+                        [
+                            'title' => 'Optimize gif image with command line executable "gifsicle"',
+                            'description' => 'Optimize gif image with command line executable "gifsicle" so it will take less space.',
+                            'available' => true,
+                            'priority' => 90,
+                            'quality' => 80,
+                            'os' => '',
+                            'exec' => 'gifsicle',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderGifGifsicle',
+                            'extKey' => null,
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderGifGifsicle',
+                            'serviceType' => 'ImageOptimizationGif',
+                            'serviceSubTypes' =>
+                                [
+                                    '' => '',
+                                ],
+                        ],
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderGifTinypng' =>
+                        [
+                            'title' => 'Optimize gif image with tinypng.com',
+                            'description' => 'Optimize gif image with tinypng.com so it will take less space.',
+                            'available' => true,
+                            'priority' => 80,
+                            'quality' => 80,
+                            'os' => '',
+                            'exec' => '',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderGifTinypng',
+                            'extKey' => null,
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderGifTinypng',
+                            'serviceType' => 'ImageOptimizationGif',
+                            'serviceSubTypes' =>
+                                [
+                                    '' => '',
+                                ],
+                        ],
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderGifKraken' =>
+                        [
+                            'title' => 'Optimize gif image with Kraken.io',
+                            'description' => 'Optimize gif image with Kraken.io so it will take less space.',
+                            'available' => true,
+                            'priority' => 70,
+                            'quality' => 80,
+                            'os' => '',
+                            'exec' => '',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderGifKraken',
+                            'extKey' => null,
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderGifKraken',
+                            'serviceType' => 'ImageOptimizationGif',
+                            'serviceSubTypes' =>
+                                [
+                                    '' => '',
+                                ],
+                        ],
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderGifImageoptim' =>
+                        [
+                            'title' => 'Optimize png image with Imageoptim.com',
+                            'description' => 'Optimize png image with Imageoptim.com so it will take less space.',
+                            'available' => true,
+                            'priority' => 60,
+                            'quality' => 80,
+                            'os' => '',
+                            'exec' => '',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderGifImageoptim',
+                            'extKey' => null,
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderGifImageoptim',
+                            'serviceType' => 'ImageOptimizationGif',
+                            'serviceSubTypes' =>
+                                [
+                                    '' => '',
+                                ],
+                        ],
+                ],
+            'ImageOptimizationJpg' =>
+                [
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgJpegoptim' =>
+                        [
+                            'title' => 'Optimize jpg image with command line executable "jpegoptim"',
+                            'description' => 'Optimize jpg image with command line executable "jpegoptim" so it will take less space.',
+                            'available' => true,
+                            'priority' => 90,
+                            'quality' => 80,
+                            'os' => '',
+                            'exec' => 'jpegoptim',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgJpegoptim',
+                            'extKey' => null,
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgJpegoptim',
+                            'serviceType' => 'ImageOptimizationJpg',
+                            'serviceSubTypes' =>
+                                [
+                                    '' => '',
+                                ],
+                        ],
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgJpegrescan' =>
+                        [
+                            'title' => 'Optimize jpg image with command line executable "jpegrescan"',
+                            'description' => 'Optimize jpg image with command line executable "jpegrescan" so it will take less space.',
+                            'available' => true,
+                            'priority' => 90,
+                            'quality' => 80,
+                            'os' => '',
+                            'exec' => 'jpegrescan',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgJpegrescan',
+                            'extKey' => null,
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgJpegrescan',
+                            'serviceType' => 'ImageOptimizationJpg',
+                            'serviceSubTypes' =>
+                                [
+                                    '' => '',
+                                ],
+                        ],
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgJpegtran' =>
+                        [
+                            'title' => 'Optimize jpg image with command line executable "jpegtran"',
+                            'jpegtran i ondescription' => 'Optimize jpg image with command line executable "jpegtran" so it will take less space.',
+                            'available' => true,
+                            'priority' => 90,
+                            'quality' => 80,
+                            'os' => '',
+                            'exec' => 'jpegtran',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgJpegtran',
+                            'extKey' => null,
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgJpegtran',
+                            'serviceType' => 'ImageOptimizationJpg',
+                            'serviceSubTypes' =>
+                                [
+                                    '' => '',
+                                ],
+                        ],
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgTinypng' =>
+                        [
+                            'title' => 'Optimize jpg image with tinypng.com',
+                            'description' => 'Optimize jpg image with tinypng.com so it will take less space.',
+                            'available' => true,
+                            'priority' => 100,
+                            'quality' => 80,
+                            'os' => '',
+                            'exec' => '',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgTinypng',
+                            'extKey' => null,
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgTinypng',
+                            'serviceType' => 'ImageOptimizationJpg',
+                            'serviceSubTypes' =>
+                                [
+                                    '' => '',
+                                ],
+                        ],
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgKraken' =>
+                        [
+                            'title' => 'Optimize jpg image with Kraken.io',
+                            'description' => 'Optimize jpg image with Kraken.io so it will take less space.',
+                            'available' => true,
+                            'priority' => 70,
+                            'quality' => 80,
+                            'os' => '',
+                            'exec' => '',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgKraken',
+                            'extKey' => null,
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgKraken',
+                            'serviceType' => 'ImageOptimizationJpg',
+                            'serviceSubTypes' =>
+                                [
+                                    '' => '',
+                                ],
+                        ],
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgImageoptim' =>
+                        [
+                            'title' => 'Optimize png image with Imageoptim.com',
+                            'description' => 'Optimize png image with Imageoptim.com so it will take less space.',
+                            'available' => true,
+                            'priority' => 60,
+                            'quality' => 80,
+                            'os' => '',
+                            'exec' => '',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgImageoptim',
+                            'extKey' => null,
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgImageoptim',
+                            'serviceType' => 'ImageOptimizationJpg',
+                            'serviceSubTypes' =>
+                                [
+                                    '' => '',
+                                ],
+                        ],
+                ],
+            'ImageOptimizationPng' =>
+                [
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderPngOptipng' =>
+                        [
+                            'title' => 'Optimize png image with command line executable "optipng"',
+                            'description' => 'Optimize png image with command line executable "optipng" so it will take less space.',
+                            'available' => true,
+                            'priority' => 90,
+                            'quality' => 80,
+                            'os' => '',
+                            'exec' => 'optipng',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderPngOptipng',
+                            'extKey' => null,
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderPngOptipng',
+                            'serviceType' => 'ImageOptimizationPng',
+                            'serviceSubTypes' =>
+                                [
+                                    '' => '',
+                                ],
+                        ],
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderPngPngcrush' =>
+                        [
+                            'title' => 'Optimize png image with command line executable "pngcrush"',
+                            'description' => 'Optimize png image with command line executable "pngcrush" so it will take less space.',
+                            'available' => true,
+                            'priority' => 90,
+                            'quality' => 80,
+                            'os' => '',
+                            'exec' => 'pngcrush',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderPngPngcrush',
+                            'extKey' => null,
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderPngPngcrush',
+                            'serviceType' => 'ImageOptimizationPng',
+                            'serviceSubTypes' =>
+                                [
+                                    '' => '',
+                                ],
+                        ],
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderPngPngquant' =>
+                        [
+                            'title' => 'Optimize png image with command line executable "pngquant"',
+                            'description' => 'Optimize png image with command line executable "pngquant" so it will take less space.',
+                            'available' => true,
+                            'priority' => 90,
+                            'quality' => 80,
+                            'os' => '',
+                            'exec' => 'pngquant',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderPngPngquant',
+                            'extKey' => null,
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderPngPngquant',
+                            'serviceType' => 'ImageOptimizationPng',
+                            'serviceSubTypes' =>
+                                [
+                                    '' => '',
+                                ],
+                        ],
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderPngTinypng' =>
+                        [
+                            'title' => 'Optimize png image with tinypng.com',
+                            'description' => 'Optimize png image with tinypng.com so it will take less space.',
+                            'available' => true,
+                            'priority' => 80,
+                            'quality' => 80,
+                            'os' => '',
+                            'exec' => '',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderPngTinypng',
+                            'extKey' => null,
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderPngTinypng',
+                            'serviceType' => 'ImageOptimizationPng',
+                            'serviceSubTypes' =>
+                                [
+                                    '' => '',
+                                ],
+                        ],
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderPngKraken' =>
+                        [
+                            'title' => 'Optimize png image with Kraken.io',
+                            'description' => 'Optimize png image with Kraken.io so it will take less space.',
+                            'available' => true,
+                            'priority' => 70,
+                            'quality' => 80,
+                            'os' => '',
+                            'exec' => '',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderPngKraken',
+                            'extKey' => null,
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderPngKraken',
+                            'serviceType' => 'ImageOptimizationPng',
+                            'serviceSubTypes' =>
+                                [
+                                    '' => '',
+                                ],
+                        ],
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderPngImageoptim' =>
+                        [
+                            'title' => 'Optimize png image with Imageoptim.com',
+                            'description' => 'Optimize png image with Imageoptim.com so it will take less space.',
+                            'available' => true,
+                            'priority' => 60,
+                            'quality' => 80,
+                            'os' => '',
+                            'exec' => '',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderPngImageoptim',
+                            'extKey' => null,
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderPngImageoptim',
+                            'serviceType' => 'ImageOptimizationPng',
+                            'serviceSubTypes' =>
+                                [
+                                    '' => '',
+                                ],
+                        ],
+                ],
+        ];
     }
 
 }
