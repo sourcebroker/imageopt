@@ -1,10 +1,10 @@
 {
   "name": "sourcebroker/imageopt",
-  "type": "typo3-cms-extension",
-  "description": "Optimize images resized by TYPO3 so they take less space. TYPO3 services used. Cron based. Support for linux native commands and external services as Kraken.io etc.",
   "license": [
     "GPL-2.0+"
   ],
+  "type": "typo3-cms-extension",
+  "description": "Optimize images resized by TYPO3 so they take less space. TYPO3 services used. Cron based. Support for linux native commands and external services as Kraken.io etc.",
   "require": {
     "typo3/cms": "^6.2 || ^7.6"
   },
@@ -26,5 +26,22 @@
   "replace": {
     "imageopt": "self.version",
     "typo3-ter/imageopt": "self.version"
+  },
+  "config": {
+    "vendor-dir": ".Build/vendor",
+    "bin-dir": ".Build/bin"
+  },
+  "extra": {
+    "typo3/cms": {
+      "cms-package-dir": "{$vendor-dir}/typo3/cms",
+      "web-dir": ".Build/Web"
+    }
+  },
+  "scripts": {
+    "phpunit-test": "TYPO3_PATH_ROOT=.Build/Web/ ./.Build/bin/phpunit -c .Build/vendor/nimut/testing-framework/res/Configuration/UnitTests.xml Tests/Unit/",
+    "post-autoload-dump": [
+      "mkdir -p .Build/Web/typo3conf/ext/",
+      "[ -L .Build/Web/typo3conf/ext/imageopt ]|| ln -snvf ../../../../. .Build/Web/typo3conf/ext/imageopt"
+    ]
   }
 }
