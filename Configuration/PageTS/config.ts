@@ -53,7 +53,7 @@ tx_imageopt {
     }
 
     providers {
-        jpg {
+        jpeg {
             kraken < tx_imageopt.default.providers.kraken
 
             tinypng < tx_imageopt.default.providers.tinypng
@@ -96,7 +96,7 @@ tx_imageopt {
             }
 
             jpegtran {
-                command = {executable} -copy none -optimize -progressive -outfile {tempFile} {tempFile}
+                command = {executable} -copy none -optimize -outfile {tempFile} {tempFile}
                 enabled = 1
             }
 

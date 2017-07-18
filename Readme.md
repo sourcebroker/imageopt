@@ -88,7 +88,7 @@ Default configuration is read automaticly:
         }
     
         providers {
-            jpg {
+            jpeg {
                 kraken < tx_imageopt.default.providers.kraken
     
                 tinypng < tx_imageopt.default.providers.tinypng
@@ -267,8 +267,8 @@ If you would like to run only Kraken.io then put this config in you PageTS.
         }
     
         providers {
-            jpg >
-            jpg {
+            jpeg >
+            jpeg {
                 kraken < tx_imageopt.default.providers.kraken
             }
     

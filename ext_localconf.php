@@ -75,88 +75,88 @@ if (TYPO3_MODE !== 'FE') {
 
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService(
         $_EXTKEY,
-        'ImageOptimizationJpg',
-        \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpgJpegoptim::class,
+        'ImageOptimizationJpeg',
+        \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpegJpegoptim::class,
         [
-            'title' => 'Optimize jpg image with command line executable "jpegoptim"',
-            'description' => 'Optimize jpg image with command line executable "jpegoptim" so it will take less space.',
+            'title' => 'Optimize jpeg image with command line executable "jpegoptim"',
+            'description' => 'Optimize jpeg image with command line executable "jpegoptim" so it will take less space.',
             'available' => true,
             'priority' => 90,
             'quality' => 80,
             'os' => '',
             'exec' => 'jpegoptim',
-            'className' => \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpgJpegoptim::class
+            'className' => \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpegJpegoptim::class
         ]
     );
 
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService(
         $_EXTKEY,
-        'ImageOptimizationJpg',
-        \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpgJpegrescan::class,
+        'ImageOptimizationJpeg',
+        \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpegJpegrescan::class,
         [
-            'title' => 'Optimize jpg image with command line executable "jpegrescan"',
-            'description' => 'Optimize jpg image with command line executable "jpegrescan" so it will take less space.',
+            'title' => 'Optimize jpeg image with command line executable "jpegrescan"',
+            'description' => 'Optimize jpeg image with command line executable "jpegrescan" so it will take less space.',
             'available' => true,
             'priority' => 90,
             'quality' => 80,
             'os' => '',
             'exec' => 'jpegrescan',
-            'className' => \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpgJpegrescan::class
+            'className' => \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpegJpegrescan::class
         ]
     );
 
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService(
         $_EXTKEY,
-        'ImageOptimizationJpg',
-        \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpgJpegtran::class,
+        'ImageOptimizationJpeg',
+        \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpegJpegtran::class,
         [
-            'title' => 'Optimize jpg image with command line executable "jpegtran"',
-            'jpegtran i ondescription' => 'Optimize jpg image with command line executable "jpegtran" so it will take less space.',
+            'title' => 'Optimize jpeg image with command line executable "jpegtran"',
+            'description' => 'Optimize jpeg image with command line executable "jpegtran" so it will take less space.',
             'available' => true,
             'priority' => 90,
             'quality' => 80,
             'os' => '',
             'exec' => 'jpegtran',
-            'className' => \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpgJpegtran::class
+            'className' => \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpegJpegtran::class
         ]
     );
 
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService(
         $_EXTKEY,
-        'ImageOptimizationJpg',
-        \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpgTinypng::class,
+        'ImageOptimizationJpeg',
+        \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpegTinypng::class,
         [
-            'title' => 'Optimize jpg image with tinypng.com',
-            'description' => 'Optimize jpg image with tinypng.com so it will take less space.',
+            'title' => 'Optimize jpeg image with tinypng.com',
+            'description' => 'Optimize jpeg image with tinypng.com so it will take less space.',
             'available' => true,
             'priority' => 100,
             'quality' => 80,
             'os' => '',
             'exec' => '',
-            'className' => \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpgTinypng::class
+            'className' => \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpegTinypng::class
         ]
     );
 
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService(
         $_EXTKEY,
-        'ImageOptimizationJpg',
-        \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpgKraken::class,
+        'ImageOptimizationJpeg',
+        \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpegKraken::class,
         [
-            'title' => 'Optimize jpg image with Kraken.io',
-            'description' => 'Optimize jpg image with Kraken.io so it will take less space.',
+            'title' => 'Optimize jpeg image with Kraken.io',
+            'description' => 'Optimize jpeg image with Kraken.io so it will take less space.',
             'available' => true,
             'priority' => 70,
             'quality' => 80,
             'os' => '',
             'exec' => '',
-            'className' => \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpgKraken::class
+            'className' => \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpegKraken::class
         ]
     );
 
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService(
         $_EXTKEY,
-        'ImageOptimizationJpg',
-        \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpgImageoptim::class,
+        'ImageOptimizationJpeg',
+        \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpegImageoptim::class,
         [
             'title' => 'Optimize png image with Imageoptim.com',
             'description' => 'Optimize png image with Imageoptim.com so it will take less space.',
@@ -165,7 +165,7 @@ if (TYPO3_MODE !== 'FE') {
             'quality' => 80,
             'os' => '',
             'exec' => '',
-            'className' => \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpgImageoptim::class
+            'className' => \SourceBroker\Imageopt\Providers\ImageManipulationProviderJpegImageoptim::class
         ]
     );
 
@@ -266,10 +266,10 @@ if (TYPO3_MODE !== 'FE') {
     );
 
     // The way to add new property to registered service
-    //$GLOBALS['T3_SERVICES']['ImageOptimizationJpg'][\SourceBroker\Imageopt\Providers\ImageManipulationProviderJpgJpegtran::class]['enable'] = true;
+    //$GLOBALS['T3_SERVICES']['ImageOptimizationJpeg'][\SourceBroker\Imageopt\Providers\ImageManipulationProviderJpegJpegtran::class]['enable'] = true;
 
     // The way to deactivate service
-    //$GLOBALS['T3_SERVICES']['ImageOptimizationJpg'][\SourceBroker\Imageopt\Providers\ImageManipulationProviderJpgJpegtran::class]['available'] = false;
+    //$GLOBALS['T3_SERVICES']['ImageOptimizationJpeg'][\SourceBroker\Imageopt\Providers\ImageManipulationProviderJpegJpegtran::class]['available'] = false;
 
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:imageopt/Configuration/PageTS/config.ts">');
 

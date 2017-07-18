@@ -25,21 +25,14 @@
 namespace SourceBroker\Imageopt\Providers;
 
 /**
- * ImageManipulationProviderJpgJpegtran
+ * ImageManipulationProviderJpegKraken
  */
-class ImageManipulationProviderJpgJpegtran extends ImageManipulationProviderBaseShell
+class ImageManipulationProviderJpegKraken extends ImageManipulationProviderBaseKraken
 {
     /**
      * Image file extension operated by provider
      *
      * @var string
      */
-    public $fileType = 'jpg';
-
-    /**
-     * Provider name
-     *
-     * @var string
-     */
-    public $name = 'jpegtran';
+    public $fileType = 'jpeg';
 }

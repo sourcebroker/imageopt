@@ -15,21 +15,15 @@ namespace SourceBroker\Imageopt\Command;
  * The TYPO3 project - inspiring people to share!
  */
 
+use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Resource\OptimizedFileRepository;
-use SourceBroker\Imageopt\Service\ImageManipulationService;
+use SourceBroker\Imageopt\Service\OptimizeImagesFalService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class ImageoptCommandController extends BaseCommandController
 {
-    /**
-     * Injection of Image Manipulation Service Object
-     *
-     * @var ImageManipulationService
-     */
-    protected $imageManipulationService;
-
     /**
      * Injection of Image Manipulation Service Object
      *
@@ -43,6 +37,13 @@ class ImageoptCommandController extends BaseCommandController
      */
     protected $taskExecutionStartTime = null;
 
+    protected $configurator;
+
+    /*
+    * @var \SourceBroker\Imageopt\Service\OptimizeImagesFalService
+    */
+    private $optimizeImagesFalService;
+
     public function __construct()
     {
         $this->taskExecutionStartTime = $GLOBALS['EXEC_TIME'];
@@ -55,39 +56,79 @@ class ImageoptCommandController extends BaseCommandController
         } else {
             $serviceConfig = [];
         }
-        $this->imageManipulationService = $objectManager->get(ImageManipulationService::class, $serviceConfig);
+        $this->configurator = GeneralUtility::makeInstance(Configurator::class);
+        $this->configurator->setConfig($serviceConfig);
         $this->optimizedFileRepository = $objectManager->get(OptimizedFileRepository::class);
+        $this->optimizeImagesFalService = $objectManager->get(
+            OptimizeImagesFalService::class,
+            $this->getConfigurator()->getConfig()
+        );
+
     }
 
     /**
-     * Optimise all TYPO3 processed images
+     * @return object|Configurator
+     */
+    public function getConfigurator()
+    {
+        return $this->configurator;
+    }
+
+    /**
+     * @param object|Configurator $configurator
+     */
+    public function setConfigurator($configurator)
+    {
+        $this->configurator = $configurator;
+    }
+
+    /**
+     * Optimize fal processed images
+     *
      * @param int $numberOfImagesToProcess The number of images to process on single task call
      */
-    public function optimizeImagesCommand($numberOfImagesToProcess = 20)
+    public function optimizeFalProcessedFilesCommand($numberOfImagesToProcess = 20)
     {
-        $this->imageManipulationService->optimizeImages($numberOfImagesToProcess);
+        $this->optimizeImagesFalService->optimizeFalProcessedFiles($numberOfImagesToProcess);
         $results = $this->optimizedFileRepository->getAllExecutedFrom($this->taskExecutionStartTime);
         $message = [];
         if (count($results)) {
             foreach ((array)$results as $result) {
                 $providersResults = unserialize($result['provider_results']);
                 $providersScore = [];
-                $success = $percentageWinner = $percentage = 0;
+                $success = $percentageWinner = $percentage = $noWinner = 0;
+                $percentageWinnerName = '';
                 foreach ((array)$providersResults['providerOptimizationResults'] as $optimizationResult) {
                     if ((int)$optimizationResult['success'] === 1) {
                         $success++;
-                        $percentage = number_format(round(($result['file_size_before'] - $optimizationResult['optimizedFileSize']) * 100 / $result['file_size_before'],
-                            2), 2, '.', '');
-                        $providersScore[] = $optimizationResult['providerName'] . ' - ' . $percentage . '%';
+                        $percentage = number_format(round((
+                                $result['file_size_before'] - $optimizationResult['optimizedFileSize']) * 100
+                            / $result['file_size_before'], 2), 2, '.', '');
+                        $providersScore[] = $success . ') ' . $optimizationResult['providerName'] . ': ' . $percentage . '%';
                     } else {
-                        $providersScore[] = $optimizationResult['providerName'] . ' - failed';
+                        $providersScore[] = $success . ') ' . $optimizationResult['providerName'] . ' - failed';
                     }
                     if ((int)$optimizationResult['winner'] === 1) {
                         $percentageWinner = $percentage;
+                        $percentageWinnerName = $optimizationResult['providerName'];
                     }
                 }
-                $providersScore = implode(', ', $providersScore);
-                $message[] = $percentageWinner . '% - ' . $result['path'] . ' | Providers Status: ' . $success . ' out of ' . count($providersResults['providerOptimizationResults']) . ' finished successfully (' . $providersScore . ')';
+                if ($providersResults['providerOptimizationWinnerKey'] === null && $success === 0
+                ) {
+                    $winnerText = 'No winner. All providers was unsuccessfull.';
+                }
+                if ($providersResults['providerOptimizationWinnerKey'] === null && $success > 0) {
+                    $winnerText = 'No winner. Non of the optimized images was smaller than original.';
+                }
+                if ($providersResults['providerOptimizationWinnerKey'] !== null) {
+                    $winnerText = "Winner is '$percentageWinnerName'  with result: " . $percentageWinner . "%";
+                }
+                $message[] =
+                    "---------------------------------\n" .
+                    "File\t\t| " . $result['path'] . "\n" .
+                    "Winner\t\t| " . (isset($winnerText) ? $winnerText : '') . "\n".
+                    "Providers stats\t| " . $success . ' out of ' . count($providersResults['providerOptimizationResults']) . ' finished successfully:' . "\n" .
+                    "\t\t| " . implode("\n\t\t| ", $providersScore) . "\n";
             }
         } else {
             $message[] = 'All images are optimized.';
@@ -103,6 +144,6 @@ class ImageoptCommandController extends BaseCommandController
      */
     public function resetOptimizationFlagCommand()
     {
-        $this->imageManipulationService->resetOptimizationFlag();
+        $this->optimizeImagesFalService->resetOptimizationFlag();
     }
 }

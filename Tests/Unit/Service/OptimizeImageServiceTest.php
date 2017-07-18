@@ -54,7 +54,7 @@ class OptimizeImageServiceTest extends UnitTestCase
             'Test png file resize' => [
                 'mountains.png',
             ],
-            'Test jpg file resize' => [
+            'Test jpeg file resize' => [
                 'mountains.jpg',
             ],
         ];
@@ -175,7 +175,7 @@ class OptimizeImageServiceTest extends UnitTestCase
                 ],
             'providers' =>
                 [
-                    'jpg' =>
+                    'jpeg' =>
                         [
                             'kraken' =>
                                 [
@@ -622,99 +622,99 @@ class OptimizeImageServiceTest extends UnitTestCase
                                 ],
                         ],
                 ],
-            'ImageOptimizationJpg' =>
+            'ImageOptimizationJpeg' =>
                 [
-                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgJpegoptim' =>
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpegJpegoptim' =>
                         [
-                            'title' => 'Optimize jpg image with command line executable "jpegoptim"',
-                            'description' => 'Optimize jpg image with command line executable "jpegoptim" so it will take less space.',
+                            'title' => 'Optimize jpeg image with command line executable "jpegoptim"',
+                            'description' => 'Optimize jpeg image with command line executable "jpegoptim" so it will take less space.',
                             'available' => true,
                             'priority' => 90,
                             'quality' => 80,
                             'os' => '',
                             'exec' => 'jpegoptim',
-                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgJpegoptim',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpegJpegoptim',
                             'extKey' => null,
-                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgJpegoptim',
-                            'serviceType' => 'ImageOptimizationJpg',
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpegJpegoptim',
+                            'serviceType' => 'ImageOptimizationJpeg',
                             'serviceSubTypes' =>
                                 [
                                     '' => '',
                                 ],
                         ],
-                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgJpegrescan' =>
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpegJpegrescan' =>
                         [
-                            'title' => 'Optimize jpg image with command line executable "jpegrescan"',
-                            'description' => 'Optimize jpg image with command line executable "jpegrescan" so it will take less space.',
+                            'title' => 'Optimize jpeg image with command line executable "jpegrescan"',
+                            'description' => 'Optimize jpeg image with command line executable "jpegrescan" so it will take less space.',
                             'available' => true,
                             'priority' => 90,
                             'quality' => 80,
                             'os' => '',
                             'exec' => 'jpegrescan',
-                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgJpegrescan',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpegJpegrescan',
                             'extKey' => null,
-                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgJpegrescan',
-                            'serviceType' => 'ImageOptimizationJpg',
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpegJpegrescan',
+                            'serviceType' => 'ImageOptimizationJpeg',
                             'serviceSubTypes' =>
                                 [
                                     '' => '',
                                 ],
                         ],
-                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgJpegtran' =>
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpegJpegtran' =>
                         [
-                            'title' => 'Optimize jpg image with command line executable "jpegtran"',
-                            'jpegtran i ondescription' => 'Optimize jpg image with command line executable "jpegtran" so it will take less space.',
+                            'title' => 'Optimize jpeg image with command line executable "jpegtran"',
+                            'jpegtran i ondescription' => 'Optimize jpeg image with command line executable "jpegtran" so it will take less space.',
                             'available' => true,
                             'priority' => 90,
                             'quality' => 80,
                             'os' => '',
                             'exec' => 'jpegtran',
-                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgJpegtran',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpegJpegtran',
                             'extKey' => null,
-                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgJpegtran',
-                            'serviceType' => 'ImageOptimizationJpg',
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpegJpegtran',
+                            'serviceType' => 'ImageOptimizationJpeg',
                             'serviceSubTypes' =>
                                 [
                                     '' => '',
                                 ],
                         ],
-                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgTinypng' =>
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpegTinypng' =>
                         [
-                            'title' => 'Optimize jpg image with tinypng.com',
-                            'description' => 'Optimize jpg image with tinypng.com so it will take less space.',
+                            'title' => 'Optimize jpeg image with tinypng.com',
+                            'description' => 'Optimize jpeg image with tinypng.com so it will take less space.',
                             'available' => true,
                             'priority' => 100,
                             'quality' => 80,
                             'os' => '',
                             'exec' => '',
-                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgTinypng',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpegTinypng',
                             'extKey' => null,
-                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgTinypng',
-                            'serviceType' => 'ImageOptimizationJpg',
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpegTinypng',
+                            'serviceType' => 'ImageOptimizationJpeg',
                             'serviceSubTypes' =>
                                 [
                                     '' => '',
                                 ],
                         ],
-                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgKraken' =>
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpegKraken' =>
                         [
-                            'title' => 'Optimize jpg image with Kraken.io',
-                            'description' => 'Optimize jpg image with Kraken.io so it will take less space.',
+                            'title' => 'Optimize jpeg image with Kraken.io',
+                            'description' => 'Optimize jpeg image with Kraken.io so it will take less space.',
                             'available' => true,
                             'priority' => 70,
                             'quality' => 80,
                             'os' => '',
                             'exec' => '',
-                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgKraken',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpegKraken',
                             'extKey' => null,
-                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgKraken',
-                            'serviceType' => 'ImageOptimizationJpg',
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpegKraken',
+                            'serviceType' => 'ImageOptimizationJpeg',
                             'serviceSubTypes' =>
                                 [
                                     '' => '',
                                 ],
                         ],
-                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgImageoptim' =>
+                    'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpegImageoptim' =>
                         [
                             'title' => 'Optimize png image with Imageoptim.com',
                             'description' => 'Optimize png image with Imageoptim.com so it will take less space.',
@@ -723,10 +723,10 @@ class OptimizeImageServiceTest extends UnitTestCase
                             'quality' => 80,
                             'os' => '',
                             'exec' => '',
-                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgImageoptim',
+                            'className' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpegImageoptim',
                             'extKey' => null,
-                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpgImageoptim',
-                            'serviceType' => 'ImageOptimizationJpg',
+                            'serviceKey' => 'SourceBroker\\Imageopt\\Providers\\ImageManipulationProviderJpegImageoptim',
+                            'serviceType' => 'ImageOptimizationJpeg',
                             'serviceSubTypes' =>
                                 [
                                     '' => '',

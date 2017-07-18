@@ -126,6 +126,7 @@ abstract class ImageManipulationProvider extends AbstractService
     /**
      * Set configuration object for provider
      *
+     * @param $configurator
      * @return object
      */
     public function setConfigurator($configurator)
@@ -169,6 +170,11 @@ abstract class ImageManipulationProvider extends AbstractService
         }
         return $tempFilename;
     }
+
+
+//    public function optimize($image) {
+//
+//    }
 
     /**
      * Return true if provider is enabled

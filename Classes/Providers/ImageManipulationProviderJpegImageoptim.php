@@ -25,21 +25,14 @@
 namespace SourceBroker\Imageopt\Providers;
 
 /**
- * ImageManipulationProviderJpgMozjpg
+ * ImageManipulationProviderJpegImageoptim
  */
-class ImageManipulationProviderJpgMozjpg extends ImageManipulationProviderBaseShell
+class ImageManipulationProviderJpegImageoptim extends ImageManipulationProviderBaseImageoptim
 {
     /**
      * Image file extension operated by provider
      *
      * @var string
      */
-    public $fileType = 'jpg';
-
-    /**
-     * Provider name
-     *
-     * @var string
-     */
-    public $name = 'mozjpg';
+    public $fileType = 'jpeg';
 }

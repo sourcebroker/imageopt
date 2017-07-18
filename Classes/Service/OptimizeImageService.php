@@ -26,10 +26,11 @@
 namespace SourceBroker\Imageopt\Service;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Optimize single image using multiple Image Manipulation Providers. The best win!
+ * Optimize single image using multiple Image Manipulation Providers. The best optimization wins!
  */
 class OptimizeImageService
 {
@@ -40,44 +41,12 @@ class OptimizeImageService
      */
     public $configurator;
 
-    /**
-     * Allowed file extensions
-     *
-     * @var array
-     */
-    private $allowExtensions = [
-        'png',
-        'jpeg',
-        'jpg',
-        'gif'
-    ];
 
     /**
-     * Temp file Prefix
-     *
-     * @var string
+     * OptimizeImageService constructor.
+     * @param null $config
+     * @throws \Exception
      */
-    private $tempFilePrefix = 'tx_imageopt';
-
-    /**
-     * Is registered shutdown function
-     *
-     * @var bool
-     */
-    private $isRegisteredShutdownFunction = false;
-
-    /**
-     * List of extensions that will be normalized
-     *
-     * @var array
-     */
-    private $fileExtensionNormalisation = [
-        'gif' => 'gif',
-        'jpeg' => 'jpg',
-        'jpg' => 'jpg',
-        'png' => 'png',
-    ];
-
     public function __construct($config = null)
     {
         if ($config === null) {
@@ -85,13 +54,13 @@ class OptimizeImageService
         }
         $this->configurator = GeneralUtility::makeInstance(Configurator::class);
         $this->configuratorGlobal = GeneralUtility::makeInstance(Configurator::class, $config);
-
+        $this->temporaryFile = GeneralUtility::makeInstance(TemporaryFileUtility::class);
     }
 
     /**
      * Optimize image using chained Image Manipulation Providers
      *
-     * @param $inputImageAbsolutePath
+     * @param string $inputImageAbsolutePath
      * @return array
      * @throws \Exception
      */
@@ -99,17 +68,18 @@ class OptimizeImageService
     {
         $imageOptimizationProviderResults = [];
         $imageOptimizationProviderWinnerKey = null;
-        $fileType = strtolower(pathinfo($inputImageAbsolutePath)['extension']);
-        if (in_array($fileType, $this->allowExtensions)
-            && file_exists($inputImageAbsolutePath) && filesize($inputImageAbsolutePath)
-        ) {
-            $fileType = $this->fileExtensionNormalisation[$fileType];
+        $fileType = strtolower(explode('/', image_type_to_mime_type(exif_imagetype($inputImageAbsolutePath)))[1]);
+        if (file_exists($inputImageAbsolutePath) && filesize($inputImageAbsolutePath)) {
             $fileSizeBeforeOptimization = filesize($inputImageAbsolutePath);
-            $theBestOptimizedImage = $this->createTempFile();
+            $theBestOptimizedImage = $this->temporaryFile->createTempFile();
             $imageManipulationProviderChain = [];
             /* @var \SourceBroker\Imageopt\Providers\ImageManipulationProvider $imageManipulationProvider */
-            while (is_object($imageManipulationProvider = GeneralUtility::makeInstanceService('ImageOptimization' . ucfirst($fileType),
-                '', $imageManipulationProviderChain))) {
+            while (is_object(
+                $imageManipulationProvider = GeneralUtility::makeInstanceService(
+                    'ImageOptimization' . ucfirst($fileType),
+                    '', $imageManipulationProviderChain)
+            )
+            ) {
                 $providerConfig = $this->configuratorGlobal->getOption('providers.' . $imageManipulationProvider->getFileType() . '.' . $imageManipulationProvider->getName());
                 if (count($providerConfig)) {
                     $imageManipulationProvider->getConfigurator()->setConfig($providerConfig);
@@ -123,15 +93,19 @@ class OptimizeImageService
                 if ($imageManipulationProvider->isEnabled()) {
                     $providerOptimizationResult = $imageManipulationProvider->optimize($inputImageAbsolutePath);
                     $providerOptimizationResult['providerClass'] = $imageManipulationProviderKey;
-                    $providerOptimizationResult['serviceError'] = implode('; ',
-                        $imageManipulationProvider->getErrorMsgArray());
+                    $providerOptimizationResult['serviceError'] = implode(
+                        '; ',
+                        $imageManipulationProvider->getErrorMsgArray()
+                    );
                     $providerOptimizationResult['optimizedFileSize'] = filesize($providerOptimizationResult['optimizedFileAbsPath']);
                     $providerOptimizationResult['winner'] = false;
 
                     if ($providerOptimizationResult['success']) {
                         // if optimized image has better optimization result than previous provider then store it for final return
-                        if ((filesize($theBestOptimizedImage) === 0 && $fileSizeBeforeOptimization >= filesize($providerOptimizationResult['optimizedFileAbsPath']))
-                            || (filesize($providerOptimizationResult['optimizedFileAbsPath']) < filesize($theBestOptimizedImage))
+                        $optimizedImageFilesize = filesize($providerOptimizationResult['optimizedFileAbsPath']);
+                        if ( $optimizedImageFilesize < $fileSizeBeforeOptimization
+                            ||
+                            $optimizedImageFilesize < filesize($theBestOptimizedImage)
                         ) {
                             rename($providerOptimizationResult['optimizedFileAbsPath'], $theBestOptimizedImage);
                             $providerOptimizationResult['optimizedFileAbsPath'] = $theBestOptimizedImage;
@@ -154,36 +128,4 @@ class OptimizeImageService
             'providerOptimizationWinnerKey' => $imageOptimizationProviderWinnerKey
         ];
     }
-
-
-    /**
-     * Create temporary file and register shoutdown function
-     *
-     * @return string $tempFile Name of temporary file
-     */
-    protected function createTempFile()
-    {
-        $tempFile = GeneralUtility::tempnam($this->tempFilePrefix);
-
-        if (!$this->isRegisteredShutdownFunction) {
-            register_shutdown_function([$this, 'unlinkTempFiles']);
-            $this->isRegisteredShutdownFunction = true;
-        }
-
-        return $tempFile;
-    }
-
-    /**
-     * Delete all temporary files
-     *
-     * @return void
-     */
-    public function unlinkTempFiles()
-    {
-        $typo3temp = PATH_site . 'typo3temp/';
-        foreach (glob($typo3temp . $this->tempFilePrefix . '*') as $tempFile) {
-            @unlink($tempFile);
-        }
-    }
-
 }

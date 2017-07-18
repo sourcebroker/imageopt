@@ -79,12 +79,10 @@ class OptimizedFileRepository
         $sizeBefore,
         $sizeAfter = null,
         $providerWinner = '',
-        $status = false,
         $providerResults = ''
     ) {
         return $this->databaseConnection->exec_INSERTquery($this->tableName, [
             'pid' => 0,
-            'optimized' => $status,
             'optimization_bytes' => $sizeBefore - $sizeAfter,
             'file_size_before' => $sizeBefore,
             'file_size_after' => $sizeAfter,

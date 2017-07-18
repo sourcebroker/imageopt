@@ -25,21 +25,14 @@
 namespace SourceBroker\Imageopt\Providers;
 
 /**
- * ImageManipulationProviderJpgJpegrescan
+ * ImageManipulationProviderJpegTinypng
  */
-class ImageManipulationProviderJpgJpegrescan extends ImageManipulationProviderBaseShell
+class ImageManipulationProviderJpegTinypng extends ImageManipulationProviderBaseTinypng
 {
     /**
      * Image file extension operated by provider
      *
      * @var string
      */
-    public $fileType = 'jpg';
-
-    /**
-     * Provider name
-     *
-     * @var string
-     */
-    public $name = 'jpegrescan';
+    public $fileType = 'jpeg';
 }
