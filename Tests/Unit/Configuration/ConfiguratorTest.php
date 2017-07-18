@@ -2,38 +2,37 @@
 
 namespace SourceBroker\Imageopt\Tests\Unit\Configuration;
 
-use \SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Configuration\Configurator;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
 
 /**
- * Test for configuration
+ * Tests for configurator
  *
  */
-class ConfigurationTest extends UnitTestCase
+class ConfiguratorTest extends UnitTestCase
 {
-
     /**
-     * Test nested variables return good values
+     * Test if configurator array options are correctly returned
      *
      * @test
-     * @dataProvider nestedVariableIsCorrectlyReturnedDataProvider
+     * @dataProvider configuratorOptionsAreCorrectlyReturnedDataProvider
      * @param $given
      * @param $expected
      */
-    public function nestedVariableIsCorrectlyReturned($given, $expected)
+    public function configuratorOptionsAreCorrectlyReturned($given, $expected)
     {
-        /** @var \SourceBroker\Imageopt\Configuration\Configurator $configuration */
-        $configuration = $this->getMockBuilder(Configurator::class)->setMethods(['dummy'])->getMock();
-        $configuration->setConfig($this->staticTsConfig());
-        $this->assertEquals($expected, $configuration->getOption($given));
+        /** @var \SourceBroker\Imageopt\Configuration\Configurator $configurator */
+        $configurator = $this->getMockBuilder(Configurator::class)->setMethods(['dummy'])->getMock();
+        $configurator->setConfig($this->staticTsConfig());
+        $this->assertEquals($expected, $configurator->getOption($given));
     }
 
     /**
-     * Data provider for nestedVariableIsCorrectlyReturned
+     * Data provider for configuratorOptionsAreCorrectlyReturned
      *
      * @return array
      */
-    public function nestedVariableIsCorrectlyReturnedDataProvider()
+    public function configuratorOptionsAreCorrectlyReturnedDataProvider()
     {
         return [
             'nonWorkingConfigurationNullConfig' => [
