@@ -58,7 +58,6 @@ class OptimizedFileRepository
      * @param $sizeBefore int Image file size before optimization
      * @param $sizeAfter int Image file size after optimization
      * @param $providerWinner string Optimization provider
-     * @param bool|string $status string Optimization provider
      * @param string $providerResults
      * @return bool
      */
