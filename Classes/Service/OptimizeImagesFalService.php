@@ -74,23 +74,6 @@ class OptimizeImagesFalService
     }
 
     /**
-     * @return ProcessedFileRepository
-     */
-    public function getFalProcessedFileRepository()
-    {
-        return $this->falProcessedFileRepository;
-    }
-
-    /**
-     * @param ProcessedFileRepository $falProcessedFileRepository
-     */
-    public function setFalProcessedFileRepository($falProcessedFileRepository)
-    {
-        $this->falProcessedFileRepository = $falProcessedFileRepository;
-    }
-
-
-    /**
      * @param int $numberOfImagesToProcess
      */
     public function optimizeFalProcessedFiles($numberOfImagesToProcess)

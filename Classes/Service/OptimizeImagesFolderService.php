@@ -84,7 +84,7 @@ class OptimizeImagesFolderService
      */
     public function optimizeFilesInFolders($numberOfImagesToProcess)
     {
-        $directories = explode(',', preg_replace('/\s+/', '', $this->getConfigurator()->getOption('directories')));
+        $directories = explode(',', preg_replace('/\s+/', '', $this->configurator->getOption('directories')));
 
         $countOfFilesFound = 0;
 
@@ -111,7 +111,6 @@ class OptimizeImagesFolderService
                                 $optimizationResults = $this->optimize($file->getPathname());
 
                                 // default values for $this->optimizedFileRepository->add
-                                $optimizeSuccess = false;
                                 $fileSizeAfterOptimization = $fileSizeBeforeOptimization;
                                 $providerWinner = '';
 
@@ -135,7 +134,6 @@ class OptimizeImagesFolderService
                                     $fileSizeBeforeOptimization,
                                     $fileSizeAfterOptimization,
                                     $providerWinner,
-                                    $optimizeSuccess,
                                     $optimizationResults
                                 );
                             }
