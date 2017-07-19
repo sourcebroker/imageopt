@@ -6,7 +6,7 @@
   "type": "typo3-cms-extension",
   "description": "Optimize images resized by TYPO3 so they take less space. TYPO3 services used. Cron based. Support for linux native commands and external services as Kraken.io etc.",
   "require": {
-    "typo3/cms": "^6.2 || ^7.6"
+    "typo3/cms": "^6.2 || ^7.6 || ^8.7"
   },
   "require-dev": {
     "phpunit/phpunit": "~4.8.0",
