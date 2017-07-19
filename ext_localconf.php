@@ -271,7 +271,7 @@ if (TYPO3_MODE !== 'FE') {
     // The way to deactivate service
     //$GLOBALS['T3_SERVICES']['ImageOptimizationJpeg'][\SourceBroker\Imageopt\Providers\ImageManipulationProviderJpegJpegtran::class]['available'] = false;
 
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:imageopt/Configuration/PageTS/config.ts">');
+    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:Configuration/TsConfig/Page/imageopt.tsconfig">');
 
 }
 
