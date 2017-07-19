@@ -28,18 +28,6 @@ class OptimizedFileRepository
      */
     protected $tableName = 'tx_imageopt_images';
 
-    /**
-     * @var \TYPO3\CMS\Core\Database\DatabaseConnection
-     */
-    protected $databaseConnection;
-
-    /**
-     * Creates this object.
-     */
-    public function __construct()
-    {
-        $this->databaseConnection = $GLOBALS['TYPO3_DB'];
-    }
 
     /**
      * Get all optimized images
@@ -50,7 +38,7 @@ class OptimizedFileRepository
      */
     public function getAll($limit = 10, $offset = 0)
     {
-        return $this->databaseConnection->exec_SELECTgetRows('*', $this->tableName, '', '', '', $offset . ',' . $limit);
+        return $this->getDatabaseConnection()->exec_SELECTgetRows('*', $this->tableName, '', '', '', $offset . ',' . $limit);
     }
 
     /**
@@ -60,7 +48,7 @@ class OptimizedFileRepository
      */
     public function getAllExecutedFrom($timestamp)
     {
-        return $this->databaseConnection->exec_SELECTgetRows('*', $this->tableName, 'tstamp >= ' . (int)$timestamp);
+        return $this->getDatabaseConnection()->exec_SELECTgetRows('*', $this->tableName, 'tstamp >= ' . (int)$timestamp);
     }
 
     /**
@@ -81,7 +69,7 @@ class OptimizedFileRepository
         $providerWinner = '',
         $providerResults = ''
     ) {
-        return $this->databaseConnection->exec_INSERTquery($this->tableName, [
+        return $this->getDatabaseConnection()->exec_INSERTquery($this->tableName, [
             'pid' => 0,
             'optimization_bytes' => $sizeBefore - $sizeAfter,
             'file_size_before' => $sizeBefore,
@@ -95,14 +83,7 @@ class OptimizedFileRepository
         ]);
     }
 
-    /**
-     * Remove entry about optimization image
-     *
-     * @param $filePath string Absolute image path
-     * @return bool
-     */
-    public function remove($filePath)
-    {
-        return $this->databaseConnection->exec_DELETEquery($this->tableName, "path = '" . $filePath . "'");
+    public function getDatabaseConnection() {
+        return $GLOBALS['TYPO3_DB'];
     }
 }

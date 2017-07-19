@@ -23,46 +23,15 @@ namespace SourceBroker\Imageopt\Resource;
 class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepository
 {
     /**
-     * Count not optimized images
-     *
-     * @return int
-     */
-    public function countNotOptimized()
-    {
-        $row = $this->databaseConnection->exec_SELECTgetSingleRow('COUNT(*) AS not_optimized_counter ', $this->table,
-            'tx_imageopt_optimized=0');
-        return $row['not_optimized_counter'];
-    }
-
-    /**
-     * Get optimalistation level
-     *
-     * @return int
-     */
-    public function getOptimalistationLevel()
-    {
-        $row = $this->databaseConnection->exec_SELECTgetSingleRow('SUM(tx_imageopt_optimized_level) AS optimized_level_all',
-            $this->table, 'tx_imageopt_optimized=1');
-        return $row['optimized_level_all'];
-    }
-
-    /**
-     * Get all optimized images
-     *
-     * @return array
-     */
-    public function findOptimizedRaw()
-    {
-        return $this->databaseConnection->exec_SELECTgetRows('*', $this->table, 'tx_imageopt_optimized=1');
-    }
-
-    /**
      * Reset optimization flag for all images
      */
     public function resetOptimizationFlag()
     {
-        $this->databaseConnection->exec_UPDATEquery($this->table, 'tx_imageopt_optimized=1',
-            ['tx_imageopt_optimized' => 0]);
+        $this->getDatabaseConnection()->exec_UPDATEquery(
+            $this->table,
+            'tx_imageopt_optimized=1',
+            ['tx_imageopt_optimized' => 0]
+        );
     }
 
     /**
@@ -73,7 +42,7 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
      */
     public function findNotOptimizedRaw($limit = 50)
     {
-        return $this->databaseConnection->exec_SELECTgetRows(
+        return $this->getDatabaseConnection()->exec_SELECTgetRows(
             '*',
             $this->table,
             // task_type == 'Image.Preview' are backend thumbnails. We do not want to optimise them.
@@ -84,21 +53,14 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
         );
     }
 
-    /**
-     * Count optimized images
-     *
-     * @return int
-     */
-    public function countOptimized()
-    {
-        $row = $this->databaseConnection->exec_SELECTgetSingleRow('COUNT(*) AS optimized_counter ', $this->table,
-            'tx_imageopt_optimized=1');
-        return $row['optimized_counter'];
-    }
-
     public function getDomainObject($raw)
     {
         return $this->createDomainObject($raw);
+    }
+
+    public function getDatabaseConnection()
+    {
+        return $GLOBALS['TYPO3_DB'];
     }
 
 }

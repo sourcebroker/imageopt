@@ -121,13 +121,13 @@ class ImageoptCommandController extends BaseCommandController
                     $winnerText = 'No winner. Non of the optimized images was smaller than original.';
                 }
                 if ($providersResults['providerOptimizationWinnerKey'] !== null) {
-                    $winnerText = "Winner is '$percentageWinnerName'  with result: " . $percentageWinner . "%";
+                    $winnerText = "Winner is '$percentageWinnerName' with optimized image smaller by: " . $percentageWinner . "%";
                 }
                 $message[] =
                     "---------------------------------\n" .
                     "File\t\t| " . $result['path'] . "\n" .
                     "Winner\t\t| " . (isset($winnerText) ? $winnerText : '') . "\n".
-                    "Providers stats\t| " . $success . ' out of ' . count($providersResults['providerOptimizationResults']) . ' finished successfully:' . "\n" .
+                    "Providers stats\t| " . $success . ' out of ' . count($providersResults['providerOptimizationResults']) . ' providers finished successfully:' . "\n" .
                     "\t\t| " . implode("\n\t\t| ", $providersScore) . "\n";
             }
         } else {
