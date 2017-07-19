@@ -495,7 +495,7 @@ class OptimizeImageServiceTest extends UnitTestCase
                                 ],
                             'optipng' =>
                                 [
-                                    'command' => '{executable} {tempFile} -strip "all" {quality}',
+                                    'command' => '{executable} {tempFile} -quiet -strip all {quality}',
                                     'enabled' => '1',
                                     'options' =>
                                         [
@@ -527,13 +527,40 @@ class OptimizeImageServiceTest extends UnitTestCase
                                 ],
                             'pngcrush' =>
                                 [
-                                    'command' => '{executable} -q -rem alla -brute -reduce -ow {tempFile} >/dev/null',
+                                    'command' => '{executable} -q -rem alla -brute -reduce -ow {tempFile}',
                                     'enabled' => '1',
                                 ],
                             'pngquant' =>
                                 [
-                                    'command' => '{executable} {tempFile} --force --ext \'\'',
+                                    'command' => '{executable} {tempFile} --skip-if-larger --force --strip --ext \'\' {quality}',
                                     'enabled' => '1',
+                                    'options' =>
+                                        [
+                                            'quality' => '85',
+                                            'qualityOptions' =>
+                                                [
+                                                    5 => '--speed 11',
+                                                    10 => '--speed 10',
+                                                    15 => '--speed 10',
+                                                    20 => '--speed 9',
+                                                    25 => '--speed 9',
+                                                    30 => '--speed 8',
+                                                    35 => '--speed 8',
+                                                    40 => '--speed 7',
+                                                    45 => '--speed 7',
+                                                    50 => '--speed 6',
+                                                    55 => '--speed 6',
+                                                    60 => '--speed 5',
+                                                    65 => '--speed 5',
+                                                    70 => '--speed 4',
+                                                    75 => '--speed 3',
+                                                    80 => '--speed 3',
+                                                    85 => '--speed=2',
+                                                    90 => '--speed=2',
+                                                    95 => '--speed 1',
+                                                    100 => '--speed 1',
+                                                ],
+                                        ],
                                 ],
                         ],
                 ]
