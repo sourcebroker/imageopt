@@ -110,7 +110,7 @@ class OptimizeImageServiceTest extends UnitTestCase
     public function pluginConfig()
     {
         $typoscriptParser = GeneralUtility::makeInstance(TypoScriptParser::class);
-        $typoscriptParser->parse(file_get_contents(realpath(__DIR__ . '/../../../Configuration/PageTS/config.ts')));
+        $typoscriptParser->parse(file_get_contents(realpath(__DIR__ . '/../../../Configuration/TsConfig/Page/imageopt.tsconfig')));
         return GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Service\\TypoScriptService')
             ->convertTypoScriptArrayToPlainArray($typoscriptParser->setup)['tx_imageopt'];
     }
