@@ -109,13 +109,13 @@ class OptimizeImageServiceTest extends UnitTestCase
     public function pluginConfig()
     {
         $typoscriptParser = GeneralUtility::makeInstance(TypoScriptParser::class);
-        $typoscriptParser->parse(file_get_contents(realpath(__DIR__ . '/../../../Configuration/TsConfig/Page/imageopt.tsconfig')));
+        $typoscriptParser->parse(file_get_contents(realpath(__DIR__ . '/../../../Configuration/TsConfig/Page/tx_imageopt.tsconfig')));
         return GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Service\\TypoScriptService')
             ->convertTypoScriptArrayToPlainArray($typoscriptParser->setup)['tx_imageopt'];
     }
 
     /*
-     * Feed $GLOBALS['T3_SERVICES'] with info about available services.
+     * Make some $GLOBALS of TYPO3 avaialble for test.
      */
     public function feedServiceGlobals()
     {
