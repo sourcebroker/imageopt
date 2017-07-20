@@ -68,13 +68,12 @@ class TemporaryFileUtility
      */
     public function unlinkTempFiles()
     {
-        if (defined(PATH_site)) {
+        if (defined('PATH_site')) {
             foreach (glob(PATH_site . 'typo3temp/' . $this->tempFilePrefix . '*') as $tempFile) {
                 @unlink($tempFile);
             }
         } else {
-            // Find way to make it work for Tests
-            // throw new \Exception('PATH_site is not declared');
+             throw new \Exception('PATH_site is not declared');
         }
     }
 }
