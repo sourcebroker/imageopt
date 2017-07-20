@@ -6,6 +6,7 @@ use Exception;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
 use SourceBroker\Imageopt\Service\OptimizeImageService;
 use TYPO3\CMS\Core\TypoScript\Parser\TypoScriptParser;
+use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -14,15 +15,19 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class OptimizeImageServiceTest extends UnitTestCase
 {
+    /** @var string  */
+    private $typo3WebRoot;
+
     protected function setUp()
     {
+        $this->typo3WebRoot = realpath(__DIR__ . '/../../../.Build/Web/');
         $this->feedServiceGlobals();
         parent::setUp();
     }
 
     protected function tearDown()
     {
-        foreach (glob(__DIR__ . '/../../../.Build/Web/typo3temp/tx_imageopt*') as $tempFile) {
+        foreach (glob($this->typo3WebRoot . '/typo3temp/tx_imageopt*') as $tempFile) {
             @unlink($tempFile);
         }
     }
@@ -42,7 +47,7 @@ class OptimizeImageServiceTest extends UnitTestCase
             ->setMethods(null)
             ->getMock();
 
-        $imageForTesting = realpath(__DIR__ . '/../../Fixture/Unit/OptimizeImageService/' . $image);
+        $imageForTesting = $this->typo3WebRoot . '/typo3conf/ext/imageopt/Tests/Fixture/Unit/OptimizeImageService/' . $image;
         if (file_exists($imageForTesting)) {
             $successfulOptimization = 0;
             $results = $optimizeImageService->optimize($imageForTesting);
@@ -73,7 +78,7 @@ class OptimizeImageServiceTest extends UnitTestCase
             ->setMethods(null)
             ->getMock();
 
-        $imageForTesting = realpath(__DIR__ . '/../../Fixture/Unit/OptimizeImageService/' . $image);
+        $imageForTesting = $this->typo3WebRoot . '/typo3conf/ext/imageopt/Tests/Fixture/Unit/OptimizeImageService/' . $image;
         $originalFileSize = filesize($imageForTesting);
         if (file_exists($imageForTesting)) {
             $results = $optimizeImageService->optimize($imageForTesting);
@@ -109,8 +114,8 @@ class OptimizeImageServiceTest extends UnitTestCase
     public function pluginConfig()
     {
         $typoscriptParser = GeneralUtility::makeInstance(TypoScriptParser::class);
-        $typoscriptParser->parse(file_get_contents(realpath(__DIR__ . '/../../../Configuration/TsConfig/Page/tx_imageopt.tsconfig')));
-        return GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Service\\TypoScriptService')
+        $typoscriptParser->parse(file_get_contents($this->typo3WebRoot . '/typo3conf/ext/imageopt/Configuration/TsConfig/Page/tx_imageopt.tsconfig'));
+        return GeneralUtility::makeInstance(TypoScriptService::class)
             ->convertTypoScriptArrayToPlainArray($typoscriptParser->setup)['tx_imageopt'];
     }
 
@@ -119,7 +124,8 @@ class OptimizeImageServiceTest extends UnitTestCase
      */
     public function feedServiceGlobals()
     {
+        $GLOBALS['TYPO3_CONF_VARS']['BE']['lockRootPath'] = PATH_site;
         define(TYPO3_MODE, 'BE');
-        include(__DIR__ . '/../../../ext_localconf.php');
+        include($this->typo3WebRoot . '/typo3conf/ext/imageopt/ext_localconf.php');
     }
 }
