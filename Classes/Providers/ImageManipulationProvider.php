@@ -76,22 +76,6 @@ abstract class ImageManipulationProvider extends AbstractService
     }
 
     /**
-     * @return array
-     */
-    public function getOptimizationResult()
-    {
-        return $this->optimizationResult;
-    }
-
-    /**
-     * @param array $optimizationResult
-     */
-    public function setOptimizationResult($optimizationResult)
-    {
-        $this->optimizationResult = $optimizationResult;
-    }
-
-    /**
      * @return string
      */
     public function getFileType()
@@ -144,6 +128,8 @@ abstract class ImageManipulationProvider extends AbstractService
         return $this->configurator;
     }
 
+    abstract public function optimize($image);
+
     /**
      * Create temporary file
      *
@@ -171,9 +157,6 @@ abstract class ImageManipulationProvider extends AbstractService
         return $tempFilename;
     }
 
-//    public function optimize($image) {
-//
-//    }
 
     /**
      * Return true if provider is enabled
