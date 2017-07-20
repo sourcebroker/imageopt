@@ -24,12 +24,13 @@
 
 namespace SourceBroker\Imageopt\Utility;
 
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Manage temporary files
  */
-class TemporaryFileUtility
+class TemporaryFileUtility implements SingletonInterface
 {
     /**
      * Temp file Prefix

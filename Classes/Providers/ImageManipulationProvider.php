@@ -149,8 +149,8 @@ abstract class ImageManipulationProvider extends AbstractService
      */
     protected function createTemporaryCopy($originalFileAbsolutePath)
     {
-        $this->checkInputFile($originalFileAbsolutePath);
-        $tempFilename = $this->getTemporaryFilename();
+        $temporaryFileUtility = GeneralUtility::makeInstance(\SourceBroker\Imageopt\Utility\TemporaryFileUtility::class);
+        $tempFilename = $temporaryFileUtility->createTempFile();
         if (file_exists($tempFilename)) {
             copy($originalFileAbsolutePath, $tempFilename);
         }

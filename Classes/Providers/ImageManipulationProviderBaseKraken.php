@@ -36,54 +36,6 @@ class ImageManipulationProviderBaseKraken extends ImageManipulationProviderBaseR
      */
     public $name = 'kraken';
 
-    /**
-     * Upload file to kraken.io and save it if optimization will be success
-     *
-     * @param string $inputImageAbsolutePath Absolute path/file with original image
-     * @param array $options Additional options to optimize
-     * @return array Result of optimization
-     */
-    public function upload($inputImageAbsolutePath, $options = [])
-    {
-        if (!file_exists($inputImageAbsolutePath)) {
-            return [
-                'success' => false,
-                'error' => 'File `' . $inputImageAbsolutePath . '` does not exist'
-            ];
-        }
-        if (class_exists('CURLFile')) {
-            $file = new \CURLFile($inputImageAbsolutePath);
-        } else {
-            $file = '@' . $inputImageAbsolutePath;
-        }
-
-        foreach ($options as $key => $value) {
-            if ($value == 'true' || $value == 'false') {
-                $options[$key] = (bool)$value;
-            }
-        }
-
-        $result = self::request([
-            'file' => $file,
-            'data' => json_encode(array_merge(['auth' => $this->settings['auth']], $options))
-        ],
-            $this->settings['url']['upload'],
-            ['type' => 'upload']
-        );
-
-        if ($result['success']) {
-            if (isset($result['response']['kraked_url'])) {
-                if (!$this->getFileFromRemoteServer($inputImageAbsolutePath, $result['response']['kraked_url'])) {
-                    $result['success'] = false;
-                }
-            } else {
-                $result['success'] = false;
-            }
-            unset($result['response']);
-        }
-
-        return $result;
-    }
 
     /**
      * Return the status of account in kraken.io
@@ -92,7 +44,7 @@ class ImageManipulationProviderBaseKraken extends ImageManipulationProviderBaseR
      */
     public function status()
     {
-        $response = self::request(json_encode($this->settings['auth']), $this->settings['url']['status'], 'url');
+        $response = $this->request($this->settings['auth'], $this->settings['url']['status'], 'url');
 
         return $response;
     }
@@ -192,4 +144,55 @@ class ImageManipulationProviderBaseKraken extends ImageManipulationProviderBaseR
 
         return $this->optimizationResult;
     }
+
+
+    /**
+     * Upload file to kraken.io and save it if optimization will be success
+     *
+     * @param string $inputImageAbsolutePath Absolute path/file with original image
+     * @param array $options Additional options to optimize
+     * @return array Result of optimization
+     */
+    public function upload($inputImageAbsolutePath, $options = [])
+    {
+        if (!file_exists($inputImageAbsolutePath)) {
+            return [
+                'success' => false,
+                'error' => 'File `' . $inputImageAbsolutePath . '` does not exist'
+            ];
+        }
+        if (class_exists('CURLFile')) {
+            $file = new \CURLFile($inputImageAbsolutePath);
+        } else {
+            $file = '@' . $inputImageAbsolutePath;
+        }
+
+        foreach ($options as $key => $value) {
+            if ($value == 'true' || $value == 'false') {
+                $options[$key] = (bool)$value;
+            }
+        }
+
+        $result = $this->request([
+            'file' => $file,
+            'data' => json_encode(array_merge(['auth' => $this->settings['auth']], $options))
+        ],
+            $this->settings['url']['upload'],
+            ['type' => 'upload']
+        );
+
+        if ($result['success']) {
+            if (isset($result['response']['kraked_url'])) {
+                if (!$this->getFileFromRemoteServer($inputImageAbsolutePath, $result['response']['kraked_url'])) {
+                    $result['success'] = false;
+                }
+            } else {
+                $result['success'] = false;
+            }
+            unset($result['response']);
+        }
+
+        return $result;
+    }
+
 }

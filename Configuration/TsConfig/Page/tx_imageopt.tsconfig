@@ -61,6 +61,8 @@ tx_imageopt {
             imageoptim < tx_imageopt.default.providers.imageoptim
 
             jpegoptim {
+                executorClass = SourceBroker\Imageopt\Providers\ImageManipulationProviderBaseShell
+                exec = jpegoptim
                 command = {executable} {tempFile} -o --strip-all {quality}
                 enabled = 1
                 options {
@@ -91,17 +93,16 @@ tx_imageopt {
             }
 
             jpegrescan {
+                executorClass = SourceBroker\Imageopt\Providers\ImageManipulationProviderBaseShell
+                exec = jpegrescan
                 command = {executable} -s {tempFile} {tempFile}
                 enabled = 1
             }
 
             jpegtran {
+                executorClass = SourceBroker\Imageopt\Providers\ImageManipulationProviderBaseShell
+                exec = jpegtran
                 command = {executable} -copy none -optimize -outfile {tempFile} {tempFile}
-                enabled = 1
-            }
-
-            mozjpg {
-                command = {executable} -copy none {tempFile} > {tempFile}
                 enabled = 1
             }
         }
@@ -114,6 +115,8 @@ tx_imageopt {
             imageoptim < tx_imageopt.default.providers.imageoptim
 
             gifsicle {
+                executorClass = SourceBroker\Imageopt\Providers\ImageManipulationProviderBaseShell
+                exec = gifsicle
                 command = {executable} --batch {quality} {tempFile}
                 enabled = 1
                 options {
@@ -152,6 +155,8 @@ tx_imageopt {
             imageoptim < tx_imageopt.default.providers.imageoptim
 
             optipng {
+                executorClass = SourceBroker\Imageopt\Providers\ImageManipulationProviderBaseShell
+                exec = optipng
                 command = {executable} {tempFile} -quiet -strip all {quality}
                 enabled = 1
                 options {
@@ -182,11 +187,15 @@ tx_imageopt {
             }
 
             pngcrush {
+                executorClass = SourceBroker\Imageopt\Providers\ImageManipulationProviderBaseShell
+                exec = pngcrush
                 command = {executable} -s -rem alla -brute -reduce -ow {tempFile} >/dev/null
                 enabled = 1
             }
 
             pngquant {
+                executorClass = SourceBroker\Imageopt\Providers\ImageManipulationProviderBaseShell
+                exec = pngquant
                 command = {executable} {tempFile} --skip-if-larger --force --ext '' --strip {quality}
                 enabled = 1
                 options {

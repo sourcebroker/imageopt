@@ -70,60 +70,56 @@ class OptimizeImageService
         if (file_exists($inputImageAbsolutePath) && filesize($inputImageAbsolutePath)) {
             $fileSizeBeforeOptimization = filesize($inputImageAbsolutePath);
             $theBestOptimizedImage = $this->temporaryFile->createTempFile();
-            $imageManipulationProviderChain = [];
-            /* @var \SourceBroker\Imageopt\Providers\ImageManipulationProvider $imageManipulationProvider */
-            while (is_object(
-                $imageManipulationProvider = GeneralUtility::makeInstanceService(
-                    'ImageOptimization' . ucfirst($fileType),
-                    '', $imageManipulationProviderChain)
-            )
-            ) {
-                $providerConfig = $this->configuratorGlobal->getOption('providers.' . $imageManipulationProvider->getFileType() . '.' . $imageManipulationProvider->getName());
-                if (count($providerConfig)) {
-                    $imageManipulationProvider->getConfigurator()->setConfig($providerConfig);
-                } else {
-                    throw new \Exception('No configuration for provider found for: "providers.' . $imageManipulationProvider->getFileType() . '.' . $imageManipulationProvider->getName() . '"');
-                }
-
-                $imageManipulationProviderKey = $imageManipulationProvider->getServiceKey();
-                // add to $imageManipulationProvider[] to exclude this service for next while loop
-                $imageManipulationProviderChain[] = $imageManipulationProviderKey;
-                if ($imageManipulationProvider->isEnabled()) {
-                    $providerOptimizationResult = $imageManipulationProvider->optimize($inputImageAbsolutePath);
-                    $providerOptimizationResult['providerClass'] = $imageManipulationProviderKey;
-                    $providerOptimizationResult['serviceError'] = implode(
-                        '; ',
-                        $imageManipulationProvider->getErrorMsgArray()
-                    );
-                    $providerOptimizationResult['optimizedFileSize'] = filesize($providerOptimizationResult['optimizedFileAbsPath']);
-                    $providerOptimizationResult['winner'] = false;
-
-                    if ($providerOptimizationResult['success']) {
-                        // if optimized image has better optimization result than previous provider then store it for final return
-                        $optimizedImageFilesize = filesize($providerOptimizationResult['optimizedFileAbsPath']);
-                        if ($optimizedImageFilesize < $fileSizeBeforeOptimization
-                            ||
-                            $optimizedImageFilesize < filesize($theBestOptimizedImage)
-                        ) {
-                            rename($providerOptimizationResult['optimizedFileAbsPath'], $theBestOptimizedImage);
-                            $providerOptimizationResult['optimizedFileAbsPath'] = $theBestOptimizedImage;
-                            $imageOptimizationProviderWinnerKey = $imageManipulationProviderKey;
-                        }
+            $imageOpimalizationsProviders = $this->configuratorGlobal->getOption('providers.' . $fileType);
+            foreach ($imageOpimalizationsProviders as $imageOpimalizationsProviderKey => $imageOpimalizationsProviderConfig) {
+                if (isset($imageOpimalizationsProviderConfig['executorClass'])
+                    && class_exists($imageOpimalizationsProviderConfig['executorClass'])) {
+                    $imageManipulationProvider = GeneralUtility::makeInstance($imageOpimalizationsProviderConfig['executorClass']);
+                    $providerConfig = $this->configuratorGlobal->getOption('providers.' . $fileType . '.' . $imageOpimalizationsProviderKey);
+                    if (count($providerConfig)) {
+                        $imageManipulationProvider->getConfigurator()->setConfig($providerConfig);
+                    } else {
+                        throw new \Exception('No configuration for provider found for: "providers.' . $imageManipulationProvider->getFileType() . '.' . $imageManipulationProvider->getName() . '"');
                     }
-                    //collect the optimizations statuses for debug
-                    ksort($providerOptimizationResult);
-                    $imageOptimizationProviderResults[$imageManipulationProviderKey] = $providerOptimizationResult;
+                    if ($imageManipulationProvider->isEnabled()) {
+                        $providerOptimizationResult = $imageManipulationProvider->optimize($inputImageAbsolutePath);
+                        $providerOptimizationResult['providerClass'] = $imageOpimalizationsProviderConfig['executorClass'];
+                        $providerOptimizationResult['serviceError'] = implode(
+                            '; ',
+                            $imageManipulationProvider->getErrorMsgArray()
+                        );
+                        $providerOptimizationResult['optimizedFileSize'] = filesize($providerOptimizationResult['optimizedFileAbsPath']);
+                        $providerOptimizationResult['winner'] = false;
+
+                        if ($providerOptimizationResult['success']) {
+                            // if optimized image has better optimization result than previous provider then store it for final return
+                            $optimizedImageFilesize = filesize($providerOptimizationResult['optimizedFileAbsPath']);
+                            if ($optimizedImageFilesize < $fileSizeBeforeOptimization
+                                ||
+                                $optimizedImageFilesize < filesize($theBestOptimizedImage)
+                            ) {
+                                rename($providerOptimizationResult['optimizedFileAbsPath'], $theBestOptimizedImage);
+                                $providerOptimizationResult['optimizedFileAbsPath'] = $theBestOptimizedImage;
+                                $imageOptimizationProviderWinnerKey = $imageOpimalizationsProviderKey;
+                            }
+                        }
+                        //collect the optimizations statuses for debug
+                        ksort($providerOptimizationResult);
+                        $imageOptimizationProviderResults[$imageOpimalizationsProviderKey] = $providerOptimizationResult;
+                    }
+                    // Unset current $imageManipulationProvider to free resources. This will unset all temporary images of provider.
+                    unset($imageManipulationProvider);
+
+                    if ($imageOptimizationProviderWinnerKey !== null) {
+                        $imageOptimizationProviderResults[$imageOptimizationProviderWinnerKey]['winner'] = true;
+                    }
                 }
-                // Unset current $imageManipulationProvider to free resources. This will unset all temporary images of provider.
-                unset($imageManipulationProvider);
-            }
-            if ($imageOptimizationProviderWinnerKey !== null) {
-                $imageOptimizationProviderResults[$imageOptimizationProviderWinnerKey]['winner'] = true;
             }
         }
         return [
             'providerOptimizationResults' => $imageOptimizationProviderResults,
             'providerOptimizationWinnerKey' => $imageOptimizationProviderWinnerKey
         ];
+
     }
 }

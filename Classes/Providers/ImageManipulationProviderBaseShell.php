@@ -50,7 +50,6 @@ class ImageManipulationProviderBaseShell extends ImageManipulationProvider
         if ($this->getConfigurator()->getOption('command') != '') {
             $this->shellExecutableCommand = $this->getConfigurator()->getOption('command');
         }
-
         $selectedQuality = '';
         $quality = (int)$this->getConfigurator()->getOption('options.quality');
         $qualityOptions = $this->getConfigurator()->getOption('options.qualityOptions');
@@ -67,7 +66,7 @@ class ImageManipulationProviderBaseShell extends ImageManipulationProvider
             }
         }
 
-        $exec = $this->getServiceInfo()['exec'];
+        $exec = $this->getConfigurator()->getOption('exec');
         $this->optimizationResult['success'] = false;
         $this->optimizationResult['providerName'] = $exec;
 
@@ -81,9 +80,7 @@ class ImageManipulationProviderBaseShell extends ImageManipulationProvider
                         [$executable, escapeshellarg($temporaryFileToBeOptimized), $selectedQuality],
                         $this->shellExecutableCommand
                     );
-
                     exec($shellCommand, $out, $commandStatus);
-
                     $this->optimizationResult['optimizedFileAbsPath'] = $temporaryFileToBeOptimized;
                     $this->optimizationResult['providerCommand'] = $shellCommand;
 

@@ -20,14 +20,16 @@ class OptimizeImageServiceTest extends UnitTestCase
     protected function setUp()
     {
         $this->typo3WebRoot = realpath(__DIR__ . '/../../../.Build/Web/');
-        $this->feedServiceGlobals();
         parent::setUp();
     }
 
     protected function tearDown()
     {
         foreach (glob($this->typo3WebRoot . '/typo3temp/tx_imageopt*') as $tempFile) {
-            @unlink($tempFile);
+            unlink($tempFile);
+        }
+        foreach (glob($this->typo3WebRoot . '/typo3temp/var/transient/tx_imageopt*') as $tempFile) {
+            unlink($tempFile);
         }
     }
 
@@ -97,12 +99,13 @@ class OptimizeImageServiceTest extends UnitTestCase
     public function imageIsOptimizedDataProvider()
     {
         return [
-            'Test png file resize' => [
-                'mountains.png',
-            ],
             'Test jpeg file resize' => [
                 'mountains.jpg',
             ],
+            'Test png file resize' => [
+                'mountains.png',
+            ],
+
         ];
     }
 
@@ -119,13 +122,4 @@ class OptimizeImageServiceTest extends UnitTestCase
             ->convertTypoScriptArrayToPlainArray($typoscriptParser->setup)['tx_imageopt'];
     }
 
-    /*
-     * Make some $GLOBALS of TYPO3 avaialble for test.
-     */
-    public function feedServiceGlobals()
-    {
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['lockRootPath'] = PATH_site;
-        define(TYPO3_MODE, 'BE');
-        include($this->typo3WebRoot . '/typo3conf/ext/imageopt/ext_localconf.php');
-    }
 }
