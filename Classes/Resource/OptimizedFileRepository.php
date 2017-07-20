@@ -36,7 +36,14 @@ class OptimizedFileRepository
      */
     public function getAll($limit = 10, $offset = 0)
     {
-        return $this->getDatabaseConnection()->exec_SELECTgetRows('*', $this->tableName, '', '', '', $offset . ',' . $limit);
+        return $this->getDatabaseConnection()->exec_SELECTgetRows(
+            '*',
+            $this->tableName,
+            '',
+            '',
+            '',
+            $offset . ',' . $limit
+        );
     }
 
     /**
@@ -46,7 +53,11 @@ class OptimizedFileRepository
      */
     public function getAllExecutedFrom($timestamp)
     {
-        return $this->getDatabaseConnection()->exec_SELECTgetRows('*', $this->tableName, 'tstamp >= ' . (int)$timestamp);
+        return $this->getDatabaseConnection()->exec_SELECTgetRows(
+            '*',
+            $this->tableName,
+            'tstamp >= ' . (int)$timestamp
+        );
     }
 
     /**
