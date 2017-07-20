@@ -56,5 +56,4 @@ class BaseCommandController extends CommandController
     {
         $this->outputLine(implode("\n", $message));
     }
-
 }

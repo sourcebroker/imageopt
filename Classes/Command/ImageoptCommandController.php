@@ -63,7 +63,6 @@ class ImageoptCommandController extends BaseCommandController
             OptimizeImagesFalService::class,
             $this->getConfigurator()->getConfig()
         );
-
     }
 
     /**

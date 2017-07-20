@@ -76,5 +76,4 @@ class FileProcessingService extends \TYPO3\CMS\Core\Resource\Service\FileProcess
 
         return $processedFile;
     }
-
 }

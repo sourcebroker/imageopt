@@ -82,7 +82,8 @@ class OptimizedFileRepository
         ]);
     }
 
-    public function getDatabaseConnection() {
+    public function getDatabaseConnection()
+    {
         return $GLOBALS['TYPO3_DB'];
     }
 }

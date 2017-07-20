@@ -103,7 +103,7 @@ class OptimizeImageService
                     if ($providerOptimizationResult['success']) {
                         // if optimized image has better optimization result than previous provider then store it for final return
                         $optimizedImageFilesize = filesize($providerOptimizationResult['optimizedFileAbsPath']);
-                        if ( $optimizedImageFilesize < $fileSizeBeforeOptimization
+                        if ($optimizedImageFilesize < $fileSizeBeforeOptimization
                             ||
                             $optimizedImageFilesize < filesize($theBestOptimizedImage)
                         ) {

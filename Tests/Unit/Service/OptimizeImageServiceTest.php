@@ -38,7 +38,7 @@ class OptimizeImageServiceTest extends UnitTestCase
     {
         /** @var \SourceBroker\Imageopt\Service\OptimizeImageService $optimizeImageService */
         $optimizeImageService = $this->getMockBuilder(OptimizeImageService::class)
-            ->setConstructorArgs(array($this->pluginConfig()))
+            ->setConstructorArgs([$this->pluginConfig()])
             ->setMethods(null)
             ->getMock();
 
@@ -46,8 +46,8 @@ class OptimizeImageServiceTest extends UnitTestCase
         if (file_exists($imageForTesting)) {
             $successfulOptimization = 0;
             $results = $optimizeImageService->optimize($imageForTesting);
-            foreach($results['providerOptimizationResults'] as $result) {
-                if(isset($result['success']) && $result['success']) {
+            foreach ($results['providerOptimizationResults'] as $result) {
+                if (isset($result['success']) && $result['success']) {
                     $successfulOptimization++;
                 }
             }
@@ -70,7 +70,7 @@ class OptimizeImageServiceTest extends UnitTestCase
     {
         /** @var \SourceBroker\Imageopt\Service\OptimizeImageService $optimizeImageService */
         $optimizeImageService = $this->getMockBuilder(OptimizeImageService::class)
-            ->setConstructorArgs(array($this->pluginConfig()))
+            ->setConstructorArgs([$this->pluginConfig()])
             ->setMethods(null)
             ->getMock();
 
@@ -123,5 +123,4 @@ class OptimizeImageServiceTest extends UnitTestCase
         define(TYPO3_MODE, 'BE');
         include(__DIR__ . '/../../../ext_localconf.php');
     }
-
 }

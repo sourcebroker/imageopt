@@ -62,5 +62,4 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
     {
         return $GLOBALS['TYPO3_DB'];
     }
-
 }

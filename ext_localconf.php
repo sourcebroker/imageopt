@@ -1,11 +1,10 @@
 <?php
 if (!defined('TYPO3_MODE')) {
-    die ('Access denied.');
+    die('Access denied.');
 }
 
 // For performance issues do not do anything on FE context
 if (TYPO3_MODE !== 'FE') {
-
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers'][] = \SourceBroker\Imageopt\Command\ImageoptCommandController::class;
 
 
@@ -272,7 +271,6 @@ if (TYPO3_MODE !== 'FE') {
     //$GLOBALS['T3_SERVICES']['ImageOptimizationJpeg'][\SourceBroker\Imageopt\Providers\ImageManipulationProviderJpegJpegtran::class]['available'] = false;
 
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:Configuration/TsConfig/Page/imageopt.tsconfig">');
-
 }
 
 /*  @var $dispatcher \TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class */

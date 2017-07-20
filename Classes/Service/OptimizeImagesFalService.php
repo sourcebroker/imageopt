@@ -70,7 +70,6 @@ class OptimizeImagesFalService
         $this->configurator = $objectManager->get(Configurator::class);
         $this->configuratorGlobal = $objectManager->get(Configurator::class, $config);
         $this->optimizeImageService = $objectManager->get(OptimizeImageService::class, $config);
-
     }
 
     /**
@@ -133,6 +132,4 @@ class OptimizeImagesFalService
     {
         $this->falProcessedFileRepository->resetOptimizationFlag();
     }
-
-
 }

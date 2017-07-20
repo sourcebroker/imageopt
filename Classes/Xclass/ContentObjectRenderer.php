@@ -44,5 +44,4 @@ class ContentObjectRenderer extends \TYPO3\CMS\Frontend\ContentObject\ContentObj
 
         return parent::getImgResource($file, $fileArray);
     }
-
 }

@@ -69,7 +69,7 @@ class TemporaryFileUtility
      */
     public function unlinkTempFiles()
     {
-        if(defined(PATH_site)) {
+        if (defined(PATH_site)) {
             foreach (glob(PATH_site . 'typo3temp/' . $this->tempFilePrefix . '*') as $tempFile) {
                 @unlink($tempFile);
             }

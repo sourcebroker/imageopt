@@ -39,7 +39,7 @@ class Configurator
 
     public function __construct($config = null)
     {
-        if($config !== null) {
+        if ($config !== null) {
             $this->setConfig($config);
         }
     }
