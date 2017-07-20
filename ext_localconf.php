@@ -1,9 +1,7 @@
 <?php
-if (!defined('TYPO3_MODE')) {
-    die('Access denied.');
-}
 
-// For performance issues do not do anything on FE context
+defined('TYPO3_MODE') || die('Access denied.');
+
 if (TYPO3_MODE !== 'FE') {
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers'][] = \SourceBroker\Imageopt\Command\ImageoptCommandController::class;
 
@@ -263,36 +261,19 @@ if (TYPO3_MODE !== 'FE') {
         ]
     );
 
-    // The way to add new property to registered service
-    //$GLOBALS['T3_SERVICES']['ImageOptimizationJpeg'][\SourceBroker\Imageopt\Providers\ImageManipulationProviderJpegJpegtran::class]['enable'] = true;
-
-    // The way to deactivate service
-    //$GLOBALS['T3_SERVICES']['ImageOptimizationJpeg'][\SourceBroker\Imageopt\Providers\ImageManipulationProviderJpegJpegtran::class]['available'] = false;
-
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:Configuration/TsConfig/Page/imageopt.tsconfig">');
+    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
+        '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:Configuration/TsConfig/Page/tx_imageopt.tsconfig">'
+    );
 }
 
-/*  @var $dispatcher \TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class */
-// $dispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
-//example of working dispatcher \TYPO3\CMS\Core\Resource\OnlineMedia\Processing\PreviewProcessing::class
-//$dispatcher->connect(
-//    TYPO3\CMS\Core\Resource\ResourceStorage::class,
-//    \TYPO3\CMS\Core\Resource\Service\FileProcessingService::SIGNAL_PreFileProcess,
-//    ,
-//    \SourceBroker\Imageopt\Slot\FileProcessingService1::class,
-//    'processFilePre'
-//);
-// unset($dispatcher);
-
-// dispatcher did not worked so xclass for now
+// Few xclasses to make TYPO3 to create copy of images even if not needed.
+// This way we can make optimization on copies always to not destroy original images.
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Core\\Resource\\Service\\FileProcessingService'] = [
     'className' => 'SourceBroker\\Imageopt\\Xclass\\FileProcessingService'
 ];
-
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Frontend\\Imaging\\GifBuilder'] = [
     'className' => 'SourceBroker\\Imageopt\\Xclass\\GifBuilder'
 ];
-
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer'] = [
     'className' => 'SourceBroker\\Imageopt\\Xclass\\ContentObjectRenderer'
 ];
