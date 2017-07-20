@@ -75,8 +75,8 @@ class OptimizedFileRepository
             'provider_winner' => $providerWinner,
             'provider_results' => serialize($providerResults),
             'path' => $filePath,
-            'tstamp' => $GLOBALS['EXEC_TIME'],
-            'crdate' => $GLOBALS['EXEC_TIME']
+            'tstamp' => time(),
+            'crdate' => time()
         ]);
     }
 

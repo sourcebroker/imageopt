@@ -46,7 +46,7 @@ class ImageoptCommandController extends BaseCommandController
 
     public function __construct()
     {
-        $this->taskExecutionStartTime = $GLOBALS['EXEC_TIME'];
+        $this->taskExecutionStartTime = time();
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
 
         $serviceConfig = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Service\\TypoScriptService')
