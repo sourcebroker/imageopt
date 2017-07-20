@@ -7,7 +7,6 @@ if (!defined('TYPO3_MODE')) {
 if (TYPO3_MODE !== 'FE') {
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers'][] = \SourceBroker\Imageopt\Command\ImageoptCommandController::class;
 
-
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService(
         $_EXTKEY,
         'ImageOptimizationGif',

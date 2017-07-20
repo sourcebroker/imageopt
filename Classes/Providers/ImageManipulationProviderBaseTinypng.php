@@ -84,7 +84,7 @@ class ImageManipulationProviderBaseTinypng extends ImageManipulationProviderBase
             if (empty($header)) {
                 continue;
             }
-            $split = explode(":", $header, 2);
+            $split = explode(':', $header, 2);
             if (count($split) === 2) {
                 $result[strtolower($split[0])] = trim($split[1]);
             }

@@ -22,7 +22,6 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-
 namespace SourceBroker\Imageopt\Service;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
@@ -57,7 +56,6 @@ class OptimizeImagesFalService
      * @var Configurator
      */
     public $configurator;
-
 
     public function __construct($config = null)
     {
@@ -123,7 +121,6 @@ class OptimizeImagesFalService
             $processedFal->delete();
         }
     }
-
 
     /**
      *

@@ -3,7 +3,6 @@
 namespace SourceBroker\Imageopt\Xclass;
 
 use TYPO3\CMS\Frontend\Imaging\GifBuilder as ParentClass;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 class GifBuilder extends ParentClass
 {

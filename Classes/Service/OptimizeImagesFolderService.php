@@ -22,7 +22,6 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-
 namespace SourceBroker\Imageopt\Service;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
@@ -50,7 +49,6 @@ class OptimizeImagesFolderService
      */
     protected $optimizedFileRepository;
 
-
     public function __construct($config = null)
     {
         if ($config === null) {
@@ -65,13 +63,12 @@ class OptimizeImagesFolderService
     /**
      * Images optimization
      *
-     * @param integer $numberOfImagesToProcess Limit of images on a single run
+     * @param int $numberOfImagesToProcess Limit of images on a single run
      */
     public function optimizeImages($numberOfImagesToProcess = 50)
     {
         $this->optimizeFilesInFolders($numberOfImagesToProcess);
     }
-
 
     /**
      * Optimize files from directories

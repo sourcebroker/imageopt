@@ -16,7 +16,6 @@ namespace SourceBroker\Imageopt\Resource;
  * The TYPO3 project - inspiring people to share!
  */
 
-
 /**
  * Class OptimizedFileRepository
  */
@@ -27,7 +26,6 @@ class OptimizedFileRepository
      * @var string
      */
     protected $tableName = 'tx_imageopt_images';
-
 
     /**
      * Get all optimized images

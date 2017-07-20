@@ -22,7 +22,6 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-
 namespace SourceBroker\Imageopt\Service;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
@@ -40,7 +39,6 @@ class OptimizeImageService
      * @var Configurator
      */
     public $configurator;
-
 
     /**
      * OptimizeImageService constructor.

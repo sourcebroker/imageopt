@@ -24,8 +24,8 @@
 
 namespace SourceBroker\Imageopt\Xclass;
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Resource;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class FileProcessingService extends \TYPO3\CMS\Core\Resource\Service\FileProcessingService
 {

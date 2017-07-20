@@ -26,8 +26,8 @@ namespace SourceBroker\Imageopt\Providers;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
 use TYPO3\CMS\Core\Mail\MailMessage;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Service\AbstractService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class ImageManipulationProvider
@@ -170,7 +170,6 @@ abstract class ImageManipulationProvider extends AbstractService
         }
         return $tempFilename;
     }
-
 
 //    public function optimize($image) {
 //

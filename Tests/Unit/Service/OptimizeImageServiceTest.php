@@ -57,7 +57,6 @@ class OptimizeImageServiceTest extends UnitTestCase
         }
     }
 
-
     /**
      * imageIsOptimized
      * @test

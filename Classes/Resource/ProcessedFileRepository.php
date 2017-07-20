@@ -16,7 +16,6 @@ namespace SourceBroker\Imageopt\Resource;
  * The TYPO3 project - inspiring people to share!
  */
 
-
 /**
  * Class ProcessedFileRepository
  */

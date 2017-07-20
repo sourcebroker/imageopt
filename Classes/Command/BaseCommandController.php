@@ -15,11 +15,11 @@ namespace SourceBroker\Imageopt\Command;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Core\Messaging\FlashMessageService;
-use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 
 class BaseCommandController extends CommandController
 {
@@ -35,7 +35,7 @@ class BaseCommandController extends CommandController
             /** @var FlashMessage $flashMessage */
             $flashMessage = GeneralUtility::makeInstance(
                 FlashMessage::class,
-                implode("<br/>", $message),
+                implode('<br/>', $message),
                 $title,
                 $status
             );

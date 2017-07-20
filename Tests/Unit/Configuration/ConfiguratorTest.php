@@ -2,8 +2,8 @@
 
 namespace SourceBroker\Imageopt\Tests\Unit\Configuration;
 
-use SourceBroker\Imageopt\Configuration\Configurator;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
+use SourceBroker\Imageopt\Configuration\Configurator;
 
 /**
  * Tests for configurator
