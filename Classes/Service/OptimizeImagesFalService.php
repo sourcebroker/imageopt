@@ -93,8 +93,7 @@ class OptimizeImagesFalService
             $fileSizeAfterOptimization = $fileSizeBeforeOptimization;
             $optimizationResults = $this->optimizeImageService->optimize($sourceFile);
             $theBestOptimizedImageRelativePath = substr($sourceFile, strlen(PATH_site));
-            // $optimizationResults['imageOptimizationProviderWinnerKey'] !== null
-            // means that at least one provider succeeded and returned file smaller than original.
+            // If providerOptimizationWinnerKey !== null means that at least one provider succeeded and returned file smaller than original.
             // If non of the provider returned smaller image or all provider failed then do not update FAL but store log.
             if ($optimizationResults['providerOptimizationWinnerKey'] !== null) {
                 $theBestOptimizedImageTmpFile = $optimizationResults['providerOptimizationResults'][$optimizationResults['providerOptimizationWinnerKey']]['optimizedFileAbsPath'];
