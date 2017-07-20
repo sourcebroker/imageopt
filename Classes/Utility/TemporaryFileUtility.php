@@ -73,7 +73,7 @@ class TemporaryFileUtility
                 @unlink($tempFile);
             }
         } else {
-             throw new \Exception('PATH_site is not declared');
+            throw new \Exception('PATH_site is not declared');
         }
     }
 }
