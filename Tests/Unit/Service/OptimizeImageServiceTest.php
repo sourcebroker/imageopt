@@ -5,7 +5,6 @@ namespace SourceBroker\Imageopt\Tests\Unit\Service;
 use Exception;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
 use SourceBroker\Imageopt\Service\OptimizeImageService;
-use TYPO3\CMS\Core\TypoScript\Parser\TypoScriptParser;
 use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -15,7 +14,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class OptimizeImageServiceTest extends UnitTestCase
 {
-    /** @var string  */
+    /** @var string Path to TYPO3 web root*/
     private $typo3WebRoot;
 
     protected function setUp()
@@ -31,6 +30,7 @@ class OptimizeImageServiceTest extends UnitTestCase
             @unlink($tempFile);
         }
     }
+
     /**
      * imageIsOptimized
      *
@@ -113,7 +113,7 @@ class OptimizeImageServiceTest extends UnitTestCase
      */
     public function pluginConfig()
     {
-        $typoscriptParser = GeneralUtility::makeInstance(TypoScriptParser::class);
+        $typoscriptParser = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Service\\TypoScriptService');
         $typoscriptParser->parse(file_get_contents($this->typo3WebRoot . '/typo3conf/ext/imageopt/Configuration/TsConfig/Page/tx_imageopt.tsconfig'));
         return GeneralUtility::makeInstance(TypoScriptService::class)
             ->convertTypoScriptArrayToPlainArray($typoscriptParser->setup)['tx_imageopt'];
