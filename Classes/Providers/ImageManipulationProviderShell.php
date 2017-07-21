@@ -29,7 +29,7 @@ use TYPO3\CMS\Core\Utility\CommandUtility;
 /**
  * Class ImageManipulationProviderBaseShell
  */
-class ImageManipulationProviderBaseShell extends ImageManipulationProvider
+class ImageManipulationProviderShell extends ImageManipulationProvider
 {
     /**
      * Shell executable command. Plz use markers with {executable} and {tempCopy}
