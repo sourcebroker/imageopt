@@ -262,7 +262,7 @@ if (TYPO3_MODE !== 'FE') {
     );
 
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
-        '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:Configuration/TsConfig/Page/tx_imageopt.tsconfig">'
+        '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $_EXTKEY . '/Configuration/TsConfig/Page/tx_imageopt.tsconfig">'
     );
 }
 
