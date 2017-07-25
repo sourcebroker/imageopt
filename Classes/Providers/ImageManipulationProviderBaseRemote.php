@@ -29,7 +29,7 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 /**
  * ImageManipulationProviderBaseRemote
  */
-class ImageManipulationProviderBaseRemote extends ImageManipulationProvider
+abstract class ImageManipulationProviderBaseRemote extends ImageManipulationProvider
 {
     /**
      * Main settings
