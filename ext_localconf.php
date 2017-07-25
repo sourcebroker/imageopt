@@ -11,6 +11,7 @@ if (TYPO3_MODE !== 'FE') {
 
 // Few xclasses to make TYPO3 to create copy of images even if not needed.
 // This way we can make optimization on copies always to not destroy original images.
+// TODO: check if this can be done better
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Core\\Resource\\Service\\FileProcessingService'] = [
     'className' => 'SourceBroker\\Imageopt\\Xclass\\FileProcessingService'
 ];

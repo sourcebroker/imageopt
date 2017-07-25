@@ -43,7 +43,7 @@ class OptimizeImagesFolderService
     public $configurator;
 
     /**
-     * Injection of Image Manipulation Service Object
+     * Injection of Image Optimization Service Object
      *
      * @var OptimizedFileRepository
      */
@@ -52,22 +52,13 @@ class OptimizeImagesFolderService
     public function __construct($config = null)
     {
         if ($config === null) {
-            throw new \Exception('Configuration not set for ImageManipulationService class');
+            throw new \Exception('Configuration not set for ImageOptimizationtionService class');
         }
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->optimizedFileRepository = $objectManager->get(OptimizedFileRepository::class);
         $this->configurator = $objectManager->get(Configurator::class);
         $this->configuratorGlobal = $objectManager->get(Configurator::class, $config);
-    }
-
-    /**
-     * Images optimization
-     *
-     * @param int $numberOfImagesToProcess Limit of images on a single run
-     */
-    public function optimizeImages($numberOfImagesToProcess = 50)
-    {
-        $this->optimizeFilesInFolders($numberOfImagesToProcess);
+        $this->optimizeImageService = $objectManager->get(OptimizeImageService::class, $config);
     }
 
     /**
@@ -105,7 +96,7 @@ class OptimizeImagesFolderService
                             //(($perms & 0x0001) ? (($perms & 0x0200) ? false : true) : false)//other
                             if (!(($perms & 0x0040) ? (($perms & 0x0800) ? false : true) : false)) {
                                 $fileSizeBeforeOptimization = filesize($file->getPathname());
-                                $optimizationResults = $this->optimize($file->getPathname());
+                                $optimizationResults = $this->optimizeImageService($file->getPathname(), $config);
 
                                 // default values for $this->optimizedFileRepository->add
                                 $fileSizeAfterOptimization = $fileSizeBeforeOptimization;

@@ -18,6 +18,7 @@ namespace SourceBroker\Imageopt\Command;
 use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Resource\OptimizedFileRepository;
 use SourceBroker\Imageopt\Service\OptimizeImagesFalService;
+use SourceBroker\Imageopt\Service\OptimizeImagesFolderService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -25,7 +26,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 class ImageoptCommandController extends BaseCommandController
 {
     /**
-     * Injection of Image Manipulation Service Object
+     * Injection of Image Optimization Service Object
      *
      * @var OptimizedFileRepository
      */
@@ -44,25 +45,21 @@ class ImageoptCommandController extends BaseCommandController
     */
     private $optimizeImagesFalService;
 
+    private $objectManager;
+
     public function __construct()
     {
         $this->taskExecutionStartTime = time();
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
 
+        // TODO: read UserTS - not PageTS
         $serviceConfig = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Service\\TypoScriptService')
             ->convertTypoScriptArrayToPlainArray(BackendUtility::getPagesTSconfig(1));
-        if (isset($serviceConfig['tx_imageopt'])) {
-            $serviceConfig = $serviceConfig['tx_imageopt'];
-        } else {
-            $serviceConfig = [];
-        }
+
         $this->configurator = GeneralUtility::makeInstance(Configurator::class);
-        $this->configurator->setConfig($serviceConfig);
-        $this->optimizedFileRepository = $objectManager->get(OptimizedFileRepository::class);
-        $this->optimizeImagesFalService = $objectManager->get(
-            OptimizeImagesFalService::class,
-            $this->getConfigurator()->getConfig()
-        );
+        $this->configurator->setConfig(isset($serviceConfig['tx_imageopt']) ? $serviceConfig['tx_imageopt']: []);
+        $this->optimizedFileRepository = $this->objectManager->get(OptimizedFileRepository::class);
+
     }
 
     /**
@@ -86,10 +83,28 @@ class ImageoptCommandController extends BaseCommandController
      *
      * @param int $numberOfImagesToProcess The number of images to process on single task call
      */
-    public function optimizeFalProcessedFilesCommand($numberOfImagesToProcess = 20)
+    public function optimizeFalProcessedImagesCommand($numberOfImagesToProcess = 20)
     {
-        $this->optimizeImagesFalService->optimizeFalProcessedFiles($numberOfImagesToProcess);
-        $results = $this->optimizedFileRepository->getAllExecutedFrom($this->taskExecutionStartTime);
+        $optimizeImagesFalService = $this->objectManager->get(
+            OptimizeImagesFalService::class,
+            $this->getConfigurator()->getConfig()
+        );
+        $optimizeImagesFalService->optimizeFalProcessedFiles($numberOfImagesToProcess);
+        $this->showResults($this->optimizedFileRepository->getAllExecutedFrom($this->taskExecutionStartTime));
+    }
+
+    public function optimizeFolderImagesCommand($numberOfImagesToProcess = 20)
+    {
+        $optimizeImagesFolderService = $this->objectManager->get(
+            OptimizeImagesFolderService::class,
+            $this->getConfigurator()->getConfig()
+        );
+        $optimizeImagesFolderService->optimizeFilesInFolders($numberOfImagesToProcess);
+        $this->showResults($this->optimizedFileRepository->getAllExecutedFrom($this->taskExecutionStartTime));
+    }
+
+    public function showResults($results)
+    {
         $message = [];
         if (count($results)) {
             foreach ((array)$results as $result) {

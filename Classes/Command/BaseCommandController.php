@@ -39,7 +39,6 @@ class BaseCommandController extends CommandController
                 $title,
                 $status
             );
-
             /** @var $flashMessageService FlashMessageService */
             $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
             /** @var $defaultFlashMessageQueue FlashMessageQueue */

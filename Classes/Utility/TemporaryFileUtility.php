@@ -63,6 +63,22 @@ class TemporaryFileUtility implements SingletonInterface
     }
 
     /**
+     * Return a copy of file under a temporary filename.
+     * File is deleted autmaticaly after script end.
+     *
+     * @param string $originalFileAbsolutePath Absolute path/file with original image
+     * @return bool if not created file or string with temporary file path
+     */
+    public function createTemporaryCopy($originalFileAbsolutePath)
+    {
+        $tempFilename = $this->createTempFile();
+        if (file_exists($tempFilename)) {
+            copy($originalFileAbsolutePath, $tempFilename);
+        }
+        return $tempFilename;
+    }
+
+    /**
      * Delete all temporary files
      * @return void
      * @throws \Exception

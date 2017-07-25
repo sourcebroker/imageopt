@@ -37,7 +37,7 @@ class OptimizeImagesFalService
 {
 
     /**
-     * Injection of Image Manipulation Service Object
+     * Injection of Image Optimization Service Object
      *
      * @var OptimizedFileRepository
      */
@@ -60,7 +60,7 @@ class OptimizeImagesFalService
     public function __construct($config = null)
     {
         if ($config === null) {
-            throw new \Exception('Configuration not set for ImageManipulationService class');
+            throw new \Exception('Configuration not set for ImageOptimizationService class');
         }
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->falProcessedFileRepository = $objectManager->get(ProcessedFileRepository::class);
