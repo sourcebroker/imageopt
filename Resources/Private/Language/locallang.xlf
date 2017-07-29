@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2017-07-29T13:12:02Z" product-name="imageopt">
+		<header/>
+		<body>
+			<trans-unit id="tx_imageopt_domain_model_providerresult">
+				<source>Provider Result</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_providerresult.name">
+				<source>Name</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_providerresult.size_before">
+				<source>Size Before</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_providerresult.size_after">
+				<source>Size After</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_providerresult.executed_successfully">
+				<source>Executed Successfully</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_providerresult.winner">
+				<source>Winner</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_providerresult.executors_results">
+				<source>Executors Results</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_executorresult">
+				<source>Executor Result</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_executorresult.size_before">
+				<source>Size Before</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_executorresult.size_after">
+				<source>Size After</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_executorresult.command">
+				<source>Command</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_executorresult.command_output">
+				<source>Command Output</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_executorresult.command_status">
+				<source>Command Status</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_executorresult.executed_successfully">
+				<source>Executed Successfully</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_executorresult.error_message">
+				<source>Error Message</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationresult">
+				<source>Optimization Result</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationresult.file_relative_path">
+				<source>File Relative Path</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationresult.size_before">
+				<source>Size Before</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationresult.size_after">
+				<source>Size After</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationresult.optimization_bytes">
+				<source>Optimization Bytes</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationresult.optimization_percentage">
+				<source>Optimization Percentage</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationresult.provider_winner_name">
+				<source>Provider Winner Name</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationresult.executed_successfully">
+				<source>Executed Successfully</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationresult.providers_results">
+				<source>Providers Results</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2017-07-29T13:12:02Z" product-name="imageopt">
+		<header/>
+		<body>
+			<trans-unit id="size_before.description">
+				<source>sizeBefore</source>
+			</trans-unit>
+			<trans-unit id="size_after.description">
+				<source>sizeAfter</source>
+			</trans-unit>
+			<trans-unit id="command.description">
+				<source>command</source>
+			</trans-unit>
+			<trans-unit id="command_output.description">
+				<source>commandOutput</source>
+			</trans-unit>
+			<trans-unit id="command_status.description">
+				<source>commandStatus</source>
+			</trans-unit>
+			<trans-unit id="executed_successfully.description">
+				<source>executedSuccessfully</source>
+			</trans-unit>
+			<trans-unit id="error_message.description">
+				<source>errorMessage</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

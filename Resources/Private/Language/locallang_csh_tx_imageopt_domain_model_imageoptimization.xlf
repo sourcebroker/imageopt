@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2017-07-29T11:38:03Z" product-name="imageopt">
+		<header/>
+		<body>
+			<trans-unit id="file_relative_path.description">
+				<source>fileRelativePath</source>
+			</trans-unit>
+			<trans-unit id="size_before.description">
+				<source>sizeBefore</source>
+			</trans-unit>
+			<trans-unit id="size_after.description">
+				<source>sizeAfter</source>
+			</trans-unit>
+			<trans-unit id="optimization_bytes.description">
+				<source>optimizationBytes</source>
+			</trans-unit>
+			<trans-unit id="optimization_percentage.description">
+				<source>optimizationPercentage</source>
+			</trans-unit>
+			<trans-unit id="provider_winner_name.description">
+				<source>providerWinnerName</source>
+			</trans-unit>
+			<trans-unit id="providers_results.description">
+				<source>providersResults</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

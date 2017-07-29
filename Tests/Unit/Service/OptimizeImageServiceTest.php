@@ -4,9 +4,12 @@ namespace SourceBroker\Imageopt\Tests\Unit\Service;
 
 use Exception;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
+use SourceBroker\Imageopt\Domain\Model\OptimizationResult;
 use SourceBroker\Imageopt\Service\OptimizeImageService;
+use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
 use TYPO3\CMS\Core\TypoScript\Parser\TypoScriptParser;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Test for OptimizeImageServiceTest
@@ -14,7 +17,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class OptimizeImageServiceTest extends UnitTestCase
 {
-    /** @var string Path to TYPO3 web root*/
+    /** @var string Path to TYPO3 web root */
     private $typo3WebRoot;
 
     protected function setUp()
@@ -49,16 +52,14 @@ class OptimizeImageServiceTest extends UnitTestCase
             ->setMethods(null)
             ->getMock();
 
-        $imageForTesting = $this->typo3WebRoot . '/typo3conf/ext/imageopt/Tests/Fixture/Unit/OptimizeImageService/' . $image;
-        if (file_exists($imageForTesting)) {
-            $successfulOptimization = 0;
-            $results = $optimizeImageService->optimize($imageForTesting);
-            foreach ($results['providerOptimizationResults'] as $result) {
-                if (isset($result['success']) && $result['success']) {
-                    $successfulOptimization++;
-                }
-            }
-            $this->assertEquals($successfulOptimization, count($results['providerOptimizationResults']));
+        $temporaryFileUtility = GeneralUtility::makeInstance(TemporaryFileUtility::class);
+        $imageForTesting = $temporaryFileUtility->createTemporaryCopy(
+            $this->typo3WebRoot . '/typo3conf/ext/imageopt/Tests/Fixture/Unit/OptimizeImageService/' . $image
+        );
+        if (is_readable($imageForTesting)) {
+            /** @var OptimizationResult $optimizationResult */
+            $optimizationResult = $optimizeImageService->optimize($imageForTesting);
+            $this->assertEquals(true, $optimizationResult->getExecutedSuccessfully());
         } else {
             throw new Exception('Image for testing is not existing:' . $imageForTesting);
         }
@@ -80,12 +81,15 @@ class OptimizeImageServiceTest extends UnitTestCase
             ->setMethods(null)
             ->getMock();
 
-        $imageForTesting = $this->typo3WebRoot . '/typo3conf/ext/imageopt/Tests/Fixture/Unit/OptimizeImageService/' . $image;
-        $originalFileSize = filesize($imageForTesting);
-        if (file_exists($imageForTesting)) {
-            $results = $optimizeImageService->optimize($imageForTesting);
-            $optimizedFileSize = filesize($results['providerOptimizationResults'][$results['providerOptimizationWinnerKey']]['optimizedFileAbsPath']);
-            $this->assertGreaterThan($optimizedFileSize, $originalFileSize);
+        $temporaryFileUtility = GeneralUtility::makeInstance(TemporaryFileUtility::class);
+        $imageForTesting = $temporaryFileUtility->createTemporaryCopy(
+            $this->typo3WebRoot . '/typo3conf/ext/imageopt/Tests/Fixture/Unit/OptimizeImageService/' . $image
+        );
+        if (is_readable($imageForTesting)) {
+            $originalFileSize = filesize($imageForTesting);
+            /** @var OptimizationResult $optimizationResult */
+            $optimizationResult = $optimizeImageService->optimize($imageForTesting);
+            $this->assertGreaterThan($optimizationResult->getSizeAfter(), $originalFileSize);
         } else {
             throw new Exception('Image for testing is not existing:' . $imageForTesting);
         }

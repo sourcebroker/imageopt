@@ -25,10 +25,14 @@
 namespace SourceBroker\Imageopt\Service;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Repository\OptimizationResultRepository;
 use SourceBroker\Imageopt\Resource\OptimizedFileRepository;
 use SourceBroker\Imageopt\Resource\ProcessedFileRepository;
+use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Optimize FAL images
@@ -37,9 +41,9 @@ class OptimizeImagesFalService
 {
 
     /**
-     * Injection of Image Optimization Service Object
+     * Injection of Image Optimization Repository
      *
-     * @var OptimizedFileRepository
+     * @var \SourceBroker\Imageopt\Domain\Repository\OptimizationResultRepository
      */
     protected $optimizedFileRepository;
 
@@ -88,34 +92,22 @@ class OptimizeImagesFalService
     {
         $processedFal = $this->falProcessedFileRepository->getDomainObject($notOptimizedFileRaw);
         $sourceFile = $processedFal->getForLocalProcessing(false);
-        if (file_exists($sourceFile)) {
-            $fileSizeBeforeOptimization = filesize($sourceFile);
-            $fileSizeAfterOptimization = $fileSizeBeforeOptimization;
-            $optimizationResults = $this->optimizeImageService->optimize($sourceFile);
-            $theBestOptimizedImageRelativePath = substr($sourceFile, strlen(PATH_site));
-            // If providerOptimizationWinnerKey !== null means that at least one provider succeeded and returned file smaller than original.
-            // If non of the provider returned smaller image or all provider failed then do not update FAL but store log.
-            if ($optimizationResults['providerOptimizationWinnerKey'] !== null) {
-                $theBestOptimizedImageTmpFile = $optimizationResults['providerOptimizationResults'][$optimizationResults['providerOptimizationWinnerKey']]['optimizedFileAbsPath'];
-                list($width, $height) = getimagesize($theBestOptimizedImageTmpFile);
-                if ($width > 0 && $height > 0) {
-                    $fileSizeAfterOptimization = filesize($theBestOptimizedImageTmpFile);
-                    $processedFal->updateWithLocalFile($theBestOptimizedImageTmpFile);
-                    $providerWinner = $optimizationResults['providerOptimizationWinnerKey'];
-                    $theBestOptimizedImageRelativePath = $processedFal->getPublicUrl();
-                }
+        if (is_readable($sourceFile)) {
+            $temporaryFileUtility = GeneralUtility::makeInstance(TemporaryFileUtility::class);
+            $imageForOptimizing = $temporaryFileUtility->createTemporaryCopy($sourceFile);
+            $optimizationResult = $this->optimizeImageService->optimize($imageForOptimizing);
+            $optimizationResult->setFileRelativePath(substr($sourceFile, strlen(PATH_site)));
+            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+            $objectManager->get(OptimizationResultRepository::class)->add($optimizationResult);
+            $objectManager->get(PersistenceManager::class)->persistAll();
+
+            if ($optimizationResult->isExecutedSuccessfully()
+                && $optimizationResult->getSizeBefore() > $optimizationResult->getSizeAfter()) {
+                $processedFal->updateWithLocalFile($imageForOptimizing);
             }
             // We set optimized flag always even if there was no real gain. Otherwise we'd need to optimize it in next loop.
             $processedFal->updateProperties(['tx_imageopt_optimized' => 1]);
             $this->falProcessedFileRepository->update($processedFal);
-
-            $this->optimizedFileRepository->add(
-                $theBestOptimizedImageRelativePath,
-                $fileSizeBeforeOptimization,
-                isset($fileSizeAfterOptimization) ? $fileSizeAfterOptimization : $fileSizeBeforeOptimization,
-                isset($providerWinner) ? $providerWinner : '',
-                $optimizationResults
-            );
         } else {
             $processedFal->delete();
         }

@@ -27,6 +27,16 @@ Support native linux commands like:
 
 Install the extension using composer ``composer require sourcebroker/imageopt``
 
+Configure "_cli_lowlevel" and "_cli_scheduler" user to have access to all filemuonts.
+
+### Usage
+
+1) Direct cli call:
+   `` php ./typo3/cli_dispatch.phpsh extbase imageopt:optimizefalprocessedimages``
+   
+2) Or better create extbase scheduler job in TYPO3 backend to run task regularly.
+    
+    
 ### Configuration
 
 Default configuration:
@@ -273,10 +283,4 @@ set default quality for all providers.
   
 * There is table "tx_imageopt_images" where the statistics and winning image optmimizer is stored.  
 
-### Usage
 
-1) Direct cli call:
-   `` php ./typo3/cli_dispatch.phpsh extbase imageopt:optimizefalprocessedimages``
-   
-2) Or better create extbase scheduler job in TYPO3 backend to run task regularly.
-    
