@@ -1,5 +1,5 @@
 tx_imageopt {
-    directories = uploads*jpg|gif
+    directories = typo3temp/pics*jpg|gif|png
 
     default {
         options {
@@ -88,13 +88,13 @@ tx_imageopt {
                         enabled = 1
                         class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
                         command {
-                            mask = {executable} --batch {quality} {tempFile}
+                            mask = {executable} {quality} {tempFile} -o {tempFile}
                             exec = gifsicle
                         }
 
                         options {
                             quality {
-                                value = tx_imageopt.default.options.quality
+                                value < tx_imageopt.default.options.quality
                                 options {
                                     5 = --optimize=3
                                     10 = --optimize=3

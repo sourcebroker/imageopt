@@ -92,9 +92,13 @@ class ImageoptCommandController extends CommandController
             $this->getConfigurator()->getConfig()
         );
         $filesToProcess = $optimizeImagesFalService->getFalProcessedFilesToOptimize($numberOfImagesToProcess);
-        foreach ($filesToProcess as $fileToProcess) {
-            $optimizationResult = $optimizeImagesFalService->optimizeFalProcessedFile($fileToProcess);
-            $this->outputLine($this->showResult($optimizationResult));
+        if (!empty($filesToProcess)) {
+            foreach ($filesToProcess as $fileToProcess) {
+                $optimizationResult = $optimizeImagesFalService->optimizeFalProcessedFile($fileToProcess);
+                $this->outputLine($this->showResult($optimizationResult));
+            }
+        } else {
+            $this->outputLine('No images to be optimized found.');
         }
     }
 
@@ -108,9 +112,13 @@ class ImageoptCommandController extends CommandController
             $this->getConfigurator()->getConfig()
         );
         $filesToProcess = $optimizeImagesFolderService->getFilesToOptimize($numberOfImagesToProcess);
-        foreach ($filesToProcess as $fileToProcess) {
-            $optimizationResult = $optimizeImagesFolderService->optimizeFolderFile($fileToProcess);
-            $this->outputLine($this->showResult($optimizationResult));
+        if (!empty($filesToProcess)) {
+            foreach ($filesToProcess as $fileToProcess) {
+                $optimizationResult = $optimizeImagesFolderService->optimizeFolderFile($fileToProcess);
+                $this->outputLine($this->showResult($optimizationResult));
+            }
+        } else {
+            $this->outputLine('No images to be optimized found.');
         }
     }
 

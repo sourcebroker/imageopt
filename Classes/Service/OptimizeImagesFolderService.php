@@ -30,7 +30,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Optimize images from defined folders (for FAL images use OptimizeImagesFalService)
- * NOTE! This is not well tested yet.
  */
 class OptimizeImagesFolderService
 {
@@ -98,11 +97,15 @@ class OptimizeImagesFolderService
     public function optimizeFolderFile($absoluteFilePath)
     {
         $optimizationResult = $this->optimizeImageService->optimize($absoluteFilePath);
-        if ($optimizationResult->isExecutedSuccessfully()
-            && $optimizationResult->getSizeBefore() > $optimizationResult->getSizeAfter()) {
+        if ($optimizationResult->isExecutedSuccessfully()) {
+            // Temporary resized images are created by default with permission 644.
+            // We set the "execute" bit of permission in optimized images (to have 744).
+            // This way we know what files are still there to be optimized or already optimized.
+            // If you have better idea how to do it then create issue on github.
             exec('chmod u+x ' . escapeshellarg($absoluteFilePath), $out, $status);
             if ($status !== 0) {
-                $optimizationResult->setInfo('Error executing chmod u+x');
+                $optimizationResult->setInfo('Error executing chmod u+x. Error code: '
+                    . $status . ' Error message: ' . $out);
             }
         }
         return $optimizationResult;

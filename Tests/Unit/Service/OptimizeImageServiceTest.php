@@ -9,7 +9,6 @@ use SourceBroker\Imageopt\Service\OptimizeImageService;
 use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
 use TYPO3\CMS\Core\TypoScript\Parser\TypoScriptParser;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Test for OptimizeImageServiceTest
@@ -109,7 +108,9 @@ class OptimizeImageServiceTest extends UnitTestCase
             'Test png file resize' => [
                 'mountains.png',
             ],
-
+            'Test gif file resize' => [
+                'mountains.gif',
+            ],
         ];
     }
 
