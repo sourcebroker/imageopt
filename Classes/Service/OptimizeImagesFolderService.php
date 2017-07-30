@@ -53,7 +53,6 @@ class OptimizeImagesFolderService
         $this->optimizeImageService = $objectManager->get(OptimizeImageService::class, $config);
     }
 
-
     /**
      * @param $numberOfFiles
      * @return array
@@ -80,7 +79,7 @@ class OptimizeImagesFolderService
                                 $filesToOptimize[] = $file->getPathname();
                             }
                             if (count($filesToOptimize) > $numberOfFiles) {
-                                break(2);
+                                break 2;
                             }
                         }
                     }

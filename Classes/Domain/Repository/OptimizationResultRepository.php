@@ -17,4 +17,4 @@ namespace SourceBroker\Imageopt\Domain\Repository;
  */
 class OptimizationResultRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 {
-    }
+}

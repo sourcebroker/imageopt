@@ -167,7 +167,6 @@ class ProviderResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $this->sizeAfter = $sizeAfter;
     }
 
-
     /**
      * Returns the winner
      *

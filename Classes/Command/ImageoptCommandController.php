@@ -28,7 +28,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Class ImageoptCommandController
- * @package SourceBroker\Imageopt\Command
  */
 class ImageoptCommandController extends CommandController
 {
@@ -154,7 +153,6 @@ class ImageoptCommandController extends CommandController
                         }
                     }
                     $providersScore[] = $nr . ') ' . $providerResult->getName() . ' - failed - ' . implode(' ', $error);
-
                 }
             }
             return
@@ -163,7 +161,6 @@ class ImageoptCommandController extends CommandController
                 "Info\t\t| " . $optimizationResult->getInfo() . "\n" .
                 "Provider stats\t| " . $success . ' out of ' . $optimizationResult->getProvidersResults()->count() . ' providers finished successfully:' . "\n" .
                 "\t\t| " . implode("\n\t\t| ", $providersScore) . "\n";
-
         } else {
             throw new \Exception('Result in not an object of: ' . OptimizationResult::class);
         }

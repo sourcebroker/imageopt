@@ -126,5 +126,4 @@ class OptimizeImageServiceTest extends UnitTestCase
         return GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Service\\TypoScriptService')
             ->convertTypoScriptArrayToPlainArray($typoscriptParser->setup)['tx_imageopt'];
     }
-
 }

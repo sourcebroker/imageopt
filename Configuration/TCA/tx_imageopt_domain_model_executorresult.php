@@ -109,7 +109,7 @@ return [
                 'eval' => 'trim'
             ],
         ],
-    
+
         'providerresult' => [
             'config' => [
                 'type' => 'passthrough',

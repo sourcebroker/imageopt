@@ -30,7 +30,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class OptimizationProvider
 {
-
     protected $executors;
 
     /**
@@ -48,7 +47,6 @@ class OptimizationProvider
     {
         $this->executors = $executors;
     }
-
 
     public function optimize($image, Configurator $providerConfigurator)
     {
@@ -89,5 +87,4 @@ class OptimizationProvider
 
         return $providerResult;
     }
-
 }

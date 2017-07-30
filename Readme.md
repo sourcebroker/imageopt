@@ -4,7 +4,8 @@ This extension allows to optimize images resized by TYPO3 so they will take less
 
 Features:
 
-* If you enable more than one image optimizer then all of them will be executed and the best optimized image is choosen.
+* If you enable more than one image optimizer then all of them will be executed 
+  and the best optimized image is choosen.
 * Own providers can be registered with TSconfig. 
 * Providers can be mixed to create new providers. 
 
@@ -27,14 +28,17 @@ Support native linux commands like:
 
 Install the extension using composer ``composer require sourcebroker/imageopt``
 
-Configure "_cli_lowlevel" and "_cli_scheduler" user to have access to all filemuonts.
+Configure "_cli_lowlevel" and "_cli_scheduler" user to have access to all filemounts.
 
 ### Usage
 
-1) Direct cli call:
+1) Direct cli call. Good for firt time to optimize all existing images at once.
    `` php ./typo3/cli_dispatch.phpsh extbase imageopt:optimizefalprocessedimages``
    
-2) Or better create extbase scheduler job in TYPO3 backend to run task regularly.
+   or with ext:typo3_console
+   `` php typo3cms imageopt:optimizefalprocessedimages``
+   
+2) For all images which will be processed .
     
     
 ### Configuration
@@ -274,9 +278,9 @@ set default quality for all providers.
   for example the requested image size is the same as original). Thanks to that xclasses the original images 
   do not have to be optimized.
   
-* For FAL files only file that are in "sys_file_processedfile" are optimized. Table "sys_file_processedfile" has
-  been extended with "tx_imageopt_optimized" field. If file has been optimised then the field "tx_imageopt_optimized"
-  is set to 1.
+* For FAL files only file that are in "sys_file_processedfile" are optimized. Table "sys_file_processedfile" 
+  has  been extended with "tx_imageopt_optimized" field. If file has been optimised then the field 
+  "tx_imageopt_optimized" is set to 1.
   
   You can reset the "tx_imageopt_optimized" flag with command
   ``php ./typo3/cli_dispatch.phpsh extbase imageopt:resetoptimizationflag``

@@ -114,8 +114,7 @@ class OptimizeImageService
                         $optimizationResult->getSizeBefore() - $optimizationResult->getSizeAfter()
                     );
                     $optimizationResult->setOptimizationPercentage(round(
-                            $optimizationResult->getOptimizationBytes() / $optimizationResult->getSizeBefore() * 100
-                            , 2)
+                            $optimizationResult->getOptimizationBytes() / $optimizationResult->getSizeBefore() * 100, 2)
                     );
                     if ($optimizationResult->getOptimizationBytes() === 0) {
                         $optimizationResult->setInfo('No winner. Non of the optimized images was smaller than original.');

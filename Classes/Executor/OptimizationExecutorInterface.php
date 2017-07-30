@@ -25,9 +25,6 @@
 namespace SourceBroker\Imageopt\Executor;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
-use SourceBroker\Imageopt\Domain\Repository\ProviderResultRepository;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 interface OptimizationExecutorInterface
 {
@@ -37,5 +34,4 @@ interface OptimizationExecutorInterface
      * @return \SourceBroker\Imageopt\Domain\Model\ExecutorResult
      */
     public function optimize($image, Configurator $configurator);
-
 }
