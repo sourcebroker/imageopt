@@ -28,7 +28,6 @@ use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
 use TYPO3\CMS\Core\Utility\CommandUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Class OptimizationExecutorShell
@@ -60,9 +59,9 @@ class OptimizationExecutorShell implements OptimizationExecutorInterface
         }
         $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
         $executorResult->setExecutedSuccessfully(false);
-        if (!empty($configurator->getOption('command'))) {
+        if (!empty($configurator->getOption('command.exec'))) {
             if (is_readable($inputImageAbsolutePath)) {
-                $execDeclared = $configurator->getOption('exec');
+                $execDeclared = $configurator->getOption('command.exec');
                 if (pathinfo($execDeclared, PATHINFO_DIRNAME) !== '.') {
                     $execDetected = $execDeclared;
                 } else {
@@ -73,15 +72,24 @@ class OptimizationExecutorShell implements OptimizationExecutorInterface
                     $shellCommand = str_replace(
                         ['{executable}', '{tempFile}', '{quality}'],
                         [$execDetected, escapeshellarg($inputImageAbsolutePath), $executorQuality],
-                        $configurator->getOption('command')
+                        $configurator->getOption('command.mask')
                     );
+                    $successfulStatuses = [0];
+                    if (!empty($configurator->getOption('command.successfulExitStatus'))) {
+                        $successfulStatuses = array_merge($successfulStatuses,
+                            explode(',', $configurator->getOption('command.successfulExitStatus'))
+                        );
+                    }
                     exec($shellCommand, $output, $commandStatus);
                     clearstatcache(true, $inputImageAbsolutePath);
                     $executorResult->setSizeAfter(filesize($inputImageAbsolutePath));
                     $executorResult->setCommand($shellCommand);
                     $executorResult->setCommandStatus($commandStatus);
                     $executorResult->setCommandOutput($output);
-                    $executorResult->setExecutedSuccessfully($commandStatus === 0 ? true : false);
+
+                    $executorResult->setExecutedSuccessfully(
+                        in_array($commandStatus, $successfulStatuses) ? true : false
+                    );
                 } else {
                     $executorResult->setErrorMessage($execDeclared . ' can\'t be found.');
                 }

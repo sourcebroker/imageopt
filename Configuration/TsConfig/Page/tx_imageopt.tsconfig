@@ -1,5 +1,5 @@
 tx_imageopt {
-    directories =
+    directories = uploads*jpg|gif
 
     default {
         options {
@@ -13,10 +13,13 @@ tx_imageopt {
                 enabled = 1
                 executors {
                     10 {
-                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                        exec = jpegoptim
-                        command = {executable} {tempFile} -o --strip-all {quality}
                         enabled = 1
+                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                        command {
+                            mask = {executable} {tempFile} -o --strip-all {quality}
+                            exec = jpegoptim
+                        }
+
                         options {
                             quality {
                                 value < tx_imageopt.default.options.quality
@@ -52,10 +55,12 @@ tx_imageopt {
                 enabled = 1
                 executors {
                     10 {
-                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                        exec = jpegrescan
-                        command = {executable} -s {tempFile} {tempFile}
                         enabled = 1
+                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                        command {
+                            mask = {executable} -s {tempFile} {tempFile}
+                            exec = jpegrescan
+                        }
                     }
                 }
             }
@@ -64,10 +69,12 @@ tx_imageopt {
                 enabled = 1
                 executors {
                     10 {
-                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                        exec = jpegtran
-                        command = {executable} -copy none -optimize -outfile {tempFile} {tempFile}
                         enabled = 1
+                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                        command {
+                            mask = {executable} -copy none -optimize -outfile {tempFile} {tempFile}
+                            exec = jpegtran
+                        }
                     }
                 }
             }
@@ -78,10 +85,13 @@ tx_imageopt {
                 enabled = 1
                 executors {
                     10 {
-                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                        exec = gifsicle
-                        command = {executable} --batch {quality} {tempFile}
                         enabled = 1
+                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                        command {
+                            mask = {executable} --batch {quality} {tempFile}
+                            exec = gifsicle
+                        }
+
                         options {
                             quality {
                                 value = tx_imageopt.default.options.quality
@@ -119,10 +129,13 @@ tx_imageopt {
                 enabled = 1
                 executors {
                     10 {
-                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                        exec = optipng
-                        command = {executable} {tempFile} -quiet -strip all {quality}
                         enabled = 1
+                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                        command {
+                            mask = {executable} {tempFile} -quiet -strip all {quality}
+                            exec = optipng
+                        }
+
                         options {
                             quality {
                                 value < tx_imageopt.default.options.quality
@@ -158,10 +171,12 @@ tx_imageopt {
                 enabled = 1
                 executors {
                     10 {
-                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                        exec = pngcrush
-                        command = {executable} -s -rem alla -brute -reduce -ow {tempFile} >/dev/null
                         enabled = 1
+                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                        command {
+                            mask = {executable} -s -rem alla -brute -reduce -ow {tempFile} >/dev/null
+                            exec = pngcrush
+                        }
                     }
                 }
             }
@@ -170,10 +185,14 @@ tx_imageopt {
                 enabled = 1
                 executors {
                     10 {
-                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                        exec = pngquant
-                        command = {executable} {tempFile} --skip-if-larger --force --ext '' --strip {quality}
                         enabled = 1
+                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                        command {
+                            mask = {executable} {tempFile} --skip-if-larger --force --ext '' --strip {quality}
+                            exec = pngquant
+                            successfulExitStatus = 98
+                        }
+
                         options {
                             quality {
                                 value < tx_imageopt.default.options.quality
@@ -205,13 +224,13 @@ tx_imageopt {
                 }
             }
 
-#            pngquant-pngcrush {
-#                enabled = 1
-#                executors {
-#                    10 < tx_imageopt.providers.png.pngquant.executors.10
-#                    20 < tx_imageopt.providers.png.pngcrush.executors.10
-#                }
-#            }
+            pngquant-pngcrush {
+                enabled = 1
+                executors {
+                    10 < tx_imageopt.providers.png.pngquant.executors.10
+                    20 < tx_imageopt.providers.png.pngcrush.executors.10
+                }
+            }
         }
     }
 }

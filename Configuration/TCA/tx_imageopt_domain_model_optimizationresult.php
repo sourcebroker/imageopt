@@ -14,14 +14,14 @@ return [
         'enablecolumns' => [
             'disabled' => 'hidden',
         ],
-        'searchFields' => 'file_relative_path,size_before,size_after,optimization_bytes,optimization_percentage,provider_winner_name,executed_successfully,providers_results',
+        'searchFields' => 'file_relative_path,size_before,size_after,optimization_bytes,optimization_percentage,provider_winner_name,executed_successfully,info,providers_results',
         'iconfile' => 'EXT:imageopt/Resources/Public/Icons/tx_imageopt_domain_model_optimizationresult.gif'
     ],
     'interface' => [
-        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, file_relative_path, size_before, size_after, optimization_bytes, optimization_percentage, provider_winner_name, executed_successfully, providers_results',
+        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, file_relative_path, size_before, size_after, optimization_bytes, optimization_percentage, provider_winner_name, executed_successfully, info, providers_results',
     ],
     'types' => [
-        '1' => ['showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, file_relative_path, size_before, size_after, optimization_bytes, optimization_percentage, provider_winner_name, executed_successfully, providers_results'],
+        '1' => ['showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, file_relative_path, size_before, size_after, optimization_bytes, optimization_percentage, provider_winner_name, executed_successfully, info, providers_results'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -146,6 +146,16 @@ return [
                     ]
                 ],
                 'default' => 0,
+            ]
+        ],
+        'info' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationresult.info',
+            'config' => [
+                'type' => 'text',
+                'cols' => 40,
+                'rows' => 15,
+                'eval' => 'trim'
             ]
         ],
         'providers_results' => [

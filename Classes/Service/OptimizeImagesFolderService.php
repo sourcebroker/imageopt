@@ -25,7 +25,6 @@
 namespace SourceBroker\Imageopt\Service;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
-use SourceBroker\Imageopt\Resource\OptimizedFileRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
@@ -36,103 +35,76 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 class OptimizeImagesFolderService
 {
     /**
-     * Plugin configuration
-     *
      * @var Configurator
      */
     public $configurator;
 
     /**
-     * Injection of Image Optimization Service Object
-     *
-     * @var OptimizedFileRepository
+     * @var OptimizeImageService
      */
-    protected $optimizedFileRepository;
+    private $optimizeImageService;
 
     public function __construct($config = null)
     {
         if ($config === null) {
-            throw new \Exception('Configuration not set for ImageOptimizationtionService class');
+            throw new \Exception('Configuration not set for OptimizeImagesFolderService class');
         }
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->optimizedFileRepository = $objectManager->get(OptimizedFileRepository::class);
-        $this->configurator = $objectManager->get(Configurator::class);
-        $this->configuratorGlobal = $objectManager->get(Configurator::class, $config);
+        $this->configurator = $objectManager->get(Configurator::class, $config);
         $this->optimizeImageService = $objectManager->get(OptimizeImageService::class, $config);
     }
 
+
     /**
-     * Optimize files from directories
-     * List of directories sets in extension configuration
-     *
-     * For example fileadmin/user_upload*jpg|jpeg where fileadmin/user_upload is directory, jpg|jpeg - list of file extensions separated |
-     * Directory separator is ','
-     *
-     * @param int $numberOfImagesToProcess
+     * @param $numberOfFiles
+     * @return array
      */
-    public function optimizeFilesInFolders($numberOfImagesToProcess)
+    public function getFilesToOptimize($numberOfFiles)
     {
+        $filesToOptimize = [];
         $directories = explode(',', preg_replace('/\s+/', '', $this->configurator->getOption('directories')));
-
-        $countOfFilesFound = 0;
-
         foreach ($directories as $directoryWithExtensions) {
             if ($directoryWithExtensions != '') {
                 if (strpos($directoryWithExtensions, '*') !== false) {
                     list($directory, $stringExtensions) = explode('*', $directoryWithExtensions);
-
                     if (is_dir(PATH_site . $directory)) {
                         $directoryIterator = new \RecursiveDirectoryIterator(PATH_site . $directory);
                         $iterator = new \RecursiveIteratorIterator($directoryIterator);
-                        $regexIterator = new \RegexIterator($iterator,
-                            '/\.(' . strtolower($stringExtensions) . '|' . strtoupper($stringExtensions) . ')$/');
-                        $regexIterator->setFlags(\RegexIterator::USE_KEY);
-
+                        $regexIterator = new \RegexIterator(
+                            $iterator,
+                            '/\.(' . strtolower($stringExtensions) . '|' . strtoupper($stringExtensions) . ')$/'
+                        );
                         foreach ($regexIterator as $file) {
                             $perms = fileperms($file->getPathname());
-
-                            //(($perms & 0x0040) ? (($perms & 0x0800) ? false : true) : false)//owner
-                            //(($perms & 0x0008) ? (($perms & 0x0400) ? false : true) : false)//group
-                            //(($perms & 0x0001) ? (($perms & 0x0200) ? false : true) : false)//other
+                            // Get only 6xx becase 7xx are arleady optimized.
                             if (!(($perms & 0x0040) ? (($perms & 0x0800) ? false : true) : false)) {
-                                $fileSizeBeforeOptimization = filesize($file->getPathname());
-                                $optimizationResults = $this->optimizeImageService($file->getPathname(), $config);
-
-                                // default values for $this->optimizedFileRepository->add
-                                $fileSizeAfterOptimization = $fileSizeBeforeOptimization;
-                                $providerWinner = '';
-
-                                if ($optimizationResults['providerOptimizationWinnerKey'] !== null) {
-                                    $theBestOptimizedImage = $optimizationResults['providerOptimizationResults'][$optimizationResults['providerOptimizationWinnerKey']]['optimizedFileAbsPath'];
-                                    list($width, $height) = getimagesize($theBestOptimizedImage);
-                                    if ($width > 0 && $height > 0) {
-                                        rename($theBestOptimizedImage, $file->getPathname());
-                                        exec('chmod u+x ' . escapeshellarg($file->getPathname()), $out, $status);
-
-                                        $providerWinner = $optimizationResults['providerOptimizationWinnerKey'];
-                                        $fileSizeAfterOptimization = filesize($file->getPathname());
-
-                                        if ($status == 0) {
-                                            $countOfFilesFound++;
-                                        }
-                                    }
-                                }
-                                $this->optimizedFileRepository->add(
-                                    $file->getPathname(),
-                                    $fileSizeBeforeOptimization,
-                                    $fileSizeAfterOptimization,
-                                    $providerWinner,
-                                    $optimizationResults
-                                );
+                                $filesToOptimize[] = $file->getPathname();
                             }
-
-                            if ($countOfFilesFound == $numberOfImagesToProcess) {
-                                break 2;
+                            if (count($filesToOptimize) > $numberOfFiles) {
+                                break(2);
                             }
                         }
                     }
                 }
             }
         }
+        return $filesToOptimize;
+    }
+
+    /**
+     * @param $absoluteFilePath
+     * @return array
+     */
+    public function optimizeFolderFile($absoluteFilePath)
+    {
+        $optimizationResult = $this->optimizeImageService->optimize($absoluteFilePath);
+        if ($optimizationResult->isExecutedSuccessfully()
+            && $optimizationResult->getSizeBefore() > $optimizationResult->getSizeAfter()) {
+            exec('chmod u+x ' . escapeshellarg($absoluteFilePath), $out, $status);
+            if ($status !== 0) {
+                $optimizationResult->setInfo('Error executing chmod u+x');
+            }
+        }
+        return $optimizationResult;
     }
 }

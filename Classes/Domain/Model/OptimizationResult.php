@@ -60,6 +60,13 @@ class OptimizationResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $providerWinnerName = '';
 
     /**
+     * executedSuccessfully
+     *
+     * @var bool
+     */
+    protected $executedSuccessfully = false;
+
+    /**
      * providersResults
      *
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\SourceBroker\Imageopt\Domain\Model\ProviderResult>
@@ -68,11 +75,11 @@ class OptimizationResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $providersResults = null;
 
     /**
-     * executedSuccessfully
+     * info
      *
-     * @var bool
+     * @var string
      */
-    protected $executedSuccessfully = false;
+    protected $info = '';
 
     /**
      * __construct
@@ -294,5 +301,26 @@ class OptimizationResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     public function isExecutedSuccessfully()
     {
         return $this->executedSuccessfully;
+    }
+
+    /**
+     * Returns the info
+     *
+     * @return string $info
+     */
+    public function getInfo()
+    {
+        return $this->info;
+    }
+
+    /**
+     * Sets the info
+     *
+     * @param string $info
+     * @return void
+     */
+    public function setInfo($info)
+    {
+        $this->info = $info;
     }
 }

@@ -25,27 +25,19 @@
 namespace SourceBroker\Imageopt\Service;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Model\OptimizationResult;
 use SourceBroker\Imageopt\Domain\Repository\OptimizationResultRepository;
-use SourceBroker\Imageopt\Resource\OptimizedFileRepository;
 use SourceBroker\Imageopt\Resource\ProcessedFileRepository;
 use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Optimize FAL images
  */
 class OptimizeImagesFalService
 {
-
-    /**
-     * Injection of Image Optimization Repository
-     *
-     * @var \SourceBroker\Imageopt\Domain\Repository\OptimizationResultRepository
-     */
-    protected $optimizedFileRepository;
 
     /**
      * The FAL processed file repository
@@ -55,11 +47,14 @@ class OptimizeImagesFalService
     protected $falProcessedFileRepository;
 
     /**
-     * Plugin configuration
-     *
      * @var Configurator
      */
-    public $configurator;
+    protected $configurator;
+
+    /**
+     * @var OptimizeImageService
+     */
+    private $optimizeImageService;
 
     public function __construct($config = null)
     {
@@ -68,49 +63,52 @@ class OptimizeImagesFalService
         }
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->falProcessedFileRepository = $objectManager->get(ProcessedFileRepository::class);
-        $this->optimizedFileRepository = $objectManager->get(OptimizedFileRepository::class);
-        $this->configurator = $objectManager->get(Configurator::class);
-        $this->configuratorGlobal = $objectManager->get(Configurator::class, $config);
         $this->optimizeImageService = $objectManager->get(OptimizeImageService::class, $config);
     }
 
     /**
      * @param int $numberOfImagesToProcess
+     * @return array
      */
-    public function optimizeFalProcessedFiles($numberOfImagesToProcess)
+    public function getFalProcessedFilesToOptimize($numberOfImagesToProcess)
     {
-        $notOptimizedProcessedFilesRaw = $this->falProcessedFileRepository->findNotOptimizedRaw($numberOfImagesToProcess);
-        foreach ($notOptimizedProcessedFilesRaw as $notOptimizedProcessedFileRaw) {
-            $this->optimizeFalProcessedFile($notOptimizedProcessedFileRaw);
-        }
+        return $this->falProcessedFileRepository->findNotOptimizedRaw($numberOfImagesToProcess);
     }
 
     /**
      * @param $notOptimizedFileRaw array $notOptimizedProcessedFileRaw,
+     * @return OptimizationResult|null
+     * @throws \Exception
      */
     public function optimizeFalProcessedFile($notOptimizedFileRaw)
     {
-        $processedFal = $this->falProcessedFileRepository->getDomainObject($notOptimizedFileRaw);
+        $optimizationResult = null;
+        /** @var \TYPO3\CMS\Core\Resource\ProcessedFile $processedFal */
+        $processedFal = $this->falProcessedFileRepository->findByIdentifier($notOptimizedFileRaw['uid']);
         $sourceFile = $processedFal->getForLocalProcessing(false);
-        if (is_readable($sourceFile)) {
-            $temporaryFileUtility = GeneralUtility::makeInstance(TemporaryFileUtility::class);
-            $imageForOptimizing = $temporaryFileUtility->createTemporaryCopy($sourceFile);
-            $optimizationResult = $this->optimizeImageService->optimize($imageForOptimizing);
-            $optimizationResult->setFileRelativePath(substr($sourceFile, strlen(PATH_site)));
-            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-            $objectManager->get(OptimizationResultRepository::class)->add($optimizationResult);
-            $objectManager->get(PersistenceManager::class)->persistAll();
-
-            if ($optimizationResult->isExecutedSuccessfully()
-                && $optimizationResult->getSizeBefore() > $optimizationResult->getSizeAfter()) {
-                $processedFal->updateWithLocalFile($imageForOptimizing);
+        if (file_exists($sourceFile)) {
+            if (is_readable($sourceFile)) {
+                $tmpForOptimizing = GeneralUtility::makeInstance(TemporaryFileUtility::class)
+                    ->createTemporaryCopy($sourceFile);
+                $optimizationResult = $this->optimizeImageService->optimize($tmpForOptimizing);
+                $optimizationResult->setFileRelativePath(substr($sourceFile, strlen(PATH_site)));
+                $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+                $objectManager->get(OptimizationResultRepository::class)->add($optimizationResult);
+                $objectManager->get(PersistenceManager::class)->persistAll();
+                if ($optimizationResult->isExecutedSuccessfully()
+                    && $optimizationResult->getSizeBefore() > $optimizationResult->getSizeAfter()) {
+                    $processedFal->updateWithLocalFile($tmpForOptimizing);
+                }
+                // We set optimized flag always even if there was no real gain. Otherwise we'd need to optimize it in next loop.
+                $processedFal->updateProperties(['tx_imageopt_optimized' => 1]);
+                $this->falProcessedFileRepository->update($processedFal);
+            } else {
+                throw new \Exception('Can not read file: ' . $sourceFile);
             }
-            // We set optimized flag always even if there was no real gain. Otherwise we'd need to optimize it in next loop.
-            $processedFal->updateProperties(['tx_imageopt_optimized' => 1]);
-            $this->falProcessedFileRepository->update($processedFal);
         } else {
             $processedFal->delete();
         }
+        return $optimizationResult;
     }
 
     /**

@@ -52,11 +52,6 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
         );
     }
 
-    public function getDomainObject($raw)
-    {
-        return $this->createDomainObject($raw);
-    }
-
     public function getDatabaseConnection()
     {
         return $GLOBALS['TYPO3_DB'];

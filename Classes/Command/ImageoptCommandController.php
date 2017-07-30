@@ -16,20 +16,22 @@ namespace SourceBroker\Imageopt\Command;
  */
 
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
 use SourceBroker\Imageopt\Domain\Model\OptimizationResult;
 use SourceBroker\Imageopt\Domain\Model\ProviderResult;
-use SourceBroker\Imageopt\Domain\Repository\OptimizationResultRepository;
-use SourceBroker\Imageopt\Resource\OptimizedFileRepository;
 use SourceBroker\Imageopt\Service\OptimizeImagesFalService;
 use SourceBroker\Imageopt\Service\OptimizeImagesFolderService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
-class ImageoptCommandController extends BaseCommandController
+/**
+ * Class ImageoptCommandController
+ * @package SourceBroker\Imageopt\Command
+ */
+class ImageoptCommandController extends CommandController
 {
-    /** @var object|OptimizedFileRepository */
-    protected $optimizedFileRepository;
 
     /**
      * The time of starting command
@@ -37,17 +39,19 @@ class ImageoptCommandController extends BaseCommandController
      */
     protected $taskExecutionStartTime = null;
 
-    /** @var object|Configurator */
+    /**
+     * @var object|Configurator
+     */
     protected $configurator;
 
-    /** @var */
-    private $optimizeImagesFalService;
-
-    /*
-    * @var \TYPO3\CMS\Extbase\Object\ObjectManager
-    */
+    /**
+     * @var object|ObjectManager
+     */
     protected $objectManager;
 
+    /**
+     * ImageoptCommandController constructor.
+     */
     public function __construct()
     {
         $this->taskExecutionStartTime = time();
@@ -58,8 +62,6 @@ class ImageoptCommandController extends BaseCommandController
             ->convertTypoScriptArrayToPlainArray(BackendUtility::getPagesTSconfig(1));
         $this->configurator = GeneralUtility::makeInstance(Configurator::class);
         $this->configurator->setConfig(isset($serviceConfig['tx_imageopt']) ? $serviceConfig['tx_imageopt'] : []);
-        $this->optimizedFileRepository = $this->objectManager->get(OptimizedFileRepository::class);
-
     }
 
     /**
@@ -89,73 +91,72 @@ class ImageoptCommandController extends BaseCommandController
             OptimizeImagesFalService::class,
             $this->getConfigurator()->getConfig()
         );
-        $optimizeImagesFalService->optimizeFalProcessedFiles($numberOfImagesToProcess);
-
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $optimizationResults = $objectManager->get(OptimizationResultRepository::class)->findAll()->toArray();
-
-        //        $this->showResults($this->optimizedFileRepository->getAllExecutedFrom($this->taskExecutionStartTime));
-        $this->showResults($optimizationResults);
+        $filesToProcess = $optimizeImagesFalService->getFalProcessedFilesToOptimize($numberOfImagesToProcess);
+        foreach ($filesToProcess as $fileToProcess) {
+            $optimizationResult = $optimizeImagesFalService->optimizeFalProcessedFile($fileToProcess);
+            $this->outputLine($this->showResult($optimizationResult));
+        }
     }
 
+    /**
+     * @param int $numberOfImagesToProcess
+     */
     public function optimizeFolderImagesCommand($numberOfImagesToProcess = 20)
     {
         $optimizeImagesFolderService = $this->objectManager->get(
             OptimizeImagesFolderService::class,
             $this->getConfigurator()->getConfig()
         );
-        $optimizeImagesFolderService->optimizeFilesInFolders($numberOfImagesToProcess);
-        $this->showResults($this->optimizedFileRepository->getAllExecutedFrom($this->taskExecutionStartTime));
+        $filesToProcess = $optimizeImagesFolderService->getFilesToOptimize($numberOfImagesToProcess);
+        foreach ($filesToProcess as $fileToProcess) {
+            $optimizationResult = $optimizeImagesFolderService->optimizeFolderFile($fileToProcess);
+            $this->outputLine($this->showResult($optimizationResult));
+        }
     }
 
-    public function showResults($optimizationResults)
+    /**
+     * @param $optimizationResult
+     * @return string
+     * @throws \Exception
+     */
+    public function showResult($optimizationResult)
     {
-        $message = [];
-        if (count($optimizationResults)) {
+        if ($optimizationResult instanceof OptimizationResult) {
             /** @var OptimizationResult $optimizationResult */
-            foreach ((array)$optimizationResults as $optimizationResult) {
-                $providersScore = [];
-                $success = $percentageWinner = $percentage = $noWinner = 0;
-                $percentageWinnerName = '';
-                /** @var ProviderResult $providerResult */
-                foreach ($optimizationResult->getProvidersResults()->toArray() as $providerResult) {
-                    if ($providerResult->isExecutedSuccessfully()) {
-                        $success++;
-                        $percentage = round((
-                                $providerResult->getSizeBefore() - $providerResult->getSizeAfter()) * 100
-                            / $providerResult->getSizeBefore(), 2);
+            $providersScore = [];
+            $success = $percentageWinner = $percentage = $noWinner = $nr = 0;
+            /** @var ProviderResult $providerResult */
+            foreach ($optimizationResult->getProvidersResults()->toArray() as $providerResult) {
+                $nr++;
+                if ($providerResult->isExecutedSuccessfully()) {
+                    $success++;
+                    $percentage = round((
+                            $providerResult->getSizeBefore() - $providerResult->getSizeAfter()) * 100
+                        / $providerResult->getSizeBefore(), 2);
 
-                        $providersScore[] = $success . ') ' . $providerResult->getName() . ': ' . $percentage . '%';
-                    } else {
-                        $providersScore[] = $success . ') ' . $providerResult->getName() . ' - failed';
+                    $providersScore[] = $nr . ') ' . $providerResult->getName() . ': ' . $percentage . '%';
+                } else {
+                    /** @var ExecutorResult $executorResult */
+                    $error = [];
+                    foreach ($providerResult->getExecutorsResults()->toArray() as $executorResult) {
+                        if (!$executorResult->isExecutedSuccessfully()) {
+                            $error[] = $executorResult->getCommandStatus();
+                        }
                     }
-//                    if ((int)$optimizationResult['winner'] === 1) {
-//                        $percentageWinner = $percentage;
-//                        $percentageWinnerName = $optimizationResult['providerName'];
-//                    }
+                    $providersScore[] = $nr . ') ' . $providerResult->getName() . ' - failed - ' . implode(' ', $error);
+
                 }
-//                if ($providersResults['providerOptimizationWinnerKey'] === null && $success === 0
-//                ) {
-//                    $winnerText = 'No winner. All providers was unsuccessfull.';
-//                }
-//                if ($providersResults['providerOptimizationWinnerKey'] === null && $success > 0) {
-//                    $winnerText = 'No winner. Non of the optimized images was smaller than original.';
-//                }
-//                if ($providersResults['providerOptimizationWinnerKey'] !== null) {
-//                    $winnerText = "Winner is '$percentageWinnerName' with optimized image smaller by: " . $percentageWinner . '%';
-//                }
-                $message[] =
-                    "---------------------------------\n" .
-                    "File\t\t| " . $optimizationResult->getFileRelativePath() . "\n" .
-                    "Winner\t\t| " . (isset($winnerText) ? $winnerText : '') . "\n" .
-                    "Provider stats\t| " . $success . ' out of ' . $optimizationResult->getProvidersResults()->count() . ' providers finished successfully:' . "\n" .
-                    "\t\t| " . implode("\n\t\t| ", $providersScore) . "\n";
             }
+            return
+                '---------------------------------' . "\n" .
+                "File\t\t| " . $optimizationResult->getFileRelativePath() . "\n" .
+                "Info\t\t| " . $optimizationResult->getInfo() . "\n" .
+                "Provider stats\t| " . $success . ' out of ' . $optimizationResult->getProvidersResults()->count() . ' providers finished successfully:' . "\n" .
+                "\t\t| " . implode("\n\t\t| ", $providersScore) . "\n";
+
         } else {
-            $message[] = 'All images are optimized.';
+            throw new \Exception('Result in not an object of: ' . OptimizationResult::class);
         }
-        $this->setSchedulerTaskMessage($message, 'Result');
-        $this->setConsoleTaskMessage($message);
     }
 
     /**

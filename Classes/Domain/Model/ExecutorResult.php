@@ -53,18 +53,18 @@ class ExecutorResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $commandStatus = '';
 
     /**
-     * errorMessage
-     *
-     * @var string
-     */
-    protected $errorMessage = '';
-
-    /**
      * executedSuccessfully
      *
      * @var bool
      */
     protected $executedSuccessfully = false;
+
+    /**
+     * errorMessage
+     *
+     * @var string
+     */
+    protected $errorMessage = '';
 
     /**
      * Returns the sizeBefore

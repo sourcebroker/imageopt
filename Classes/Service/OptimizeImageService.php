@@ -31,14 +31,19 @@ use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Optimize single image using multiple Image Optmization Provider. The best optimization wins!
+ * Optimize single image using multiple Image Optmization Provider.
+ * The best optimization wins!
  */
 class OptimizeImageService
 {
-    /** @var object|Configurator */
+    /**
+     * @var object|Configurator
+     */
     public $configurator;
 
-    /** @var object|TemporaryFileUtility */
+    /**
+     * @var object|TemporaryFileUtility
+     */
     private $temporaryFile;
 
     /**
@@ -65,16 +70,16 @@ class OptimizeImageService
     public function optimize($inputImageAbsolutePath)
     {
         $optimizationResult = GeneralUtility::makeInstance(OptimizationResult::class);
+        $optimizationResult->setFileRelativePath(substr($inputImageAbsolutePath, strlen(PATH_site)));
         $optimizationResult->setExecutedSuccessfully(false);
-        $optimizationResult->setFileRelativePath($inputImageAbsolutePath);
         clearstatcache(true, $inputImageAbsolutePath);
-        $fileType = strtolower(explode('/', image_type_to_mime_type(exif_imagetype($inputImageAbsolutePath)))[1]);
         if (file_exists($inputImageAbsolutePath) && filesize($inputImageAbsolutePath)) {
             $optimizationResult->setSizeBefore(filesize($inputImageAbsolutePath));
+            $fileType = strtolower(explode('/', image_type_to_mime_type(exif_imagetype($inputImageAbsolutePath)))[1]);
             $temporaryBestOptimizedImageAbsolutePath = $this->temporaryFile->createTemporaryCopy($inputImageAbsolutePath);
             $imageOpimalizationsProviders = $this->configurator->getOption('providers.' . $fileType);
             if (!empty($imageOpimalizationsProviders)) {
-                $providerExecuted = $providerExecutedSuccessfuly = 0;
+                $providerExecuted = $providerExecutedSuccessfully = 0;
                 foreach ($imageOpimalizationsProviders as $providerKey => $imageOpimalizationsProviderConfig) {
                     if ($imageOpimalizationsProviderConfig['enabled']) {
                         $providerExecuted++;
@@ -87,7 +92,7 @@ class OptimizeImageService
                         );
                         $optimizationResult->addProvidersResult($providerResult);
                         if ($providerResult->isExecutedSuccessfully()) {
-                            $providerExecutedSuccessfuly++;
+                            $providerExecutedSuccessfully++;
                             clearstatcache(true, $temporaryProviderOptimizedImageAbsolutePath);
                             clearstatcache(true, $temporaryBestOptimizedImageAbsolutePath);
                             $filesizeAfterProviderOptimization = filesize($temporaryProviderOptimizedImageAbsolutePath);
@@ -99,37 +104,33 @@ class OptimizeImageService
                         }
                     }
                 }
-
-//                if ($providersResults['providerOptimizationWinnerKey'] === null && $success === 0
-//                ) {
-//                    $winnerText = 'No winner. All providers was unsuccessfull.';
-//                }
-//                if ($providersResults['providerOptimizationWinnerKey'] === null && $success > 0) {
-//                    $winnerText = 'No winner. Non of the optimized images was smaller than original.';
-//                }
-//                if ($providersResults['providerOptimizationWinnerKey'] !== null) {
-//                    $winnerText = "Winner is '$percentageWinnerName' with optimized image smaller by: " . $percentageWinner . '%';
-//                }
-
-                if ($providerExecuted === $providerExecutedSuccessfuly) {
+                if ($providerExecutedSuccessfully === 0) {
+                    $optimizationResult->setInfo('No winner. All providers were unsuccessfull.');
+                } else {
                     $optimizationResult->setExecutedSuccessfully(true);
                     clearstatcache(true, $temporaryBestOptimizedImageAbsolutePath);
                     $optimizationResult->setSizeAfter(filesize($temporaryBestOptimizedImageAbsolutePath));
                     $optimizationResult->setOptimizationBytes(
                         $optimizationResult->getSizeBefore() - $optimizationResult->getSizeAfter()
                     );
-                    $optimizationResult->setOptimizationPercentage(
-                        $optimizationResult->getOptimizationBytes() / $optimizationResult->getSizeBefore() * 100
+                    $optimizationResult->setOptimizationPercentage(round(
+                            $optimizationResult->getOptimizationBytes() / $optimizationResult->getSizeBefore() * 100
+                            , 2)
                     );
-                    rename($temporaryBestOptimizedImageAbsolutePath,
-                        $inputImageAbsolutePath);
+                    if ($optimizationResult->getOptimizationBytes() === 0) {
+                        $optimizationResult->setInfo('No winner. Non of the optimized images was smaller than original.');
+                    } else {
+                        $optimizationResult->setInfo('Winner is ' . $optimizationResult->getProviderWinnerName() .
+                            ' with optimized image smaller by: ' . $optimizationResult->getOptimizationPercentage() . '%');
+                        rename($temporaryBestOptimizedImageAbsolutePath,
+                            $inputImageAbsolutePath);
+                    }
                 }
             } else {
-                echo('f');
-                // TODO: put info here that there is no provider for such extension
+                $optimizationResult->setInfo('There is no providers for file with extension: "' . $fileType . '"');
             }
         } else {
-            $optimizationResult->setInfo('Can not read file to optimize');
+            $optimizationResult->setInfo('Can not read file to optimize. File: "' . $inputImageAbsolutePath . '"');
         }
         return $optimizationResult;
     }

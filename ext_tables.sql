@@ -104,6 +104,7 @@ CREATE TABLE tx_imageopt_domain_model_optimizationresult (
 	optimization_percentage varchar(255) DEFAULT '' NOT NULL,
 	provider_winner_name varchar(255) DEFAULT '' NOT NULL,
 	executed_successfully smallint(5) unsigned DEFAULT '0' NOT NULL,
+	info text,
 	providers_results int(11) unsigned DEFAULT '0' NOT NULL,
 
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
