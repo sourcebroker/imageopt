@@ -58,7 +58,7 @@ class OptimizeImagesFolderService
      * @param $numberOfFiles
      * @return array
      */
-    public function getFilesToOptimize($numberOfFiles)
+    public function getFilesToOptimize($numberOfFiles = 20)
     {
         $filesToOptimize = [];
         $directories = explode(',', preg_replace('/\s+/', '', $this->configurator->getOption('directories')));
@@ -109,5 +109,19 @@ class OptimizeImagesFolderService
             }
         }
         return $optimizationResult;
+    }
+
+
+    public function resetOptimizationFlag()
+    {
+        $directories = explode(',', preg_replace('/\s+/', '', $this->configurator->getOption('directories')));
+        foreach ($directories as $directoryWithExtensions) {
+            if (strpos($directoryWithExtensions, '*') !== false) {
+                $directory = trim(explode('*', $directoryWithExtensions)[0], '/\\');
+                if (is_dir(PATH_site . $directory)) {
+                    exec('find ' . PATH_site . $directory . ' -type f -exec chmod u-x {} \;');
+                }
+            }
+        }
     }
 }

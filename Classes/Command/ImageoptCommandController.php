@@ -103,6 +103,8 @@ class ImageoptCommandController extends CommandController
     }
 
     /**
+     * Optimize images in folders
+     *
      * @param int $numberOfImagesToProcess
      */
     public function optimizeFolderImagesCommand($numberOfImagesToProcess = 20)
@@ -168,16 +170,28 @@ class ImageoptCommandController extends CommandController
     }
 
     /**
-     * Clear optimized stat so all files can be optimized once more.
+     * Reset optimized flag for FAL processed images so all files can be optimized once more.
      * Can be useful for testing.
-     *
      */
-    public function resetOptimizationFlagCommand()
+    public function resetOptimizationFlagForFalCommand()
     {
         $optimizeImagesFalService = $this->objectManager->get(
             OptimizeImagesFalService::class,
             $this->getConfigurator()->getConfig()
         );
         $optimizeImagesFalService->resetOptimizationFlag();
+    }
+
+    /**
+     * Reset optimized flag for folders images so all files can be optimized once more.
+     * Can be useful for testing or for first time permission normalistation.
+     */
+    public function resetOptimizationFlagForFoldersCommand()
+    {
+        $optimizeImagesFolderService = $this->objectManager->get(
+            OptimizeImagesFolderService::class,
+            $this->getConfigurator()->getConfig()
+        );
+        $optimizeImagesFolderService->resetOptimizationFlag();
     }
 }
