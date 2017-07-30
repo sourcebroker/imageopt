@@ -110,7 +110,6 @@ class OptimizeImagesFolderService
         return $optimizationResult;
     }
 
-
     public function resetOptimizationFlag()
     {
         $directories = explode(',', preg_replace('/\s+/', '', $this->configurator->getOption('directories')));
