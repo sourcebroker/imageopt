@@ -26,17 +26,13 @@ Features:
 
 * If you enable more than one image optimizer then all of them will
   be executed and the best optimized image is choosen.
-
 * Own providers can be registered with TSconfig.
-
 * Providers can be mixed to create new providers (chained executors).
-
 * Its safe as the original images, for example in folder fileadmin/, uploads/
   are not optmized. Only already resized images are optmized, so for FAL
   that would be files form "\_processed\_/" folder of file storages and for uploads/
   typo3temp/pics folder.
-
-* Support native linux commands like:
+* Support for native linux commands like:
     * for png:
         * optipng
         * pngcrush
@@ -108,7 +104,7 @@ Technical notes
   This can be handy for testing purposes.
 
 * If you optimize files from folders then if file has been optimized it gets "executed" persmission bit. So for most
-  cases its 664 on the beginning and 744 after optimization. The "execution" bit is the way script knows which files
+  cases its 644 on the beginning and 744 after optimization. The "execution" bit is the way script knows which files
   has been optimized and which one still needs.
 
   You can reset the "executed" bit for folders decalred in `tx_imageopt.directories` with command:
