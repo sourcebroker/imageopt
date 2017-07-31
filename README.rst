@@ -96,14 +96,16 @@ avaliable configuration options.
 Technical notes
 ---------------
 
-* For FAL files only file that are in "sys_file_processedfile" are optimized. Table "sys_file_processedfile"
-  has  been extended with "tx_imageopt_optimized" field. If file has been optimised then the field
+* For FAL only files that are in "sys_file_processedfile" are optimized. Table "sys_file_processedfile"
+  has  been extended with field "tx_imageopt_optimized". If file has been optimised then the field
   "tx_imageopt_optimized" is set to 1.
 
   You can reset the "tx_imageopt_optimized" flag with command:
   ::
 
     php ./typo3/cli_dispatch.phpsh extbase imageopt:resetoptimizationflagforfal
+
+  This can be handy for testing purposes.
 
 * If you optimize files from folders then if file has been optimized it gets "executed" persmission bit. So for most
   cases its 664 on the beginning and 744 after optimization. The "execution" bit is the way script knows which files
@@ -114,11 +116,13 @@ Technical notes
 
     php ./typo3/cli_dispatch.phpsh extbase imageopt:resetoptimizationflagforfolders
 
+  This can be handy for testing purposes.
 
 * There is table "tx_imageopt_domain_model_optimizationresult" with relation to two more tables
-  "tx_imageopt_domain_model_providerresult" and "tx_imageopt_domain_model_executorresult". They hold statistics from
-  images optimizations. You can check there what command exactly was used to optimize image, what was the result, error,
-  how many bytes image has before and after for each executor and for each provider.
+  "tx_imageopt_domain_model_providerresult" and "tx_imageopt_domain_model_executorresult".
+  They hold statistics from  images optimizations. You can check there what command exactly was
+  used to optimize image, what was the result, error,  how many bytes image has before and after
+  for each executor and for each provider.
 
 
 Changelog
