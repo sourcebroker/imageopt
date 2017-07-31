@@ -29,7 +29,7 @@ Features:
 
 * Own providers can be registered with TSconfig.
 
-* Providers can be mixed to create new providers.
+* Providers can be mixed to create new providers (chained executors).
 
 * Its safe as the original images, for example in folder fileadmin/, uploads/
   are not optmized. Only already resized images are optmized, so for FAL
@@ -105,19 +105,19 @@ Technical notes
 
     php ./typo3/cli_dispatch.phpsh extbase imageopt:resetoptimizationflagforfal
 
-* If you optimize files from folders then if file has been optimized it gets "executet" persmission bit. So for most
-  cases its 664 on the beginning and 744 after optimizayion. The "execution" bit it the way script knows which files
+* If you optimize files from folders then if file has been optimized it gets "executed" persmission bit. So for most
+  cases its 664 on the beginning and 744 after optimization. The "execution" bit is the way script knows which files
   has been optimized and which one still needs.
 
-  You can reset the "executed" bit for folders decalted in tx_imagetopn.directories with command:
+  You can reset the "executed" bit for folders decalred in `tx_imageopt.directories` with command:
   ::
 
     php ./typo3/cli_dispatch.phpsh extbase imageopt:resetoptimizationflagforfolders
 
 
-* There is table  "tx_imageopt_domain_model_optimizationresult" with relation to two more tables
-  "tx_imageopt_domain_model_providerresult" and "tx_imageopt_domain_model_executorresult" which holds statistics from
-  image optimization. You can check there what command exactly was used to optimize image, what was the result, error,
+* There is table "tx_imageopt_domain_model_optimizationresult" with relation to two more tables
+  "tx_imageopt_domain_model_providerresult" and "tx_imageopt_domain_model_executorresult". They hold statistics from
+  images optimizations. You can check there what command exactly was used to optimize image, what was the result, error,
   how many bytes image has before and after for each executor and for each provider.
 
 
