@@ -47,7 +47,7 @@ Features:
         - jpegoptim
         - jpegrescan
         - jpegtran
-        -* mozjpg
+        - mozjpg
 
 
 Installation
