@@ -79,7 +79,7 @@ Usage
 
         typo3cms imageopt:optimizefalprocessedimages
 
-   b) For folder processed images. It will optimize images in `typo3temp/pics/` by default.
+   b) For folder processed images.
       ::
 
         php ./typo3/cli_dispatch.phpsh extbase imageopt:optimizefolderimages
@@ -88,6 +88,11 @@ Usage
       ::
 
         typo3cms imageopt:optimizefolderimages
+
+      It will optimize images in following folders:
+      - typo3temp/pics/
+      - typo3temp/GB/
+      - typo3temp/assets/images/
 
 2) For all images which will be processed in future set up scheduler job.
 
