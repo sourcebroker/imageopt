@@ -37,17 +37,17 @@ Features:
   typo3temp/pics folder.
 
 - Support for native linux commands like:
-    - for png:
-        - optipng
-        - pngcrush
-        - pngquant
-    - for gif:
-        - gifsicle
-    - for jpeg:
-        - jpegoptim
-        - jpegrescan
-        - jpegtran
-        - mozjpg
+  - for png:
+    - optipng
+    - pngcrush
+    - pngquant
+  - for gif:
+    - gifsicle
+  - for jpeg:
+    - jpegoptim
+    - jpegrescan
+    - jpegtran
+    - mozjpg
 
 
 Installation
