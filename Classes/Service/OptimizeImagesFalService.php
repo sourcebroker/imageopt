@@ -69,7 +69,6 @@ class OptimizeImagesFalService
         $this->optimizeImageService = $this->objectManager->get(OptimizeImageService::class, $config);
     }
 
-
     /**
      * @param $notOptimizedFileRaw array $notOptimizedProcessedFileRaw,
      * @return OptimizationResult|null
