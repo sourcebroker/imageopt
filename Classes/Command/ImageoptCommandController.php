@@ -97,7 +97,7 @@ class ImageoptCommandController extends CommandController
                 $this->outputLine($this->showResult($optimizationResult));
             }
         } else {
-            $this->outputLine('No images to be optimized found.');
+            $this->outputLine('No images found that can be optimized.');
         }
     }
 
@@ -119,7 +119,7 @@ class ImageoptCommandController extends CommandController
                 $this->outputLine($this->showResult($optimizationResult));
             }
         } else {
-            $this->outputLine('No images to be optimized found.');
+            $this->outputLine('No images found that can be optimized.');
         }
     }
 
