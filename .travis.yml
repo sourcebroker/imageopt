@@ -1,3 +1,6 @@
+dist: trusty
+sudo: false
+
 language: php
 
 matrix:
@@ -20,7 +23,16 @@ addons:
   apt:
     packages:
       - parallel
-
+      - jpegoptim
+      - optipng
+      - pngquant
+      - pngcrush
+      - gifsicle
+      # jpgrescan and mozjpg
+      - libjpeg-progs
+      - libjpeg-turbo-progs
+      - libperl6-slurp-perl
+      - libfile-slurp-perl
 cache:
   directories:
     - $HOME/.composer/cache
