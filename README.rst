@@ -18,12 +18,14 @@ TYPO3 Extension imageopt
 What does it do?
 ----------------
 
-This extension allows to optimize images resized by TYPO3 so they will take less space.
+This extension optimize images resized by TYPO3 so they will take less space,
+page will be downloaded faster and Google PageSpeed Insights score will get higher.
 
-Features:
+Features
+--------
 
-- If you enable more than one image optimizer then all of them will
-  be executed and the best optimized image is choosen.
+- If you enable more than one image optimizer then all of them will be executed
+  and the best optimized image is choosen.
 
 - Own providers can be registered with TSconfig.
 
@@ -31,8 +33,12 @@ Features:
 
 - Its safe as the original images, for example in folder fileadmin/, uploads/
   are not optmized. Only already resized images are optmized, so for FAL
-  that would be files form "\_processed\_/" folder of file storages and for uploads/
-  typo3temp/pics folder.
+  that would be files form \_processed\_/ folder and for uploads/
+  typo3temp/pics (TYPO3 7.6 and below) or typo3temp/assets/images (TYPO3 8.7 and higger).
+
+- Adds few xclasses that make TYPO3 to not use original images in frontend HTML. In other words
+  you will not find any image in HTML that links directly to /fileadmin/ or /uploads/.
+  This way original images do not have to be optimized.
 
 - Support for native linux commands like:
 
@@ -51,13 +57,15 @@ Features:
     - jpegoptim
     - jpegrescan
     - jpegtran
-    - mozjpg
 
 
 Installation
 ------------
 
-Install the extension using composer `composer require sourcebroker/imageopt`
+Install the extension using composer:
+::
+
+  composer require sourcebroker/imageopt
 
 Configure "_cli_lowlevel" and "_cli_scheduler" users to have access to all filemounts.
 
@@ -88,6 +96,7 @@ Usage
         typo3cms imageopt:optimizefolderimages
 
       It will optimize images in following folders:
+
       - typo3temp/pics/
       - typo3temp/GB/
       - typo3temp/assets/images/
