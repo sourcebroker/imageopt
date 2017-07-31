@@ -1,5 +1,5 @@
 tx_imageopt {
-    directories = typo3temp/pics*jpg|gif|png
+    directories = typo3temp/pics*jpg|gif|png,typo3temp/GB*jpg|gif|png,typo3temp/assets/images*jpg|gif|png,
 
     default {
         options {
