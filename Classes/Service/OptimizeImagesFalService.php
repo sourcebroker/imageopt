@@ -40,8 +40,6 @@ class OptimizeImagesFalService
 {
 
     /**
-     * The FAL processed file repository
-     *
      * @var ProcessedFileRepository
      */
     protected $falProcessedFileRepository;
@@ -56,24 +54,21 @@ class OptimizeImagesFalService
      */
     private $optimizeImageService;
 
+    /**
+     * @var ObjectManager
+     */
+    private $objectManager;
+
     public function __construct($config = null)
     {
         if ($config === null) {
-            throw new \Exception('Configuration not set for ImageOptimizationService class');
+            throw new \Exception('Configuration not set for OptimizeImagesFalService class');
         }
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->falProcessedFileRepository = $objectManager->get(ProcessedFileRepository::class);
-        $this->optimizeImageService = $objectManager->get(OptimizeImageService::class, $config);
+        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->falProcessedFileRepository = $this->objectManager->get(ProcessedFileRepository::class);
+        $this->optimizeImageService = $this->objectManager->get(OptimizeImageService::class, $config);
     }
 
-    /**
-     * @param int $numberOfImagesToProcess
-     * @return array
-     */
-    public function getFalProcessedFilesToOptimize($numberOfImagesToProcess)
-    {
-        return $this->falProcessedFileRepository->findNotOptimizedRaw($numberOfImagesToProcess);
-    }
 
     /**
      * @param $notOptimizedFileRaw array $notOptimizedProcessedFileRaw,
@@ -88,20 +83,18 @@ class OptimizeImagesFalService
         $sourceFile = $processedFal->getForLocalProcessing(false);
         if (file_exists($sourceFile)) {
             if (is_readable($sourceFile)) {
-                $tmpForOptimizing = GeneralUtility::makeInstance(TemporaryFileUtility::class)
-                    ->createTemporaryCopy($sourceFile);
+                $tmpForOptimizing = $this->objectManager->get(TemporaryFileUtility::class)->createTemporaryCopy($sourceFile);
                 $optimizationResult = $this->optimizeImageService->optimize($tmpForOptimizing);
                 $optimizationResult->setFileRelativePath(substr($sourceFile, strlen(PATH_site)));
-                $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-                $objectManager->get(OptimizationResultRepository::class)->add($optimizationResult);
-                $objectManager->get(PersistenceManager::class)->persistAll();
-                if ($optimizationResult->isExecutedSuccessfully()
-                    && $optimizationResult->getSizeBefore() > $optimizationResult->getSizeAfter()) {
-                    $processedFal->updateWithLocalFile($tmpForOptimizing);
+                $this->objectManager->get(OptimizationResultRepository::class)->add($optimizationResult);
+                $this->objectManager->get(PersistenceManager::class)->persistAll();
+                if ($optimizationResult->isExecutedSuccessfully()) {
+                    if ($optimizationResult->getSizeBefore() > $optimizationResult->getSizeAfter()) {
+                        $processedFal->updateWithLocalFile($tmpForOptimizing);
+                    }
+                    $processedFal->updateProperties(['tx_imageopt_executed_successfully' => 1]);
+                    $this->falProcessedFileRepository->update($processedFal);
                 }
-                // We set optimized flag always even if there was no real gain. Otherwise we'd need to optimize it in next loop.
-                $processedFal->updateProperties(['tx_imageopt_optimized' => 1]);
-                $this->falProcessedFileRepository->update($processedFal);
             } else {
                 throw new \Exception('Can not read file: ' . $sourceFile);
             }
@@ -109,6 +102,15 @@ class OptimizeImagesFalService
             $processedFal->delete();
         }
         return $optimizationResult;
+    }
+
+    /**
+     * @param int $numberOfImagesToProcess
+     * @return array
+     */
+    public function getFalProcessedFilesToOptimize($numberOfImagesToProcess)
+    {
+        return $this->falProcessedFileRepository->findNotOptimizedRaw($numberOfImagesToProcess);
     }
 
     /**

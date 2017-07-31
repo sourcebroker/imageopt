@@ -98,7 +98,7 @@ class OptimizeImagesFolderService
         $optimizationResult = $this->optimizeImageService->optimize($absoluteFilePath);
         if ($optimizationResult->isExecutedSuccessfully()) {
             // Temporary resized images are created by default with permission 644.
-            // We set the "execute" bit of permission in optimized images (to have 744).
+            // We set the "execute" bit of permission for optimized images (to have 744).
             // This way we know what files are still there to be optimized or already optimized.
             // If you have better idea how to do it then create issue on github.
             exec('chmod u+x ' . escapeshellarg($absoluteFilePath), $out, $status);

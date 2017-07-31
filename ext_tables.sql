@@ -1,3 +1,37 @@
+CREATE TABLE sys_file_processedfile (
+  tx_imageopt_executed_successfully tinyint(3) unsigned DEFAULT '0' NOT NULL
+);
+
+
+#
+# Table structure for table 'tx_imageopt_domain_model_optimizationresult'
+#
+CREATE TABLE tx_imageopt_domain_model_optimizationresult (
+
+	uid int(11) NOT NULL auto_increment,
+	pid int(11) DEFAULT '0' NOT NULL,
+
+	file_relative_path varchar(255) DEFAULT '' NOT NULL,
+	size_before varchar(255) DEFAULT '' NOT NULL,
+	size_after varchar(255) DEFAULT '' NOT NULL,
+	optimization_bytes varchar(255) DEFAULT '' NOT NULL,
+	optimization_percentage varchar(255) DEFAULT '' NOT NULL,
+	provider_winner_name varchar(255) DEFAULT '' NOT NULL,
+	executed_successfully smallint(5) unsigned DEFAULT '0' NOT NULL,
+	info text,
+	providers_results int(11) unsigned DEFAULT '0' NOT NULL,
+
+	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
+	crdate int(11) unsigned DEFAULT '0' NOT NULL,
+	cruser_id int(11) unsigned DEFAULT '0' NOT NULL,
+	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
+	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
+
+	PRIMARY KEY (uid),
+	KEY parent (pid),
+
+);
+
 #
 # Table structure for table 'tx_imageopt_domain_model_providerresult'
 #
@@ -52,52 +86,5 @@ CREATE TABLE tx_imageopt_domain_model_executorresult (
 
 	PRIMARY KEY (uid),
 	KEY parent (pid),
-
-);
-
-#
-# Table structure for table 'tx_imageopt_domain_model_optimizationresult'
-#
-CREATE TABLE tx_imageopt_domain_model_optimizationresult (
-
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
-
-	file_relative_path varchar(255) DEFAULT '' NOT NULL,
-	size_before varchar(255) DEFAULT '' NOT NULL,
-	size_after varchar(255) DEFAULT '' NOT NULL,
-	optimization_bytes varchar(255) DEFAULT '' NOT NULL,
-	optimization_percentage varchar(255) DEFAULT '' NOT NULL,
-	provider_winner_name varchar(255) DEFAULT '' NOT NULL,
-	executed_successfully smallint(5) unsigned DEFAULT '0' NOT NULL,
-	info text,
-	providers_results int(11) unsigned DEFAULT '0' NOT NULL,
-
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-	cruser_id int(11) unsigned DEFAULT '0' NOT NULL,
-	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
-	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid),
-
-);
-
-#
-# Table structure for table 'tx_imageopt_domain_model_executorresult'
-#
-CREATE TABLE tx_imageopt_domain_model_executorresult (
-
-	providerresult int(11) unsigned DEFAULT '0' NOT NULL,
-
-);
-
-#
-# Table structure for table 'tx_imageopt_domain_model_providerresult'
-#
-CREATE TABLE tx_imageopt_domain_model_providerresult (
-
-	optimizationresult int(11) unsigned DEFAULT '0' NOT NULL,
 
 );

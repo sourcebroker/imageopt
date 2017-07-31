@@ -103,10 +103,10 @@ Technical notes
 ---------------
 
 * For FAL only files that are in "sys_file_processedfile" are optimized. Table "sys_file_processedfile"
-  has  been extended with field "tx_imageopt_optimized". If file has been optimised then the field
-  "tx_imageopt_optimized" is set to 1.
+  has  been extended with field "tx_imageopt_executed_successfully". If file has been optimised then the field
+  "tx_imageopt_executed_successfully" is set to 1.
 
-  You can reset the "tx_imageopt_optimized" flag with command:
+  You can reset the "tx_imageopt_executed_successfully" flag with command:
   ::
 
     php ./typo3/cli_dispatch.phpsh extbase imageopt:resetoptimizationflagforfal
