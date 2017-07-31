@@ -24,22 +24,30 @@ This extension allows to optimize images resized by TYPO3 so they will take less
 
 Features:
 
-* If you enable more than one image optimizer then all of them will
+- If you enable more than one image optimizer then all of them will
   be executed and the best optimized image is choosen.
-* Own providers can be registered with TSconfig.
-* Providers can be mixed to create new providers (chained executors).
-* Support for native linux commands like:
-    * for png:
-        * optipng
-        * pngcrush
-        * pngquant
-    * for gif:
-        * gifsicle
-    * for jpeg:
-        * jpegoptim
-        * jpegrescan
-        * jpegtran
-        * mozjpg
+
+- Own providers can be registered with TSconfig.
+
+- Providers can be mixed to create new providers (chained executors).
+
+- Its safe as the original images, for example in folder fileadmin/, uploads/
+  are not optmized. Only already resized images are optmized, so for FAL
+  that would be files form "\_processed\_/" folder of file storages and for uploads/
+  typo3temp/pics folder.
+
+- Support for native linux commands like:
+    - for png:
+        - optipng
+        - pngcrush
+        - pngquant
+    - for gif:
+        - gifsicle
+    - for jpeg:
+        - jpegoptim
+        - jpegrescan
+        - jpegtran
+        -* mozjpg
 
 
 Installation
