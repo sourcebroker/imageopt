@@ -4,7 +4,7 @@
     "GPL-2.0+"
   ],
   "type": "typo3-cms-extension",
-  "description": "Optimize images resized by TYPO3 so they take less space. TYPO3 services used. Cron based. Support for linux native commands and external services as Kraken.io etc.",
+  "description": "Optimize images created/resized by TYPO3 so they take less space. Cron based. Support for linux native commands.",
   "require": {
     "typo3/cms": "^6.2 || ^7.6 || ^8.7"
   },

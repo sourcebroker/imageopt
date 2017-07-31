@@ -7,12 +7,10 @@ TYPO3 Extension imageopt
 .. image:: https://scrutinizer-ci.com/g/sourcebroker/imageopt/badges/quality-score.png?b=master
    :target: https://scrutinizer-ci.com/g/sourcebroker/imageopt/?branch=master
 
-.. image:: https://poser.pugx.org/sourcebroker/imageopt/v/stable
-   :target: https://packagist.org/packages/sourcebroker/imageopt
-
 .. image:: https://poser.pugx.org/sourcebroker/imageopt/license
    :target: https://packagist.org/packages/sourcebroker/imageopt
 
+|
 |
 
 .. contents:: :local:
