@@ -36,19 +36,19 @@ Features:
   that would be files form "\_processed\_/" folder of file storages and for uploads/
   typo3temp/pics folder.
 
-- Support for native linux commands like"
+- Support for native linux commands like:
 
-  - for png"
+  - for png:
 
     - optipng
     - pngcrush
     - pngquant
 
-  - for gif"
+  - for gif:
 
     - gifsicle
 
-  - for jpeg"
+  - for jpeg:
 
     - jpegoptim
     - jpegrescan
