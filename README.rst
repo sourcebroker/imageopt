@@ -28,10 +28,6 @@ Features:
   be executed and the best optimized image is choosen.
 * Own providers can be registered with TSconfig.
 * Providers can be mixed to create new providers (chained executors).
-* Its safe as the original images, for example in folder fileadmin/, uploads/
-  are not optmized. Only already resized images are optmized, so for FAL
-  that would be files form "\_processed\_/" folder of file storages and for uploads/
-  typo3temp/pics folder.
 * Support for native linux commands like:
     * for png:
         * optipng
