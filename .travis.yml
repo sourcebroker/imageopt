@@ -28,7 +28,7 @@ addons:
       - pngquant
       - pngcrush
       - gifsicle
-      # jpgrescan and mozjpg
+      # jpgrescan
       - libjpeg-progs
       - libjpeg-turbo-progs
       - libperl6-slurp-perl
