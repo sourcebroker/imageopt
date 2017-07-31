@@ -18,18 +18,18 @@ namespace SourceBroker\Imageopt\Domain\Model;
 class ExecutorResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
     /**
-     * sizeBefore
+     * File size before optimization
      *
-     * @var int
+     * @var string
      */
-    protected $sizeBefore = 0;
+    protected $sizeBefore = '';
 
     /**
-     * sizeAfter
+     * File size after optimization
      *
-     * @var int
+     * @var string
      */
-    protected $sizeAfter = 0;
+    protected $sizeAfter = '';
 
     /**
      * command
@@ -69,7 +69,7 @@ class ExecutorResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * Returns the sizeBefore
      *
-     * @return int $sizeBefore
+     * @return string sizeBefore
      */
     public function getSizeBefore()
     {
@@ -79,7 +79,7 @@ class ExecutorResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * Sets the sizeBefore
      *
-     * @param int $sizeBefore
+     * @param string $sizeBefore
      * @return void
      */
     public function setSizeBefore($sizeBefore)
@@ -90,7 +90,7 @@ class ExecutorResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * Returns the sizeAfter
      *
-     * @return int $sizeAfter
+     * @return string $sizeAfter
      */
     public function getSizeAfter()
     {
@@ -100,7 +100,7 @@ class ExecutorResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * Sets the sizeAfter
      *
-     * @param int $sizeAfter
+     * @param string $sizeAfter
      * @return void
      */
     public function setSizeAfter($sizeAfter)

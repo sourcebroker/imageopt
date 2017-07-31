@@ -47,26 +47,26 @@ class ProviderResultTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
         );
     }
 
-//    /**
-//     * @test
-//     */
-//    public function getSizeBeforeReturnsInitialValueForInt()
-//    {
-//        self::assertSame(
-//            0,
-//            $this->subject->getSizeBefore()
-//        );
-//    }
+    /**
+     * @test
+     */
+    public function getSizeBeforeReturnsInitialValueForString()
+    {
+        self::assertSame(
+            '',
+            $this->subject->getSizeBefore()
+        );
+    }
 
     /**
      * @test
      */
-    public function setSizeBeforeForIntSetsSizeBefore()
+    public function setSizeBeforeForStringSetsSizeAfter()
     {
-        $this->subject->setSizeBefore(12);
+        $this->subject->setSizeBefore('Conceived at T3CON10');
 
         self::assertAttributeEquals(
-            12,
+            'Conceived at T3CON10',
             'sizeBefore',
             $this->subject
         );

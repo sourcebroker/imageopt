@@ -25,10 +25,10 @@ class ExecutorResultTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     /**
      * @test
      */
-    public function getSizeBeforeReturnsInitialValueForInt()
+    public function getSizeBeforeReturnsInitialValueForString()
     {
         self::assertSame(
-            0,
+            '',
             $this->subject->getSizeBefore()
         );
     }
@@ -36,12 +36,12 @@ class ExecutorResultTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     /**
      * @test
      */
-    public function setSizeBeforeForIntSetsSizeBefore()
+    public function setSizeBeforeForStringSetsSizeBefore()
     {
-        $this->subject->setSizeBefore(12);
+        $this->subject->setSizeBefore('Conceived at T3CON10');
 
         self::assertAttributeEquals(
-            12,
+            'Conceived at T3CON10',
             'sizeBefore',
             $this->subject
         );
@@ -50,10 +50,10 @@ class ExecutorResultTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     /**
      * @test
      */
-    public function getSizeAfterReturnsInitialValueForInt()
+    public function getSizeAfterReturnsInitialValueForString()
     {
         self::assertSame(
-            0,
+            '',
             $this->subject->getSizeAfter()
         );
     }
@@ -61,12 +61,12 @@ class ExecutorResultTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     /**
      * @test
      */
-    public function setSizeAfterForIntSetsSizeAfter()
+    public function setSizeAfterForStringSetsSizeAfter()
     {
-        $this->subject->setSizeAfter(12);
+        $this->subject->setSizeAfter('Conceived at T3CON10');
 
         self::assertAttributeEquals(
-            12,
+            'Conceived at T3CON10',
             'sizeAfter',
             $this->subject
         );

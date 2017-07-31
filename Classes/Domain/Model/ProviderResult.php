@@ -27,7 +27,7 @@ class ProviderResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * File size before optimization
      *
-     * @var int
+     * @var string
      */
     protected $sizeBefore = '';
 
@@ -128,7 +128,7 @@ class ProviderResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * Returns the sizeBefore
      *
-     * @return int sizeBefore
+     * @return string sizeBefore
      */
     public function getSizeBefore()
     {
