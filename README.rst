@@ -33,7 +33,7 @@ Features
 
 - Its safe as the original images, for example in folder fileadmin/, uploads/
   are not optmized. Only already resized images are optmized, so for FAL
-  that would be files form \_processed\_/ folder and for uploads/
+  that would be files form \_processed\_/ folder and for uploads/ i will be
   typo3temp/pics (TYPO3 7.6 and below) or typo3temp/assets/images (TYPO3 8.7 and higger).
 
 - Adds few xclasses that make TYPO3 to not use original images in frontend HTML. In other words
@@ -95,7 +95,7 @@ Usage
 
         typo3cms imageopt:optimizefolderimages
 
-      It will optimize images in following folders:
+      Command "imageopt:optimizefolderimages" will optimize images in following folders:
 
       - typo3temp/pics/
       - typo3temp/GB/
@@ -129,7 +129,7 @@ Technical notes
   cases its 644 on the beginning and 744 after optimization. The "execution" bit is the way script knows which files
   has been optimized and which one still needs.
 
-  You can reset the "executed" bit for folders decalred in `tx_imageopt.directories` with command:
+  You can reset the "executed" bit for folders decalred in "tx_imageopt.directories" with command:
   ::
 
     php ./typo3/cli_dispatch.phpsh extbase imageopt:resetoptimizationflagforfolders
