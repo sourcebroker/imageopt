@@ -33,12 +33,6 @@ class ImageoptCommandController extends CommandController
 {
 
     /**
-     * The time of starting command
-     * @var int
-     */
-    protected $taskExecutionStartTime = null;
-
-    /**
      * @var object|Configurator
      */
     protected $configurator;
@@ -53,9 +47,7 @@ class ImageoptCommandController extends CommandController
      */
     public function __construct()
     {
-        $this->taskExecutionStartTime = time();
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-
         // TODO: read UserTS - not PageTS
         $serviceConfig = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Service\\TypoScriptService')
             ->convertTypoScriptArrayToPlainArray(BackendUtility::getPagesTSconfig(1));
