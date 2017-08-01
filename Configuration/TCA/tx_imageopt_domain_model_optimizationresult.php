@@ -18,7 +18,17 @@ return [
         'showRecordFieldList' => 'file_relative_path, size_before, size_after, optimization_bytes, optimization_percentage, provider_winner_name, executed_successfully, info, providers_results',
     ],
     'types' => [
-        '1' => ['showitem' => 'file_relative_path, size_before, size_after, optimization_bytes, optimization_percentage, provider_winner_name, executed_successfully, info, providers_results'],
+        '1' => ['showitem' => 'file_relative_path, --palette--;;sizes, --palette--;;optimization, provider_winner_name, info, executed_successfully, providers_results'],
+    ],
+    'palettes' => [
+        'sizes' => [
+            'showitem' => 'size_before, size_after',
+            'canNotCollapse' => true
+        ],
+        'optimization' => [
+            'showitem' => 'optimization_bytes, optimization_percentage',
+            'canNotCollapse' => true
+        ]
     ],
     'columns' => [
         'hidden' => [
@@ -33,13 +43,12 @@ return [
                 ],
             ],
         ],
-
         'file_relative_path' => [
             'exclude' => true,
             'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationresult.file_relative_path',
             'config' => [
                 'type' => 'input',
-                'size' => 30,
+                'size' => 200,
                 'eval' => 'trim',
                 'readOnly' => 1
             ],
@@ -49,8 +58,8 @@ return [
             'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationresult.size_before',
             'config' => [
                 'type' => 'input',
-                'size' => 30,
-                'eval' => 'trim',
+                'size' => 4,
+                'eval' => 'int',
                 'readOnly' => 1
             ],
         ],
@@ -59,8 +68,8 @@ return [
             'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationresult.size_after',
             'config' => [
                 'type' => 'input',
-                'size' => 30,
-                'eval' => 'trim',
+                'size' => 4,
+                'eval' => 'int',
                 'readOnly' => 1
             ],
         ],
@@ -69,7 +78,7 @@ return [
             'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationresult.optimization_bytes',
             'config' => [
                 'type' => 'input',
-                'size' => 30,
+                'size' => 4,
                 'eval' => 'trim',
                 'readOnly' => 1
             ],
@@ -79,7 +88,7 @@ return [
             'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationresult.optimization_percentage',
             'config' => [
                 'type' => 'input',
-                'size' => 30,
+                'size' => 4,
                 'eval' => 'trim',
                 'readOnly' => 1
             ],
@@ -89,7 +98,7 @@ return [
             'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationresult.provider_winner_name',
             'config' => [
                 'type' => 'input',
-                'size' => 30,
+                'size' => 200,
                 'eval' => 'trim',
                 'readOnly' => 1
             ],
@@ -113,8 +122,8 @@ return [
             'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationresult.info',
             'config' => [
                 'type' => 'text',
-                'cols' => 40,
-                'rows' => 15,
+                'cols' => 200,
+                'rows' => 3,
                 'eval' => 'trim',
                 'readOnly' => 1,
             ]
@@ -129,7 +138,7 @@ return [
                 'foreign_field' => 'optimizationresult',
                 'maxitems' => 9999,
                 'appearance' => [
-                    'collapseAll' => 0,
+                    'collapseAll' => 1,
                     'levelLinksPosition' => 'top',
                     'showSynchronizationLink' => 1,
                     'showPossibleLocalizationRecords' => 1,

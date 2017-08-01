@@ -2,7 +2,7 @@
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_executorresult',
-        'label' => 'size_before',
+        'label' => 'command',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
         'cruser_id' => 'cruser_id',
@@ -19,7 +19,13 @@ return [
         'showRecordFieldList' => 'size_before, size_after, command, command_output, command_status, executed_successfully, error_message',
     ],
     'types' => [
-        '1' => ['showitem' => 'size_before, size_after, command, command_output, command_status, executed_successfully, error_message'],
+        '1' => ['showitem' => '--palette--;;sizes, command, command_output, command_status, error_message,  executed_successfully'],
+    ],
+    'palettes' => [
+        'sizes' => [
+            'showitem' => 'size_before, size_after',
+            'canNotCollapse' => true
+        ]
     ],
     'columns' => [
         'hidden' => [
@@ -34,7 +40,6 @@ return [
                 ],
             ],
         ],
-
         'size_before' => [
             'exclude' => true,
             'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_executorresult.size_before',
@@ -59,8 +64,9 @@ return [
             'exclude' => true,
             'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_executorresult.command',
             'config' => [
-                'type' => 'input',
-                'size' => 30,
+                'type' => 'text',
+                'rows' => 2,
+                'cols' => 200,
                 'eval' => 'trim',
                 'readOnly' => 1
             ],
@@ -69,8 +75,9 @@ return [
             'exclude' => true,
             'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_executorresult.command_output',
             'config' => [
-                'type' => 'input',
-                'size' => 30,
+                'type' => 'text',
+                'rows' => 2,
+                'cols' => 200,
                 'eval' => 'trim',
                 'readOnly' => 1
             ],
@@ -80,9 +87,20 @@ return [
             'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_executorresult.command_status',
             'config' => [
                 'type' => 'input',
-                'size' => 30,
+                'size' => 200,
                 'eval' => 'trim',
                 'readOnly' => 1
+            ],
+        ],
+        'error_message' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_executorresult.error_message',
+            'config' => [
+                'readOnly' => 1,
+                'type' => 'text',
+                'rows' => 2,
+                'cols' => 200,
+                'eval' => 'trim'
             ],
         ],
         'executed_successfully' => [
@@ -99,17 +117,6 @@ return [
                 'default' => 0,
             ]
         ],
-        'error_message' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_executorresult.error_message',
-            'config' => [
-                'readOnly' => 1,
-                'type' => 'input',
-                'size' => 30,
-                'eval' => 'trim'
-            ],
-        ],
-
         'providerresult' => [
             'config' => [
                 'type' => 'passthrough',

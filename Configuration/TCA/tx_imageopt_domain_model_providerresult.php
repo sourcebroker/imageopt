@@ -19,7 +19,17 @@ return [
         'showRecordFieldList' => 'name, size_before, size_after, executed_successfully, winner, executors_results',
     ],
     'types' => [
-        '1' => ['showitem' => 'name, size_before, size_after, executed_successfully, winner, executors_results'],
+        '1' => ['showitem' => '--palette--;;sizes, --palette--;;checks, executors_results'],
+    ],
+    'palettes' => [
+        'sizes' => [
+            'showitem' => 'size_before, size_after',
+            'canNotCollapse' => true
+        ],
+        'checks' => [
+            'showitem' => 'executed_successfully, winner',
+            'canNotCollapse' => true
+        ]
     ],
     'columns' => [
         'hidden' => [
@@ -53,7 +63,7 @@ return [
                 'type' => 'input',
                 'size' => 4,
                 'eval' => 'int',
-                'readOnly' => 1,
+                'readOnly' => 1
             ]
         ],
         'size_after' => [
@@ -61,9 +71,9 @@ return [
             'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_providerresult.size_after',
             'config' => [
                 'type' => 'input',
-                'size' => 30,
-                'eval' => 'trim',
-                'readOnly' => 1,
+                'size' => 4,
+                'eval' => 'int',
+                'readOnly' => 1
             ],
         ],
         'executed_successfully' => [
