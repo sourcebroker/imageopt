@@ -2,6 +2,11 @@
 Changelog
 ---------
 
+1.1.0
+~~~~~
+
+1) [BUGFIX] Fix wrong default value for file_relative_path / text.
+2) [TASK] Optimize TCA settings for models.
 
 1.0.2
 ~~~~~
