@@ -11,7 +11,7 @@ CREATE TABLE tx_imageopt_domain_model_optimizationresult (
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
 
-	file_relative_path text DEFAULT '' NOT NULL,
+	file_relative_path text,
 	size_before varchar(20) DEFAULT '' NOT NULL,
 	size_after varchar(20) DEFAULT '' NOT NULL,
 	optimization_bytes varchar(20) DEFAULT '' NOT NULL,
