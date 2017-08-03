@@ -2,6 +2,11 @@
 Changelog
 ---------
 
+1.2.0
+~~~~~
+
+1) [FEATURE] Add support for choosing uid of page to parse TSConfig. If not set then fallback to first root page.
+
 1.1.0
 ~~~~~
 

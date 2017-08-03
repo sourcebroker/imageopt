@@ -25,6 +25,7 @@
 namespace SourceBroker\Imageopt\Service;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Model\OptimizationResult;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
@@ -91,7 +92,7 @@ class OptimizeImagesFolderService
 
     /**
      * @param $absoluteFilePath
-     * @return array
+     * @return OptimizationResult
      */
     public function optimizeFolderFile($absoluteFilePath)
     {
@@ -110,6 +111,9 @@ class OptimizeImagesFolderService
         return $optimizationResult;
     }
 
+    /**
+     * Reset optimization "done" flag for files in folder
+     */
     public function resetOptimizationFlag()
     {
         $directories = explode(',', preg_replace('/\s+/', '', $this->configurator->getOption('directories')));

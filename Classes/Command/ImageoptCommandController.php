@@ -24,35 +24,47 @@ use SourceBroker\Imageopt\Service\OptimizeImagesFolderService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Class ImageoptCommandController
  */
 class ImageoptCommandController extends CommandController
 {
-
     /**
      * @var object|Configurator
      */
     protected $configurator;
 
     /**
-     * @var object|ObjectManager
+     * Init configurator wiht TSconfig settings from cli params or scheduler parameters.
+     *
+     * @param null $rootPageForTsConfig
+     * @throws \Exception
      */
-    protected $objectManager;
-
-    /**
-     * ImageoptCommandController constructor.
-     */
-    public function __construct()
+    public function initConfigurator($rootPageForTsConfig = null)
     {
-        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        // TODO: read UserTS - not PageTS
-        $serviceConfig = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Service\\TypoScriptService')
-            ->convertTypoScriptArrayToPlainArray(BackendUtility::getPagesTSconfig(1));
-        $this->configurator = GeneralUtility::makeInstance(Configurator::class);
-        $this->configurator->setConfig(isset($serviceConfig['tx_imageopt']) ? $serviceConfig['tx_imageopt'] : []);
+        if ($rootPageForTsConfig === null) {
+            $rootPageForTsConfigRow = $this->getDatabaseConnection()->exec_SELECTgetSingleRow(
+                'uid',
+                'pages',
+                'pid=0 AND deleted=0');
+            if ($rootPageForTsConfigRow !== null) {
+                $rootPageForTsConfig = $rootPageForTsConfigRow['uid'];
+            }
+        }
+        if ($rootPageForTsConfig !== null) {
+            $serviceConfig = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Service\\TypoScriptService')
+                ->convertTypoScriptArrayToPlainArray(BackendUtility::getPagesTSconfig($rootPageForTsConfig));
+            if (isset($serviceConfig['tx_imageopt'])) {
+                $this->configurator = GeneralUtility::makeInstance(Configurator::class);
+                $this->configurator->setConfig($serviceConfig['tx_imageopt']);
+            } else {
+                throw new \Exception('There is no TSconfig for tx_imageopt in the root page id=' . $rootPageForTsConfig,
+                    1501692752398);
+            }
+        } else {
+            throw new \Exception('Can not detect the root page to generate page TSconfig.', 1501700792654);
+        }
     }
 
     /**
@@ -72,12 +84,14 @@ class ImageoptCommandController extends CommandController
     }
 
     /**
-     * Optimize fal processed images
+     * Optimize FAL processed images
      *
-     * @param int $numberOfImagesToProcess The number of images to process on single task call
+     * @param int $numberOfImagesToProcess The number of images to process on single task call.
+     * @param int $rootPageForTsConfig The page uid for which the TSconfig is parsed. If not set then first found root page will be used.
      */
-    public function optimizeFalProcessedImagesCommand($numberOfImagesToProcess = 20)
+    public function optimizeFalProcessedImagesCommand($numberOfImagesToProcess = 20, $rootPageForTsConfig = null)
     {
+        $this->initConfigurator($rootPageForTsConfig);
         $optimizeImagesFalService = $this->objectManager->get(
             OptimizeImagesFalService::class,
             $this->getConfigurator()->getConfig()
@@ -96,10 +110,12 @@ class ImageoptCommandController extends CommandController
     /**
      * Optimize images in folders
      *
-     * @param int $numberOfImagesToProcess
+     * @param int $numberOfImagesToProcess The number of images to process on single task call.
+     * @param int $rootPageForTsConfig The page uid for which the TSconfig is parsed. If not set then first found root page will be used.
      */
-    public function optimizeFolderImagesCommand($numberOfImagesToProcess = 20)
+    public function optimizeFolderImagesCommand($numberOfImagesToProcess = 20, $rootPageForTsConfig = null)
     {
+        $this->initConfigurator($rootPageForTsConfig);
         $optimizeImagesFolderService = $this->objectManager->get(
             OptimizeImagesFolderService::class,
             $this->getConfigurator()->getConfig()
@@ -116,7 +132,7 @@ class ImageoptCommandController extends CommandController
     }
 
     /**
-     * @param $optimizationResult
+     * @param $optimizationResult Optimization object to render
      * @return string
      * @throws \Exception
      */
@@ -161,9 +177,13 @@ class ImageoptCommandController extends CommandController
     /**
      * Reset optimized flag for FAL processed images so all files can be optimized once more.
      * Can be useful for testing.
+     *
+     * @param int $rootPageForTsConfig The page uid for which the TSconfig is parsed. If not set then first found root page will be used.
+     *
      */
-    public function resetOptimizationFlagForFalCommand()
+    public function resetOptimizationFlagForFalCommand($rootPageForTsConfig = null)
     {
+        $this->initConfigurator($rootPageForTsConfig);
         $optimizeImagesFalService = $this->objectManager->get(
             OptimizeImagesFalService::class,
             $this->getConfigurator()->getConfig()
@@ -174,13 +194,24 @@ class ImageoptCommandController extends CommandController
     /**
      * Reset optimized flag for folders images so all files can be optimized once more.
      * Can be useful for testing or for first time permission normalistation.
+     *
+     * @param int $rootPageForTsConfig The page uid for which the TSconfig is parsed. If not set then first found root page will be used.
      */
-    public function resetOptimizationFlagForFoldersCommand()
+    public function resetOptimizationFlagForFoldersCommand($rootPageForTsConfig = null)
     {
+        $this->initConfigurator($rootPageForTsConfig);
         $optimizeImagesFolderService = $this->objectManager->get(
             OptimizeImagesFolderService::class,
             $this->getConfigurator()->getConfig()
         );
         $optimizeImagesFolderService->resetOptimizationFlag();
+    }
+
+    /**
+     * @return mixed|\TYPO3\CMS\Core\Database\DatabaseConnection
+     */
+    public function getDatabaseConnection()
+    {
+        return $GLOBALS['TYPO3_DB'];
     }
 }
