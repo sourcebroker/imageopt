@@ -38,7 +38,7 @@ class ImageoptCommandController extends CommandController
     /**
      * Init configurator wiht TSconfig settings from cli params or scheduler parameters.
      *
-     * @param null $rootPageForTsConfig
+     * @param int $rootPageForTsConfig
      * @throws \Exception
      */
     public function initConfigurator($rootPageForTsConfig = null)
