@@ -1,4 +1,5 @@
 <?php
+
 namespace SourceBroker\Imageopt\Domain\Repository;
 
 /***
