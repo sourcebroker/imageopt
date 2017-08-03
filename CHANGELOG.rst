@@ -6,6 +6,7 @@ Changelog
 ~~~~~
 
 1) [FEATURE] Add support for choosing uid of page to parse TSConfig. If not set then fallback to first root page.
+2) [FEATURE] Colapse 1:n relation of executorsResults in ProviderResult
 
 1.1.0
 ~~~~~
