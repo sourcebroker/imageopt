@@ -100,7 +100,11 @@ class ImageoptCommandController extends CommandController
         if (!empty($filesToProcess)) {
             foreach ($filesToProcess as $fileToProcess) {
                 $optimizationResult = $optimizeImagesFalService->optimizeFalProcessedFile($fileToProcess);
-                $this->outputLine($this->showResult($optimizationResult));
+                if(!is_null($optimizationResult)) {
+                  $this->outputLine($this->showResult($optimizationResult));
+                } else {
+                  $this->outputLine($this->showResult($fileToProcess));
+                }
             }
         } else {
             $this->outputLine('No images found that can be optimized.');
@@ -124,7 +128,11 @@ class ImageoptCommandController extends CommandController
         if (!empty($filesToProcess)) {
             foreach ($filesToProcess as $fileToProcess) {
                 $optimizationResult = $optimizeImagesFolderService->optimizeFolderFile($fileToProcess);
-                $this->outputLine($this->showResult($optimizationResult));
+                if(!is_null($optimizationResult)) {
+                  $this->outputLine($this->showResult($optimizationResult));
+                } else {
+                  $this->outputLine($this->showResult($fileToProcess));
+                }
             }
         } else {
             $this->outputLine('No images found that can be optimized.');
@@ -170,7 +178,10 @@ class ImageoptCommandController extends CommandController
                 "Provider stats\t| " . $success . ' out of ' . $optimizationResult->getProvidersResults()->count() . ' providers finished successfully:' . "\n" .
                 "\t\t| " . implode("\n\t\t| ", $providersScore) . "\n";
         } else {
-            throw new \Exception('Result in not an object of: ' . OptimizationResult::class);
+            return
+              '---------------------------------' . "\n" .
+              "File\t\t| " . $optimizationResult['identifier'] . "\n" .
+              "Info\t\t| File could not be found.\n";
         }
     }
 
