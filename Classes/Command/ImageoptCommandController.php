@@ -101,9 +101,9 @@ class ImageoptCommandController extends CommandController
             foreach ($filesToProcess as $fileToProcess) {
                 $optimizationResult = $optimizeImagesFalService->optimizeFalProcessedFile($fileToProcess);
                 if(!is_null($optimizationResult)) {
-                   $this->outputLine($this->showResult($optimizationResult));
+                  $this->outputLine($this->showResult($optimizationResult));
                 } else {
-                   $this->outputLine($this->showResult($fileToProcess));
+                  $this->outputLine($this->showResult($fileToProcess));
                 }
             }
         } else {
@@ -129,9 +129,9 @@ class ImageoptCommandController extends CommandController
             foreach ($filesToProcess as $fileToProcess) {
                 $optimizationResult = $optimizeImagesFolderService->optimizeFolderFile($fileToProcess);
                 if(!is_null($optimizationResult)) {
-                   $this->outputLine($this->showResult($optimizationResult));
+                  $this->outputLine($this->showResult($optimizationResult));
                 } else {
-                   $this->outputLine($this->showResult($fileToProcess));
+                  $this->outputLine($this->showResult($fileToProcess));
                 }
             }
         } else {
