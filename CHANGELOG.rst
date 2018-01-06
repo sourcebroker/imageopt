@@ -6,6 +6,7 @@ Changelog
 ~~~~~
 
 1) [DOC] Add missing description for version 1.2.1
+2) [BUGFIX] Add missing "info" lang label
 
 1.2.1
 ~~~~~

@@ -75,6 +75,9 @@
 			<trans-unit id="tx_imageopt_domain_model_optimizationresult.providers_results">
 				<source>Providers Results</source>
 			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationresult.info">
+				<source>Info</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
