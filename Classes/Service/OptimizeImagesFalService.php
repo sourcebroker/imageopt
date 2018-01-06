@@ -76,7 +76,10 @@ class OptimizeImagesFalService
      */
     public function optimizeFalProcessedFile($notOptimizedFileRaw)
     {
+        $fileDoesNotExistOrNotReadable = false;
+        $optimizationResultInfo = '';
         $optimizationResult = null;
+
         /** @var \TYPO3\CMS\Core\Resource\ProcessedFile $processedFal */
         $processedFal = $this->falProcessedFileRepository->findByIdentifier($notOptimizedFileRaw['uid']);
         $sourceFile = $processedFal->getForLocalProcessing(false);
@@ -95,10 +98,23 @@ class OptimizeImagesFalService
                     $this->falProcessedFileRepository->update($processedFal);
                 }
             } else {
-                throw new \Exception('Can not read file: ' . $sourceFile);
+                $fileDoesNotExistOrNotReadable = true;
+                $optimizationResultInfo = 'The file above exists but is not readable for imageopt process.';
             }
         } else {
+            $fileDoesNotExistOrNotReadable = true;
+            $optimizationResultInfo = 'The file does not exists but exists as reference in "sys_file_processedfile" ' .
+                'database table. Seems like it was processed in past but the processed file does not exist now. ' .
+                'The record has been deleted from "sys_file_processedfile" table.';
             $processedFal->delete();
+            $this->objectManager->get(PersistenceManager::class)->persistAll();
+        }
+        if ($fileDoesNotExistOrNotReadable) {
+            $optimizationResult = GeneralUtility::makeInstance(OptimizationResult::class);
+            $optimizationResult->setExecutedSuccessfully(false);
+            $optimizationResult->setFileRelativePath(substr($sourceFile, strlen(PATH_site)));
+            $optimizationResult->setInfo($optimizationResultInfo);
+            $this->objectManager->get(OptimizationResultRepository::class)->add($optimizationResult);
         }
         return $optimizationResult;
     }

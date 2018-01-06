@@ -8,6 +8,7 @@ Changelog
 1) [DOC] Add missing description for version 1.2.1
 2) [BUGFIX] Add missing "info" lang label
 3) [FEATURE] Add wordwrap 70 for info when showing resulats on CLI
+4) [BUGFIX] Do not throw exception if processed files is deleted - show info instead.
 
 1.2.1
 ~~~~~
