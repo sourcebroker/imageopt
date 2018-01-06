@@ -2,6 +2,16 @@
 Changelog
 ---------
 
+1.2.2
+~~~~~
+
+1) [DOC] Add missing description for version 1.2.1
+
+1.2.1
+~~~~~
+
+1) [BUGFIX] Increase ect version ext_emconf.php
+
 1.2.0
 ~~~~~
 
