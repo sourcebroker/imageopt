@@ -2,16 +2,16 @@ TYPO3 Extension imageopt
 ========================
 
     .. image:: https://styleci.io/repos/80069905/shield?branch=master
-    :target: https://styleci.io/repos/80069905
+       :target: https://styleci.io/repos/80069905
 
     .. image:: https://scrutinizer-ci.com/g/sourcebroker/imageopt/badges/quality-score.png?b=master
-    :target: https://scrutinizer-ci.com/g/sourcebroker/imageopt/?branch=master
+       :target: https://scrutinizer-ci.com/g/sourcebroker/imageopt/?branch=master
 
     .. image:: https://travis-ci.org/sourcebroker/imageopt.svg?branch=master
-    :target: https://travis-ci.org/sourcebroker/imageopt
+       :target: https://travis-ci.org/sourcebroker/imageopt
 
     .. image:: https://poser.pugx.org/sourcebroker/imageopt/license
-    :target: https://packagist.org/packages/sourcebroker/imageopt
+       :target: https://packagist.org/packages/sourcebroker/imageopt
 
 .. contents:: :local:
 
