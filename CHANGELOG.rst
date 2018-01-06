@@ -12,6 +12,7 @@ Changelog
 5) [TASK] Increase ext version ext_emconf.php
 6) [DOC] Improve changelog.
 7) [BREAKING] Replace function "exif_imagetype" with "getimagesize" which is more popular.
+8) [DOCS] Improve docs / add overview images.
 
 1.2.1
 ~~~~~

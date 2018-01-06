@@ -1,20 +1,17 @@
 TYPO3 Extension imageopt
 ========================
 
-.. image:: https://styleci.io/repos/80069905/shield?branch=master
-   :target: https://styleci.io/repos/80069905
+    .. image:: https://styleci.io/repos/80069905/shield?branch=master
+    :target: https://styleci.io/repos/80069905
 
-.. image:: https://scrutinizer-ci.com/g/sourcebroker/imageopt/badges/quality-score.png?b=master
-   :target: https://scrutinizer-ci.com/g/sourcebroker/imageopt/?branch=master
+    .. image:: https://scrutinizer-ci.com/g/sourcebroker/imageopt/badges/quality-score.png?b=master
+    :target: https://scrutinizer-ci.com/g/sourcebroker/imageopt/?branch=master
 
-.. image:: https://travis-ci.org/sourcebroker/imageopt.svg?branch=master
-   :target: https://travis-ci.org/sourcebroker/imageopt
+    .. image:: https://travis-ci.org/sourcebroker/imageopt.svg?branch=master
+    :target: https://travis-ci.org/sourcebroker/imageopt
 
-.. image:: https://poser.pugx.org/sourcebroker/imageopt/license
-   :target: https://packagist.org/packages/sourcebroker/imageopt
-
-|
-|
+    .. image:: https://poser.pugx.org/sourcebroker/imageopt/license
+    :target: https://packagist.org/packages/sourcebroker/imageopt
 
 .. contents:: :local:
 
@@ -24,15 +21,32 @@ What does it do?
 This extension optimize images resized by TYPO3 so they will take less space,
 page will be downloaded faster and Google PageSpeed Insights score will get higher.
 
+Example CLI output:
+
+.. image:: Documentation/Images/OutputCliExample.png
+    :width: 100%
+
+TYPO3 backend - "Optimization Result" record example:
+
+.. image:: Documentation/Images/OptimizationResultExample.png
+    :width: 100%
+
+TYPO3 backend - "Executor Result" record example:
+
+.. image:: Documentation/Images/ExecutorResultExample.png
+    :width: 100%
+
 Features
 --------
 
-- If you enable more than one image optimizer then all of them will be executed
-  and the best optimized image is choosen.
+- If you enable more than one image optimization provider then all of them will be executed and the best optimized
+  image is choosen.
 
 - Own providers can be registered with TSconfig.
 
-- Providers can be mixed to create new providers (chained executors).
+- Providers can have more than one executors and executors can be chained. So for example you create provider that
+  consist of two chained executors: first executor will optimize jpg and the second executor will make the jpg image
+  progressive.
 
 - Its safe as the original images, for example in folder fileadmin/, uploads/
   are not optmized. Only already resized images are optmized, so for FAL
@@ -112,7 +126,6 @@ Configuration
 
 Check https://github.com/sourcebroker/imageopt/blob/master/Configuration/TsConfig/Page/tx_imageopt.tsconfig for
 avaliable configuration options.
-
 
 Technical notes
 ---------------
