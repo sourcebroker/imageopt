@@ -166,7 +166,7 @@ class ImageoptCommandController extends CommandController
             return
                 '---------------------------------' . "\n" .
                 "File\t\t| " . $optimizationResult->getFileRelativePath() . "\n" .
-                "Info\t\t| " . $optimizationResult->getInfo() . "\n" .
+                "Info\t\t| " . implode("\n\t\t| ", explode("\n", wordwrap($optimizationResult->getInfo(), 70))) . "\n" .
                 "Provider stats\t| " . $success . ' out of ' . $optimizationResult->getProvidersResults()->count() . ' providers finished successfully:' . "\n" .
                 "\t\t| " . implode("\n\t\t| ", $providersScore) . "\n";
         } else {
