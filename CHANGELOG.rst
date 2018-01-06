@@ -2,7 +2,7 @@
 Changelog
 ---------
 
-1.3.0
+2.0.0
 ~~~~~
 
 1) [DOC] Add missing changelog for version 1.2.1
