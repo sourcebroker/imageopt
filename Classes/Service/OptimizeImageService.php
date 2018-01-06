@@ -75,7 +75,7 @@ class OptimizeImageService
         clearstatcache(true, $inputImageAbsolutePath);
         if (file_exists($inputImageAbsolutePath) && filesize($inputImageAbsolutePath)) {
             $optimizationResult->setSizeBefore(filesize($inputImageAbsolutePath));
-            $fileType = strtolower(explode('/', image_type_to_mime_type(exif_imagetype($inputImageAbsolutePath)))[1]);
+            $fileType = strtolower(explode('/', image_type_to_mime_type(getimagesize($inputImageAbsolutePath)[2]))[1]);
             $temporaryBestOptimizedImageAbsolutePath = $this->temporaryFile->createTemporaryCopy($inputImageAbsolutePath);
             $imageOpimalizationsProviders = $this->configurator->getOption('providers.' . $fileType);
             if (!empty($imageOpimalizationsProviders)) {

@@ -11,6 +11,7 @@ Changelog
 4) [BUGFIX] Do not throw exception if processed files is deleted - show info instead.
 5) [TASK] Increase ext version ext_emconf.php
 6) [DOC] Improve changelog.
+7) [TASK] Replace function "exif_imagetype" with "getimagesize" which is more popular.
 
 1.2.1
 ~~~~~
