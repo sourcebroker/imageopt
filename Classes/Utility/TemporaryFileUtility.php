@@ -87,7 +87,10 @@ class TemporaryFileUtility implements SingletonInterface
     {
         if (defined('PATH_site')) {
             foreach (glob(PATH_site . 'typo3temp/' . $this->tempFilePrefix . '*') as $tempFile) {
-                @unlink($tempFile);
+                GeneralUtility::unlink_tempfile($tempFile);
+            }
+            foreach (glob(PATH_site . 'typo3temp/var/transient/' . $this->tempFilePrefix . '*') as $tempFile) {
+                GeneralUtility::unlink_tempfile($tempFile);
             }
         } else {
             throw new \Exception('PATH_site is not declared');
