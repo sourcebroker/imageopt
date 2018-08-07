@@ -2,6 +2,11 @@
 Changelog
 ---------
 
+2.0.1
+~~~~~
+
+1) [BUGFIX] Correctly cleanup temp files.
+
 2.0.0
 ~~~~~
 
