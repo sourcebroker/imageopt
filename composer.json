@@ -6,7 +6,7 @@
   "type": "typo3-cms-extension",
   "description": "Optimize images created/resized by TYPO3 so they take less space. Cron based. Support for linux native commands.",
   "require": {
-    "typo3/cms-core": "^6.2 || ^7.6 || ^8.7"
+    "typo3/cms-core": "^8.7 || ^9.5"
   },
   "require-dev": {
     "phpunit/phpunit": "~4.8.0",
