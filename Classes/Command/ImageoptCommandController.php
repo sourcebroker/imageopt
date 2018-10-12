@@ -22,6 +22,8 @@ use SourceBroker\Imageopt\Domain\Model\ProviderResult;
 use SourceBroker\Imageopt\Service\OptimizeImagesFalService;
 use SourceBroker\Imageopt\Service\OptimizeImagesFolderService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
 
@@ -30,6 +32,11 @@ use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
  */
 class ImageoptCommandController extends CommandController
 {
+    /**
+     * @var ConnectionPool
+     */
+    protected $connection;
+
     /**
      * @var object|Configurator
      */
@@ -44,16 +51,20 @@ class ImageoptCommandController extends CommandController
     public function initConfigurator($rootPageForTsConfig = null)
     {
         if ($rootPageForTsConfig === null) {
-            $rootPageForTsConfigRow = $this->getDatabaseConnection()->exec_SELECTgetSingleRow(
-                'uid',
-                'pages',
-                'pid=0 AND deleted=0');
+            $queryBuilder = $this->getDatabaseConnection()->getQueryBuilderForTable('pages');
+            $rootPageForTsConfigRow = $queryBuilder
+                ->select('uid')
+                ->from('pages')
+                ->where(
+                    $queryBuilder->expr()->eq('pid', 0),
+                    $queryBuilder->expr()->eq('deleted', 0)
+                )->execute()->fetch();
             if ($rootPageForTsConfigRow !== null) {
                 $rootPageForTsConfig = $rootPageForTsConfigRow['uid'];
             }
         }
         if ($rootPageForTsConfig !== null) {
-            $serviceConfig = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Service\\TypoScriptService')
+            $serviceConfig = GeneralUtility::makeInstance(TypoScriptService::class)
                 ->convertTypoScriptArrayToPlainArray(BackendUtility::getPagesTSconfig($rootPageForTsConfig));
             if (isset($serviceConfig['tx_imageopt'])) {
                 $this->configurator = GeneralUtility::makeInstance(Configurator::class);
@@ -88,6 +99,7 @@ class ImageoptCommandController extends CommandController
      *
      * @param int $numberOfImagesToProcess The number of images to process on single task call.
      * @param int $rootPageForTsConfig The page uid for which the TSconfig is parsed. If not set then first found root page will be used.
+     * @throws \Exception
      */
     public function optimizeFalProcessedImagesCommand($numberOfImagesToProcess = 20, $rootPageForTsConfig = null)
     {
@@ -112,6 +124,7 @@ class ImageoptCommandController extends CommandController
      *
      * @param int $numberOfImagesToProcess The number of images to process on single task call.
      * @param int $rootPageForTsConfig The page uid for which the TSconfig is parsed. If not set then first found root page will be used.
+     * @throws \Exception
      */
     public function optimizeFolderImagesCommand($numberOfImagesToProcess = 20, $rootPageForTsConfig = null)
     {
@@ -132,7 +145,7 @@ class ImageoptCommandController extends CommandController
     }
 
     /**
-     * @param $optimizationResult Optimization object to render
+     * @param $optimizationResult OptimizationResult object to render
      * @return string
      * @throws \Exception
      */
@@ -180,6 +193,7 @@ class ImageoptCommandController extends CommandController
      *
      * @param int $rootPageForTsConfig The page uid for which the TSconfig is parsed. If not set then first found root page will be used.
      *
+     * @throws \Exception
      */
     public function resetOptimizationFlagForFalCommand($rootPageForTsConfig = null)
     {
@@ -196,6 +210,7 @@ class ImageoptCommandController extends CommandController
      * Can be useful for testing or for first time permission normalistation.
      *
      * @param int $rootPageForTsConfig The page uid for which the TSconfig is parsed. If not set then first found root page will be used.
+     * @throws \Exception
      */
     public function resetOptimizationFlagForFoldersCommand($rootPageForTsConfig = null)
     {
@@ -208,10 +223,14 @@ class ImageoptCommandController extends CommandController
     }
 
     /**
-     * @return mixed|\TYPO3\CMS\Core\Database\DatabaseConnection
+     * @return ConnectionPool
      */
     public function getDatabaseConnection()
     {
-        return $GLOBALS['TYPO3_DB'];
+        if (!$this->connection) {
+            $this->connection = GeneralUtility::makeInstance(ConnectionPool::class);
+        }
+
+        return $this->connection;
     }
 }

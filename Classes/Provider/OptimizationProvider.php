@@ -48,9 +48,15 @@ class OptimizationProvider
         $this->executors = $executors;
     }
 
+    /**
+     * @param $image
+     * @param Configurator $providerConfigurator
+     * @return object|ProviderResult
+     * @throws \Exception
+     */
     public function optimize($image, Configurator $providerConfigurator)
     {
-        $executorsDone = $executorsSuccesfull = 0;
+        $executorsDone = $executorsSuccessful = 0;
         $providerResult = GeneralUtility::makeInstance(ProviderResult::class);
         $providerResult->setSizeBefore(filesize($image));
         foreach ((array)$providerConfigurator->getOption('executors') as $executorKey => $executor) {
@@ -67,7 +73,7 @@ class OptimizationProvider
                     );
                     $providerResult->addExecutorsResult($executorResult);
                     if ($executorResult->isExecutedSuccessfully()) {
-                        $executorsSuccesfull++;
+                        $executorsSuccessful++;
                     } else {
                         $providerResult->setExecutedSuccessfully(false);
                         break;
@@ -79,7 +85,7 @@ class OptimizationProvider
         }
 
         $providerResult->setName($providerConfigurator->getOption('providerKey'));
-        if ($executorsSuccesfull == $executorsDone) {
+        if ($executorsSuccessful == $executorsDone) {
             $providerResult->setExecutedSuccessfully(true);
         }
         clearstatcache(true, $image);

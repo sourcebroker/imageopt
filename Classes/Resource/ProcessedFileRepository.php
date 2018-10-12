@@ -16,21 +16,31 @@ namespace SourceBroker\Imageopt\Resource;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Class ProcessedFileRepository
  */
 class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepository
 {
     /**
+     * @var ConnectionPool
+     */
+    protected $connection;
+
+    /**
      * Reset optimization flag for all images
      */
     public function resetOptimizationFlag()
     {
-        $this->getDatabaseConnection()->exec_UPDATEquery(
-            $this->table,
-            'tx_imageopt_executed_successfully=1',
-            ['tx_imageopt_executed_successfully' => 0]
-        );
+        $this->getDatabaseConnection()
+            ->getConnectionForTable($this->table)
+            ->update(
+                $this->table,
+                ['tx_imageopt_executed_successfully' => 0],
+                ['tx_imageopt_executed_successfully' => 1]
+            );
     }
 
     /**
@@ -41,19 +51,35 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
      */
     public function findNotOptimizedRaw($limit = 50)
     {
-        return $this->getDatabaseConnection()->exec_SELECTgetRows(
-            '*',
-            $this->table,
-            // if task_type is euqal to 'Image.Preview' then thses are backend thumbnails. We do not want to optimise them.
-            'name IS NOT NULL AND tx_imageopt_executed_successfully=0 AND task_type != \'Image.Preview\' AND identifier != \'\' AND (identifier LIKE \'%.png\' OR identifier LIKE \'%.gif\' OR identifier LIKE \'%.jpg\' OR identifier LIKE \'%.jpeg\')',
-            '',
-            '',
-            intval($limit)
-        );
+        $queryBuilder = $this->getDatabaseConnection()->getQueryBuilderForTable($this->table);
+
+        return $queryBuilder
+            ->select('*')
+            ->from($this->table)
+            ->where(
+                $queryBuilder->expr()->isNotNull('name'),
+                $queryBuilder->expr()->eq('tx_imageopt_executed_successfully', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
+                $queryBuilder->expr()->neq('task_type', $queryBuilder->createNamedParameter('Image.Preview')),
+                $queryBuilder->expr()->neq('identifier', $queryBuilder->createNamedParameter(''))
+            )->andWhere(
+                $queryBuilder->expr()->orX(
+                    $queryBuilder->expr()->like('identifier', $queryBuilder->createNamedParameter('%.png')),
+                    $queryBuilder->expr()->like('identifier', $queryBuilder->createNamedParameter('%.jpg')),
+                    $queryBuilder->expr()->like('identifier', $queryBuilder->createNamedParameter('%.jpeg')),
+                    $queryBuilder->expr()->like('identifier', $queryBuilder->createNamedParameter('%.gif'))
+                )
+            )->setMaxResults((int)$limit)->execute()->fetchAll();
     }
 
+    /**
+     * @return ConnectionPool
+     */
     public function getDatabaseConnection()
     {
-        return $GLOBALS['TYPO3_DB'];
+        if (!$this->connection) {
+            $this->connection = GeneralUtility::makeInstance(ConnectionPool::class);
+        }
+
+        return $this->connection;
     }
 }
