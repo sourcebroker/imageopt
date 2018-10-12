@@ -59,6 +59,11 @@ class OptimizeImagesFalService
      */
     private $objectManager;
 
+    /**
+     * OptimizeImagesFalService constructor.
+     * @param null $config
+     * @throws \Exception
+     */
     public function __construct($config = null)
     {
         if ($config === null) {
@@ -116,6 +121,7 @@ class OptimizeImagesFalService
             $optimizationResult->setInfo($optimizationResultInfo);
             $this->objectManager->get(OptimizationResultRepository::class)->add($optimizationResult);
         }
+
         return $optimizationResult;
     }
 

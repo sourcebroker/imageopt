@@ -88,6 +88,7 @@ class ImageoptCommandController extends CommandController
      *
      * @param int $numberOfImagesToProcess The number of images to process on single task call.
      * @param int $rootPageForTsConfig The page uid for which the TSconfig is parsed. If not set then first found root page will be used.
+     * @throws \Exception
      */
     public function optimizeFalProcessedImagesCommand($numberOfImagesToProcess = 20, $rootPageForTsConfig = null)
     {
@@ -112,6 +113,7 @@ class ImageoptCommandController extends CommandController
      *
      * @param int $numberOfImagesToProcess The number of images to process on single task call.
      * @param int $rootPageForTsConfig The page uid for which the TSconfig is parsed. If not set then first found root page will be used.
+     * @throws \Exception
      */
     public function optimizeFolderImagesCommand($numberOfImagesToProcess = 20, $rootPageForTsConfig = null)
     {
@@ -132,7 +134,7 @@ class ImageoptCommandController extends CommandController
     }
 
     /**
-     * @param $optimizationResult Optimization object to render
+     * @param $optimizationResult OptimizationResult object to render
      * @return string
      * @throws \Exception
      */
@@ -180,6 +182,7 @@ class ImageoptCommandController extends CommandController
      *
      * @param int $rootPageForTsConfig The page uid for which the TSconfig is parsed. If not set then first found root page will be used.
      *
+     * @throws \Exception
      */
     public function resetOptimizationFlagForFalCommand($rootPageForTsConfig = null)
     {
@@ -196,6 +199,7 @@ class ImageoptCommandController extends CommandController
      * Can be useful for testing or for first time permission normalistation.
      *
      * @param int $rootPageForTsConfig The page uid for which the TSconfig is parsed. If not set then first found root page will be used.
+     * @throws \Exception
      */
     public function resetOptimizationFlagForFoldersCommand($rootPageForTsConfig = null)
     {

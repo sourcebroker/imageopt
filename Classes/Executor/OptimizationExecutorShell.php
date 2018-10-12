@@ -99,6 +99,7 @@ class OptimizationExecutorShell implements OptimizationExecutorInterface
         } else {
             $executorResult->setErrorMessage('Variable "command" can not be found in executor configuration.');
         }
+
         return $executorResult;
     }
 }

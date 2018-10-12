@@ -36,6 +36,10 @@ class Configurator
      */
     protected $config = null;
 
+    /**
+     * Configurator constructor.
+     * @param null $config
+     */
     public function __construct($config = null)
     {
         if ($config !== null) {
@@ -85,6 +89,7 @@ class Configurator
                 }
             }
         }
+
         return $config;
     }
 }
