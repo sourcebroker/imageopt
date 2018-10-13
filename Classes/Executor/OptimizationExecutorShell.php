@@ -44,20 +44,16 @@ class OptimizationExecutorShell implements OptimizationExecutorInterface
      */
     public function optimize($inputImageAbsolutePath, Configurator $configurator)
     {
-        if (!empty($configurator->getOption('options.quality.options')) && !empty($configurator->getOption('options.quality.value'))
-        ) {
+        $executorQuality = '';
+        if (!empty($configurator->getOption('options.quality.options')) && !empty($configurator->getOption('options.quality.value'))) {
             $closestQualityKey = null;
             $quality = (int)$configurator->getOption('options.quality.value');
-            if (is_array($configurator->getOption('options.quality.options'))) {
-                foreach (array_keys($configurator->getOption('options.quality.options')) as $optionKey) {
-                    if ($closestQualityKey == null || abs((int)$quality - $closestQualityKey) > abs($optionKey - (int)$quality)) {
-                        $closestQualityKey = $optionKey;
-                    }
+            foreach (array_keys((array)$configurator->getOption('options.quality.options')) as $optionKey) {
+                if ($closestQualityKey == null || abs((int)$quality - $closestQualityKey) > abs($optionKey - (int)$quality)) {
+                    $closestQualityKey = $optionKey;
                 }
                 $executorQuality = $configurator->getOption('options.quality.options')[$closestQualityKey];
             }
-        } else {
-            $executorQuality = '';
         }
         $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
         $executorResult->setExecutedSuccessfully(false);
