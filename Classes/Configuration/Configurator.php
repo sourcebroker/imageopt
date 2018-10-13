@@ -67,7 +67,7 @@ class Configurator
      * Return option from configuration array with support for nested comma separated notation as "option1.suboption"
      *
      * @param string $name Configuration
-     * @param null $overwriteConfig
+     * @param array $overwriteConfig
      * @return array|null|string
      */
     public function getOption($name = null, $overwriteConfig = null)

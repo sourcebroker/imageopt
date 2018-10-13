@@ -44,18 +44,18 @@ class OptimizationExecutorShell implements OptimizationExecutorInterface
      */
     public function optimize($inputImageAbsolutePath, Configurator $configurator)
     {
-        if (!empty($configurator->getOption('options.quality.options'))
-            && is_array($configurator->getOption('options.quality.options'))
-            && !empty($configurator->getOption('options.quality.value'))
+        if (!empty($configurator->getOption('options.quality.options')) && !empty($configurator->getOption('options.quality.value'))
         ) {
             $closestQualityKey = null;
             $quality = (int)$configurator->getOption('options.quality.value');
-            foreach (array_keys($configurator->getOption('options.quality.options')) as $optionKey) {
-                if ($closestQualityKey == null || abs((int)$quality - $closestQualityKey) > abs($optionKey - (int)$quality)) {
-                    $closestQualityKey = $optionKey;
+            if (is_array($configurator->getOption('options.quality.options'))) {
+                foreach (array_keys($configurator->getOption('options.quality.options')) as $optionKey) {
+                    if ($closestQualityKey == null || abs((int)$quality - $closestQualityKey) > abs($optionKey - (int)$quality)) {
+                        $closestQualityKey = $optionKey;
+                    }
                 }
+                $executorQuality = $configurator->getOption('options.quality.options')[$closestQualityKey];
             }
-            $executorQuality = $configurator->getOption('options.quality.options')[$closestQualityKey];
         } else {
             $executorQuality = '';
         }
@@ -79,7 +79,7 @@ class OptimizationExecutorShell implements OptimizationExecutorInterface
                     $successfulStatuses = [0];
                     if (!empty($configurator->getOption('command.successfulExitStatus'))) {
                         $successfulStatuses = array_merge($successfulStatuses,
-                            explode(',', $configurator->getOption('command.successfulExitStatus'))
+                            explode(',', (string)$configurator->getOption('command.successfulExitStatus'))
                         );
                     }
                     exec($shellCommand, $output, $commandStatus);
