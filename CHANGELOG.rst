@@ -8,6 +8,7 @@ master
 1) [TASK] Drop travis testing for PHP 5.6 and TYPO3 7.6.
 2) [TASK] TYPO3 9.5 compatibility.
 3) [TASK] ext_localconf.php refactor
+4) [TASK] Drop travis testing for TYPO3 7.6. Add testing for TYPO3 9.5.
 
 2.0.1
 ~~~~~
