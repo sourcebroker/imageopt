@@ -48,7 +48,7 @@ class OptimizeImageService
 
     /**
      * OptimizeImageService constructor.
-     * @param null $config
+     * @param array $config
      * @throws \Exception
      */
     public function __construct($config = null)

@@ -38,7 +38,7 @@ class Configurator
 
     /**
      * Configurator constructor.
-     * @param null $config
+     * @param array $config
      */
     public function __construct($config = null)
     {

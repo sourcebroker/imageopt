@@ -44,8 +44,10 @@ class OptimizationExecutorShell implements OptimizationExecutorInterface
      */
     public function optimize($inputImageAbsolutePath, Configurator $configurator)
     {
-        if (!empty($configurator->getOption('options.quality.options')) &&
-            !empty($configurator->getOption('options.quality.value'))) {
+        if (!empty($configurator->getOption('options.quality.options'))
+            && is_array($configurator->getOption('options.quality.options'))
+            && !empty($configurator->getOption('options.quality.value'))
+        ) {
             $closestQualityKey = null;
             $quality = (int)$configurator->getOption('options.quality.value');
             foreach (array_keys($configurator->getOption('options.quality.options')) as $optionKey) {

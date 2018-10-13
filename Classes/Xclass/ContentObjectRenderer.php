@@ -24,13 +24,16 @@
 
 namespace SourceBroker\Imageopt\Xclass;
 
+use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\FileReference;
+
 class ContentObjectRenderer extends \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
 {
 
     /**
      * Xclassed because when the parameters ($fileArray['params.']) are changed the hash is changed then we force processed files
      *
-     * @param string|File|FileReference $file A "imgResource" TypoScript data type. Either a TypoScript file resource, a file or a file reference object or the string GIFBUILDER. See description above.
+     * @param string |File|FileReference $file A "imgResource" TypoScript data type. Either a TypoScript file resource, a file or a file reference object or the string GIFBUILDER. See description above.
      * @param array $fileArray TypoScript properties for the imgResource type
      * @return array|NULL Returns info-array
      */
