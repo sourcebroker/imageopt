@@ -1,10 +1,12 @@
 <?php
 namespace SourceBroker\Imageopt\Tests\Unit\Domain\Model;
 
+use Nimut\TestingFramework\TestCase\UnitTestCase;
+
 /**
  * Test case.
  */
-class OptimizationResultTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
+class OptimizationResultTest extends UnitTestCase
 {
     /**
      * @var \SourceBroker\Imageopt\Domain\Model\OptimizationResult

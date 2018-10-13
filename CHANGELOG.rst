@@ -10,6 +10,7 @@ master
 3) [TASK] ext_localconf.php refactor
 4) [TASK] Drop travis testing for TYPO3 7.6. Add testing for TYPO3 9.5.
 5) [TASK] Increase nimut/testing-framework for TYPO3 9.5 tests
+6) [TASK] Update test for TYPO3 9.5
 
 2.0.1
 ~~~~~
