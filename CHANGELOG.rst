@@ -11,6 +11,7 @@ master
 4) [TASK] Drop travis testing for TYPO3 7.6. Add testing for TYPO3 9.5.
 5) [TASK] Increase nimut/testing-framework for TYPO3 9.5 tests
 6) [TASK] Update test for TYPO3 9.5
+7) [TASK] Remove not used variables, improve phpdocs, cast variables.
 
 2.0.1
 ~~~~~

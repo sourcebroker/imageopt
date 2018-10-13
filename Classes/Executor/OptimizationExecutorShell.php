@@ -61,7 +61,7 @@ class OptimizationExecutorShell implements OptimizationExecutorInterface
         $executorResult->setExecutedSuccessfully(false);
         if (!empty($configurator->getOption('command.exec'))) {
             if (is_readable($inputImageAbsolutePath)) {
-                $execDeclared = $configurator->getOption('command.exec');
+                $execDeclared = (string)$configurator->getOption('command.exec');
                 if (pathinfo($execDeclared, PATHINFO_DIRNAME) !== '.') {
                     $execDetected = $execDeclared;
                 } else {

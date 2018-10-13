@@ -154,7 +154,7 @@ class ImageoptCommandController extends CommandController
         if ($optimizationResult instanceof OptimizationResult) {
             /** @var OptimizationResult $optimizationResult */
             $providersScore = [];
-            $success = $percentageWinner = $percentage = $noWinner = $nr = 0;
+            $success = $nr = 0;
             /** @var ProviderResult $providerResult */
             foreach ($optimizationResult->getProvidersResults()->toArray() as $providerResult) {
                 $nr++;

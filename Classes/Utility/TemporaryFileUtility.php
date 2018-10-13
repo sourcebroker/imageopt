@@ -67,7 +67,7 @@ class TemporaryFileUtility implements SingletonInterface
      * File is deleted autmaticaly after script end.
      *
      * @param string $originalFileAbsolutePath Absolute path/file with original image
-     * @return bool if not created file or string with temporary file path
+     * @return string temporary file path
      */
     public function createTemporaryCopy($originalFileAbsolutePath)
     {
