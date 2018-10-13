@@ -2,8 +2,8 @@
 Changelog
 ---------
 
-master
-~~~~~~
+3.0.0
+~~~~~
 
 1) [TASK] Drop travis testing for PHP 5.6 and TYPO3 7.6.
 2) [TASK] TYPO3 9.5 compatibility.
