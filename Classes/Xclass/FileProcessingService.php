@@ -26,7 +26,6 @@ namespace SourceBroker\Imageopt\Xclass;
 
 use SourceBroker\Imageopt\Utility\FrontendProcessingUtility;
 use TYPO3\CMS\Core\Resource;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class FileProcessingService extends \TYPO3\CMS\Core\Resource\Service\FileProcessingService
 {
@@ -48,34 +47,10 @@ class FileProcessingService extends \TYPO3\CMS\Core\Resource\Service\FileProcess
         $taskType,
         $configuration
     ) {
-        /** @var $processedFileRepository Resource\ProcessedFileRepository */
-        $processedFileRepository = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\ProcessedFileRepository::class);
-
-        // LOCC START
         if (FrontendProcessingUtility::isAllowedToForceFrontendImageProcessing($fileObject->getPublicUrl())) {
             // Make additionalParameters at least one space to count that towards hash in order to make TYPO3 to process image even if it would not be processed without this.
             $configuration['additionalParameters'] = ' ';
         }
-        // LOCC END
-
-        $processedFile = $processedFileRepository->findOneByOriginalFileAndTaskTypeAndConfiguration($fileObject,
-            $taskType, $configuration);
-
-        // set the storage of the processed file
-        // Pre-process the file
-
-        $this->emitPreFileProcessSignal($processedFile, $fileObject, $taskType, $configuration);
-
-        // Only handle the file if it is not processed yet
-        // (maybe modified or already processed by a signal)
-        // or (in case of preview images) already in the DB/in the processing folder
-        if (!$processedFile->isProcessed()) {
-            $this->process($processedFile, $targetStorage);
-        }
-
-        // Post-process (enrich) the file
-        $this->emitPostFileProcessSignal($processedFile, $fileObject, $taskType, $configuration);
-
-        return $processedFile;
+        return parent::processFile($fileObject, $targetStorage, $taskType, $configuration);
     }
 }

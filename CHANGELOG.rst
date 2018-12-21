@@ -15,6 +15,8 @@ master
 
 4) [TASK] Add scheduler task as fallback for using symfony commands as scheduler task in TYPO3 8.7.
 
+5) [TASK] Refactor for FileProcessingService xclass.
+
 
 3.0.0
 ~~~~~
