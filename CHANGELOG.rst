@@ -11,6 +11,8 @@ master
 
 2) [FEATURE] Allow to define files that should not be forced to be processed (regexp on filepath / filename).
 
+3) [FEATURE] Add symfony commands and rework configurator.
+
 3.0.0
 ~~~~~
 

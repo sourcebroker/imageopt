@@ -24,6 +24,11 @@
 
 namespace SourceBroker\Imageopt\Configuration;
 
+use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\TypoScript\TypoScriptService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Configuration Class
  */
@@ -91,5 +96,42 @@ class Configurator
         }
 
         return $config;
+    }
+
+    /**
+     * Return config for given page.
+     *
+     * @param int $rootPageForTsConfig
+     * @return array
+     * @throws \Exception
+     */
+    public function getConfigForPage($rootPageForTsConfig = null)
+    {
+        if ($rootPageForTsConfig === null) {
+            $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+            $queryBuilder = $connectionPool->getQueryBuilderForTable('pages');
+            $rootPageForTsConfigRow = $queryBuilder
+                ->select('uid')
+                ->from('pages')
+                ->where(
+                    $queryBuilder->expr()->eq('pid', 0),
+                    $queryBuilder->expr()->eq('deleted', 0)
+                )->execute()->fetch();
+            if ($rootPageForTsConfigRow !== null) {
+                $rootPageForTsConfig = $rootPageForTsConfigRow['uid'];
+            }
+        }
+        if ($rootPageForTsConfig !== null) {
+            $serviceConfig = GeneralUtility::makeInstance(TypoScriptService::class)
+                ->convertTypoScriptArrayToPlainArray(BackendUtility::getPagesTSconfig($rootPageForTsConfig));
+            if (isset($serviceConfig['tx_imageopt'])) {
+                return $serviceConfig['tx_imageopt'];
+            } else {
+                throw new \Exception('There is no TSconfig for tx_imageopt in the root page id=' . $rootPageForTsConfig,
+                    1501692752398);
+            }
+        } else {
+            throw new \Exception('Can not detect the root page to generate page TSconfig.', 1501700792654);
+        }
     }
 }
