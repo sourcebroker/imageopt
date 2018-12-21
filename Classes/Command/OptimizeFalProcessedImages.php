@@ -59,7 +59,7 @@ class OptimizeFalProcessedImages extends BaseCommand
         $io = new SymfonyStyle($input, $output);
         $io->title($this->getDescription());
 
-        $numberOfImagesToProcess = $input->hasArgument('numberOfImagesToProcess') && $input->getArgument('numberOfImagesToProcess') !== null ? $input->getArgument('numberOfImagesToProcess') : 20;
+        $numberOfImagesToProcess = $input->hasArgument('numberOfImagesToProcess') && $input->getArgument('numberOfImagesToProcess') !== null ? $input->getArgument('numberOfImagesToProcess') : 50;
         $rootPageForTsConfig = $input->hasArgument('rootPageForTsConfig') && $input->getArgument('rootPageForTsConfig') !== null ? $input->getArgument('rootPageForTsConfig') : null;
 
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);

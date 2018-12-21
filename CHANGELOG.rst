@@ -17,6 +17,7 @@ master
 
 5) [TASK] Refactor for FileProcessingService xclass.
 
+6) [TASK] Increase numberOfImagesToProcess from 20 to 50.
 
 3.0.0
 ~~~~~
