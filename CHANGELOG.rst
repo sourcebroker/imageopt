@@ -13,6 +13,9 @@ master
 
 3) [FEATURE] Add symfony commands and rework configurator.
 
+4) [TASK] Add scheduler task as fallback for using symfony commands as scheduler task in TYPO3 8.7.
+
+
 3.0.0
 ~~~~~
 

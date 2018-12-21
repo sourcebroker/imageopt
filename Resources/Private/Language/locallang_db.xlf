@@ -78,6 +78,18 @@
 			<trans-unit id="tx_imageopt_domain_model_optimizationresult.info">
 				<source>Info</source>
 			</trans-unit>
+			<trans-unit id="task.OptimizeFalProcessedImagesTask.title">
+				<source>Optimize FAL processed images</source>
+			</trans-unit>
+			<trans-unit id="task.OptimizeFalProcessedImagesTask.description">
+				<source>Optimize FAL processed images.</source>
+			</trans-unit>
+			<trans-unit id="task.OptimizeFolderImagesTask.title">
+				<source>Optimize folders images</source>
+			</trans-unit>
+			<trans-unit id="task.OptimizeFolderImagesTask.description">
+				<source>Optimize images generated from /uploads resources and stored in /typo3temp. You can define own folders also.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
