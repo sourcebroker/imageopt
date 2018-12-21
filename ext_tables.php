@@ -11,5 +11,7 @@ call_user_func(
 
         \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_imageopt_domain_model_optimizationresult',
             'EXT:imageopt/Resources/Private/Language/locallang_csh_tx_imageopt_domain_model_optimizationresult.xlf');
+
+        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile('imageopt', 'Configuration/TypoScript', 'Imageopt');
     }
 );

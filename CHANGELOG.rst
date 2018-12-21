@@ -3,7 +3,16 @@ Changelog
 ---------
 
 master
-~~~~~~
+~~~~~
+
+1) [FEATURE][BREAKING] So far imageopt was forcing all images to be resized on fronted by default. Right now its
+    configurable in Typoscript. To activate this behaviour you need to include static extension Typoscript
+    in frontent template record.
+
+2) [FEATURE] Allow to define files that should not be forced to be processed (regexp on filepath / filename).
+
+3.0.0
+~~~~~
 
 1) [TASK] Drop travis testing for PHP 5.6 and TYPO3 7.6.
 2) [TASK] TYPO3 9.5 compatibility.

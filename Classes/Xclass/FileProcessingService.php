@@ -24,16 +24,14 @@
 
 namespace SourceBroker\Imageopt\Xclass;
 
+use SourceBroker\Imageopt\Utility\FrontendProcessingUtility;
 use TYPO3\CMS\Core\Resource;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class FileProcessingService extends \TYPO3\CMS\Core\Resource\Service\FileProcessingService
 {
-
     /**
-     *
-     * Xclassed because when the $configuration['additionalParameters'] is changed the hash is changed
-     * and we force to process file even if regulary TYPO3 would use original.
+     * Fluid processed images
      *
      * @param Resource\FileInterface $fileObject The file object
      * @param Resource\ResourceStorage $targetStorage The storage to store the processed file in
@@ -53,8 +51,12 @@ class FileProcessingService extends \TYPO3\CMS\Core\Resource\Service\FileProcess
         /** @var $processedFileRepository Resource\ProcessedFileRepository */
         $processedFileRepository = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\ProcessedFileRepository::class);
 
-        // LOCC add neutral additionalParameters that will make the image to be processed even if not needed
-        $configuration['additionalParameters'] = 'MUST_RECREATE';
+        // LOCC START
+        if (FrontendProcessingUtility::isAllowedToForceFrontendImageProcessing($fileObject->getPublicUrl())) {
+            // Make additionalParameters at least one space to count that towards hash in order to make TYPO3 to process image even if it would not be processed without this.
+            $configuration['additionalParameters'] = ' ';
+        }
+        // LOCC END
 
         $processedFile = $processedFileRepository->findOneByOriginalFileAndTaskTypeAndConfiguration($fileObject,
             $taskType, $configuration);
