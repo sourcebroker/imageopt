@@ -37,6 +37,5 @@ class BaseTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
 
     public function execute()
     {
-
     }
 }
