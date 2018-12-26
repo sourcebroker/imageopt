@@ -60,10 +60,9 @@ class OptimizationProvider
         $providerResult = GeneralUtility::makeInstance(ProviderResult::class);
         $providerResult->setSizeBefore(filesize($image));
         foreach ((array)$providerConfigurator->getOption('executors') as $executorKey => $executor) {
-            if ($executor['enabled']) {
+            if (empty($executor['enabled']) || (!empty($executor['enabled']) && (int) $executor['enabled'] !== 0)) {
                 $executorsDone++;
                 if (isset($executor['class']) && class_exists($executor['class'])) {
-                    /** @var  \SourceBroker\Imageopt\Executor\OptimizationExecutorShell $imageOptimizationProvider */
                     $imageOptimizationProvider = GeneralUtility::makeInstance($executor['class']);
                     $executorResult = $imageOptimizationProvider->optimize(
                         $image,
