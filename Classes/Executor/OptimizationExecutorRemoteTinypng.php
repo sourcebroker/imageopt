@@ -26,13 +26,25 @@ namespace SourceBroker\Imageopt\Executor;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-interface OptimizationExecutorInterface
+class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
 {
     /**
-     * @param string $image
-     * @param Configurator $configurator
-     * @return \SourceBroker\Imageopt\Domain\Model\ExecutorResult
+     * Optimize image using remote Tinypng
+     * Return the temporary file path
+     *
+     * @param string $inputImageAbsolutePath Absolute path/file with image to be optimized. It will be replaced with optimized version.
+     * @param Configurator $configurator Executor configurator
+     * @return ExecutorResult Executor Result
      */
-    public function optimize(string $image, Configurator $configurator): ExecutorResult;
+    public function optimize(string $inputImageAbsolutePath, Configurator $configurator) : ExecutorResult
+    {
+        $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
+        $executorResult->setExecutedSuccessfully(false);
+
+        // Implement optimize image with Tinypng and fill all $execuroeResult fields
+
+        return $executorResult;
+    }
 }

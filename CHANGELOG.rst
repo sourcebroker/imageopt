@@ -9,6 +9,8 @@ Remote Executors
 
 2) [FEATURE] Make executors enabled by default.
 
+3) [FEATURE] Add remote executors base implementation.
+
 master
 ~~~~~
 

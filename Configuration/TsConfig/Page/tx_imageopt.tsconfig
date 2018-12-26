@@ -2,18 +2,80 @@ tx_imageopt {
     directories = typo3temp/pics*jpg|gif|png,typo3temp/GB*jpg|gif|png,typo3temp/assets/images*jpg|gif|png,
 
     default {
-        options {
-            quality = 85
+        providers {
+          # "_all" is merged to all providers
+          _all {
+            enabled = 1
+            # "executors" is merged to each executor
+            executors {
+              options {
+                quality {
+                  value = 85
+                }
+              }
+              notifications {
+                limitsExeeded {
+                  active = 1
+                }
+              }
+            }
+            email {
+                sender {
+                    email =
+                    name =
+                }
+                reciver {
+                    email =
+                    name =
+                }
+            }
+          }
+          kraken {
+            enabled = 1
+            executors {
+              api {
+                key = 2a9f4fcb773fcf69bd05373d494641be
+                pass = 64b0db57a0613b66e4068725f38d6d8ed57c17e8
+              }
+              options {
+                  lossy = true
+              }
+            }
+          }
+
+          tinypng {
+            enabled = 1
+            executors {
+              api {
+                key =
+                pass =
+              }
+            }
+          }
+
+          imageoptim {
+            enabled = 1
+            executors {
+              api {
+                key =
+                pass =
+              }
+              options {
+                  lossy = true
+              }
+            }
+          }
         }
     }
 
     providers {
         jpeg {
+            imageoptim.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteImageoptim
+
             jpegoptim {
                 enabled = 1
                 executors {
                     10 {
-                        enabled = 1
                         class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
                         command {
                             mask = {executable} {tempFile} -o --strip-all {quality}
@@ -22,7 +84,6 @@ tx_imageopt {
 
                         options {
                             quality {
-                                value < tx_imageopt.default.options.quality
                                 options {
                                     5 = --max=5
                                     10 = --max=10
@@ -55,7 +116,6 @@ tx_imageopt {
                 enabled = 1
                 executors {
                     10 {
-                        enabled = 1
                         class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
                         command {
                             mask = {executable} -s {tempFile} {tempFile}
@@ -69,7 +129,6 @@ tx_imageopt {
                 enabled = 1
                 executors {
                     10 {
-                        enabled = 1
                         class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
                         command {
                             mask = {executable} -copy none -optimize -outfile {tempFile} {tempFile}
@@ -78,6 +137,10 @@ tx_imageopt {
                     }
                 }
             }
+
+            kraken.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
+
+            tinypng.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteTinypng
         }
 
         gif {
@@ -85,7 +148,6 @@ tx_imageopt {
                 enabled = 1
                 executors {
                     10 {
-                        enabled = 1
                         class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
                         command {
                             mask = {executable} {quality} {tempFile} -o {tempFile}
@@ -94,7 +156,6 @@ tx_imageopt {
 
                         options {
                             quality {
-                                value < tx_imageopt.default.options.quality
                                 options {
                                     5 = --optimize=3
                                     10 = --optimize=3
@@ -122,23 +183,29 @@ tx_imageopt {
                     }
                 }
             }
+            imageoptim.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteImageoptim
+
+            kraken.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
+
+            tinypng.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteTinypng
         }
 
         png {
+            imageoptim.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteImageoptim
+
+            kraken.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
+
             optipng {
                 enabled = 1
                 executors {
                     10 {
-                        enabled = 1
                         class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
                         command {
                             mask = {executable} {tempFile} -quiet -strip all {quality}
                             exec = optipng
                         }
-
                         options {
                             quality {
-                                value < tx_imageopt.default.options.quality
                                 options {
                                     5 = -o7
                                     10 = -o7
@@ -171,7 +238,6 @@ tx_imageopt {
                 enabled = 1
                 executors {
                     10 {
-                        enabled = 1
                         class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
                         command {
                             mask = {executable} -s -rem alla -brute -reduce -ow {tempFile} >/dev/null
@@ -185,17 +251,14 @@ tx_imageopt {
                 enabled = 1
                 executors {
                     10 {
-                        enabled = 1
                         class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
                         command {
                             mask = {executable} {tempFile} --skip-if-larger --force --ext '' --strip {quality}
                             exec = pngquant
                             successfulExitStatus = 98
                         }
-
                         options {
                             quality {
-                                value < tx_imageopt.default.options.quality
                                 options {
                                     5 = --speed 11
                                     10 = --speed 10
@@ -225,12 +288,13 @@ tx_imageopt {
             }
 
             pngquant-pngcrush {
-                enabled = 1
                 executors {
                     10 < tx_imageopt.providers.png.pngquant.executors.10
                     20 < tx_imageopt.providers.png.pngcrush.executors.10
                 }
             }
+
+            tinypng.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteTinypng
         }
     }
 }
