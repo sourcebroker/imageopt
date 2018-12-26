@@ -4,6 +4,7 @@ namespace SourceBroker\Imageopt\Tests\Unit\Service;
 
 use Exception;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
+use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Domain\Model\OptimizationResult;
 use SourceBroker\Imageopt\Service\OptimizeImageService;
 use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
@@ -121,9 +122,12 @@ class OptimizeImageServiceTest extends UnitTestCase
      */
     public function pluginConfig()
     {
+        $configurator = GeneralUtility::makeInstance(Configurator::class);
         $typoscriptParser = GeneralUtility::makeInstance(TypoScriptParser::class);
         $typoscriptParser->parse(file_get_contents(realpath(__DIR__ . '/../../../Configuration/TsConfig/Page/tx_imageopt.tsconfig')));
-        return GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Service\\TypoScriptService')
-            ->convertTypoScriptArrayToPlainArray($typoscriptParser->setup)['tx_imageopt'];
+        return $configurator->mergeDefaultForProviderAndExecutor(
+            GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Service\TypoScriptService::class)
+                ->convertTypoScriptArrayToPlainArray($typoscriptParser->setup)['tx_imageopt']
+        );
     }
 }

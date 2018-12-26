@@ -27,6 +27,7 @@ namespace SourceBroker\Imageopt\Configuration;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\TypoScript\TypoScriptService;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -94,7 +95,6 @@ class Configurator
                 }
             }
         }
-
         return $config;
     }
 
@@ -125,7 +125,7 @@ class Configurator
             $serviceConfig = GeneralUtility::makeInstance(TypoScriptService::class)
                 ->convertTypoScriptArrayToPlainArray(BackendUtility::getPagesTSconfig($rootPageForTsConfig));
             if (isset($serviceConfig['tx_imageopt'])) {
-                return $serviceConfig['tx_imageopt'];
+                return $this->mergeDefaultForProviderAndExecutor($serviceConfig['tx_imageopt']);
             } else {
                 throw new \Exception('There is no TSconfig for tx_imageopt in the root page id=' . $rootPageForTsConfig,
                     1501692752398);
@@ -133,5 +133,44 @@ class Configurator
         } else {
             throw new \Exception('Can not detect the root page to generate page TSconfig.', 1501700792654);
         }
+    }
+
+    /**
+     * For convinience values from tx_imageopt are merged to corensponding providers and executors defaults
+     *
+     * @param array $config
+     * @return array
+     */
+    public function mergeDefaultForProviderAndExecutor(array $config): array
+    {
+        foreach ($config['providers'] as $extension => $providersForExtension) {
+            foreach ($providersForExtension as $providerKey => $providerValues) {
+                if (is_array($config['default']['providers']['_all'])) {
+                    $allExceptExecutors = $config['default']['providers']['_all'];
+                    unset($allExceptExecutors['executors']);
+                    ArrayUtility::mergeRecursiveWithOverrule($providerValues,
+                        $allExceptExecutors);
+                }
+                if (is_array($config['default']['providers'][$providerKey])) {
+                    $allExceptExecutors = $config['default']['providers'][$providerKey];
+                    unset($allExceptExecutors['executors']);
+                    ArrayUtility::mergeRecursiveWithOverrule($providerValues,
+                        $allExceptExecutors);
+                }
+                foreach ($providerValues['executors'] as $executorKey => $executorValues) {
+                    if (is_array($config['default']['providers']['_all']['executors'])) {
+                        ArrayUtility::mergeRecursiveWithOverrule($executorValues,
+                            $config['default']['providers']['_all']['executors']);
+                    }
+                    if (is_array($config['default']['providers'][$providerKey]['executors'])) {
+                        ArrayUtility::mergeRecursiveWithOverrule($executorValues,
+                            $config['default']['providers'][$providerKey]['executors']);
+                    }
+                    $providerValues['executors'][$executorKey] = $executorValues;
+                }
+                $config['providers'][$extension][$providerKey] = $providerValues;
+            }
+        }
+        return $config;
     }
 }

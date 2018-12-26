@@ -2,6 +2,11 @@
 Changelog
 ---------
 
+Remote Executors
+~~~~~~~~~~~~~~~~
+
+1) [FEATURE] Add configuration merging from default.providers (and executors).
+
 master
 ~~~~~
 
