@@ -11,6 +11,8 @@ Remote Executors
 
 3) [FEATURE] Add remote executors base implementation.
 
+4) [TASK] Add /var folder to gitignore and "typo3/cms-scheduler": "^8.7 || ^9.5" to composer suggetsed.
+
 master
 ~~~~~
 
