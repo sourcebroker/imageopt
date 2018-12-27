@@ -2,7 +2,7 @@
 Changelog
 ---------
 
-master
+4.0.0
 ~~~~~
 
 1) [FEATURE][BREAKING] So far imageopt was forcing all images to be resized on fronted by default. Right now its
