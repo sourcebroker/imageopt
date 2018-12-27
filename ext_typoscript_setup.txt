@@ -1,0 +1,12 @@
+plugin.tx_imageopt {
+    imageProcessing {
+        // Force processing of all images on frontend because imageopt should not optimize original images.
+        force = 1
+        exclusion {
+          // Regexp on filepath and filename. When true this file will not be forced to be processed on frontend.
+          // Example /animation.*\.gif/ -> do not force gif files that have animation in name or folder name.
+          // Example /\.gif/ -> do not force gif files
+          regexp =
+        }
+    }
+}

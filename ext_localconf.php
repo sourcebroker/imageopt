@@ -16,9 +16,6 @@ if (TYPO3_MODE !== 'FE') {
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Core\\Resource\\Service\\FileProcessingService'] = [
     'className' => 'SourceBroker\\Imageopt\\Xclass\\FileProcessingService'
 ];
-$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Frontend\\Imaging\\GifBuilder'] = [
-    'className' => 'SourceBroker\\Imageopt\\Xclass\\GifBuilder'
-];
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer'] = [
     'className' => 'SourceBroker\\Imageopt\\Xclass\\ContentObjectRenderer'
 ];
