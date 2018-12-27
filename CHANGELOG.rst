@@ -6,29 +6,22 @@ Remote Executors
 ~~~~~~~~~~~~~~~~
 
 1) [FEATURE] Add configuration merging from default.providers (and executors).
-
 2) [FEATURE] Make executors enabled by default.
-
 3) [FEATURE] Add remote executors base implementation.
-
 4) [TASK] Add /var folder to gitignore and "typo3/cms-scheduler": "^8.7 || ^9.5" to composer suggetsed.
 
-master
+4.0.0
 ~~~~~
 
 1) [FEATURE][BREAKING] So far imageopt was forcing all images to be resized on fronted by default. Right now its
-    configurable in Typoscript. To activate this behaviour you need to include static extension Typoscript
-    in frontent template record.
-
+   configurable in Typoscript. To activate this behaviour you need to include static extension Typoscript
+   in frontent template record.
 2) [FEATURE] Allow to define files that should not be forced to be processed (regexp on filepath / filename).
-
 3) [FEATURE] Add symfony commands and rework configurator.
-
 4) [TASK] Add scheduler task as fallback for using symfony commands as scheduler task in TYPO3 8.7.
-
 5) [TASK] Refactor for FileProcessingService xclass.
-
 6) [TASK] Increase numberOfImagesToProcess from 20 to 50.
+7) [TASK][BREAKING] Convert symfony argumnets to options.
 
 3.0.0
 ~~~~~
