@@ -6,8 +6,8 @@ Changelog
 ~~~~~
 
 1) [FEATURE][BREAKING] So far imageopt was forcing all images to be resized on fronted by default. Right now its
-    configurable in Typoscript. To activate this behaviour you need to include static extension Typoscript
-    in frontent template record.
+   configurable in Typoscript. To activate this behaviour you need to include static extension Typoscript
+   in frontent template record.
 2) [FEATURE] Allow to define files that should not be forced to be processed (regexp on filepath / filename).
 3) [FEATURE] Add symfony commands and rework configurator.
 4) [TASK] Add scheduler task as fallback for using symfony commands as scheduler task in TYPO3 8.7.
