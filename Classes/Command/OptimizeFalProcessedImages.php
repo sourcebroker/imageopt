@@ -17,8 +17,8 @@ namespace SourceBroker\Imageopt\Command;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Service\OptimizeImagesFalService;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -35,14 +35,16 @@ class OptimizeFalProcessedImages extends BaseCommand
     public function configure()
     {
         $this->setDescription('Optimize FAL processed images')
-            ->addArgument(
+            ->addOption(
                 'numberOfImagesToProcess',
-                InputArgument::OPTIONAL,
+                null,
+                InputOption::VALUE_REQUIRED,
                 'The number of images to process on single task call.'
             )
-            ->addArgument(
+            ->addOption(
                 'rootPageForTsConfig',
-                InputArgument::OPTIONAL,
+                null,
+                InputOption::VALUE_REQUIRED,
                 'The page uid for which the TSconfig is parsed. If not set then first found root page will be used.'
             );
     }
@@ -59,8 +61,8 @@ class OptimizeFalProcessedImages extends BaseCommand
         $io = new SymfonyStyle($input, $output);
         $io->title($this->getDescription());
 
-        $numberOfImagesToProcess = $input->hasArgument('numberOfImagesToProcess') && $input->getArgument('numberOfImagesToProcess') !== null ? $input->getArgument('numberOfImagesToProcess') : 50;
-        $rootPageForTsConfig = $input->hasArgument('rootPageForTsConfig') && $input->getArgument('rootPageForTsConfig') !== null ? $input->getArgument('rootPageForTsConfig') : null;
+        $numberOfImagesToProcess = $input->hasOption('numberOfImagesToProcess') && $input->getOption('numberOfImagesToProcess') !== null ? $input->getOption('numberOfImagesToProcess') : 50;
+        $rootPageForTsConfig = $input->hasOption('rootPageForTsConfig') && $input->getOption('rootPageForTsConfig') !== null ? $input->getOption('rootPageForTsConfig') : null;
 
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $optimizeImagesFalService = $objectManager->get(

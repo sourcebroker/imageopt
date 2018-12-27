@@ -17,8 +17,8 @@ namespace SourceBroker\Imageopt\Command;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Service\OptimizeImagesFalService;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -35,9 +35,10 @@ class ResetOptimizationFlagForFal extends BaseCommand
     public function configure()
     {
         $this->setDescription('Reset optimized flag for FAL processed images so all files can be optimized once more')
-            ->addArgument(
+            ->addOption(
                 'rootPageForTsConfig',
-                InputArgument::OPTIONAL,
+                null,
+                InputOption::VALUE_REQUIRED,
                 'The page uid for which the TSconfig is parsed. If not set then first found root page will be used.'
             );
     }
@@ -53,7 +54,7 @@ class ResetOptimizationFlagForFal extends BaseCommand
     {
         $io = new SymfonyStyle($input, $output);
         $io->title($this->getDescription());
-        $rootPageForTsConfig = $input->hasArgument('rootPageForTsConfig') && $input->getArgument('rootPageForTsConfig') !== null ? $input->getArgument('rootPageForTsConfig') : null;
+        $rootPageForTsConfig = $input->hasOption('rootPageForTsConfig') && $input->getOption('rootPageForTsConfig') !== null ? $input->getOption('rootPageForTsConfig') : null;
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $optimizeImagesFalService = $objectManager->get(
             OptimizeImagesFalService::class,
