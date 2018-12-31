@@ -41,7 +41,16 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
      */
     public function upload($inputImageAbsolutePath, $options = [])
     {
-        $file = '@' . $inputImageAbsolutePath;
+        if (class_exists('CURLFile')) {
+            $file = new \CURLFile($inputImageAbsolutePath);
+        } else {
+            $file = '@' . $inputImageAbsolutePath;
+        }
+        
+        if(isset($options['quality']))
+        {
+            $options['quality'] = (int) $options['quality']['value'];
+        }
 
         foreach ($options as $key => $value) {
             if ($value === 'true' || $value === 'false') {
@@ -50,9 +59,9 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
         }
 
         $result = self::request([
-            'upload' => $file,
-            'data' => json_encode(array_merge(['auth' => $this->settings['auth']], $options))
-        ],
+                'file' => $file,
+                'data' => json_encode(array_merge(['auth' => $this->settings['auth']], $options))
+            ],
             $this->settings['url']['upload'],
             ['type' => 'upload']
         );
