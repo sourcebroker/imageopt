@@ -2,6 +2,12 @@
 Changelog
 ---------
 
+master
+~~~~~~
+
+1) [TASK][BREAKING] Disable all providers by default.
+2) [TASK] Add mozjpeg providers (cjpeg, jpegtran).
+
 4.0.0
 ~~~~~
 

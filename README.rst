@@ -69,6 +69,58 @@ Installation
 
 2) Open main Template record and add "imageopt" in tab "Includes" -> field "Include static (from extensions)"
 
+3) Disable not needed providers.
+
+   a) If you accept lossy optimisations then good start is:
+      - for jpeg: mozjpeg (best results), jpgoptim
+      - for git: gifsicle
+      - for png: pngquant (best results), optipng
+
+      So the Page TSConfig you should add that will enable providers is:
+
+      ::
+
+      tx_imageopt {
+        providers {
+          gif {
+            gifsicle.enabled = 1
+          }
+          jpeg {
+            jpegoptim.enabled = 1
+            mozjpeg.enabled = 1
+          }
+          png {
+            pngquant.enabled = 1
+            pngquant-pngcrush.enabled = 1
+          }
+        }
+      }
+
+   b) If you accept only lossless optimisations then good start is:
+      - jpeg: jpegtran, jpegtran-mozjpeg (jpegrescan is wrap around jpegtran-mozjpeg)
+      - git: gifsicle
+      - png: pngcrush
+
+      So the Page TSConfig you should add that will enable providers is:
+
+      ::
+
+      tx_imageopt {
+        providers {
+          gif {
+            gifsicle.enabled = 1
+          }
+          jpeg {
+            jpegtran.enabled = 1
+            jpegtran-mozjpeg.enabled = 1
+          }
+          png {
+            optipng.enabled = 1
+            pngcrush.enabled = 1
+          }
+        }
+      }
+
 Usage
 -----
 

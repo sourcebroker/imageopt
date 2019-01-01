@@ -10,7 +10,7 @@ tx_imageopt {
     providers {
         jpeg {
             jpegoptim {
-                enabled = 1
+                enabled = 0
                 executors {
                     10 {
                         enabled = 1
@@ -51,8 +51,79 @@ tx_imageopt {
                 }
             }
 
+            mozjpeg {
+                enabled = 0
+                executors {
+                    10 {
+                        enabled = 1
+                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                        command {
+                            mask = {executable} -optimize -outfile {tempFile}_tmp {tempFile}
+                            exec = mozjpeg-cjpeg
+                        }
+                    }
+                    20 {
+                        enabled = 1
+                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                        command {
+                            mask = {executable} -f {tempFile}_tmp {tempFile}
+                            exec = cp
+                        }
+                    }
+                }
+            }
+
+            mozjpeg-quality {
+                enabled = 0
+                executors {
+                    10 {
+                        enabled = 1
+                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                        command {
+                            mask = {executable} {quality} -optimize -outfile {tempFile}_tmp {tempFile}
+                            exec = mozjpeg-cjpeg
+                        }
+                        options {
+                            quality {
+                                value < tx_imageopt.default.options.quality
+                                options {
+                                    5 = -quality 5
+                                    10 = -quality 10
+                                    15 = -quality 15
+                                    20 = -quality 20
+                                    25 = -quality 25
+                                    30 = -quality 30
+                                    35 = -quality 35
+                                    40 = -quality 40
+                                    45 = -quality 45
+                                    50 = -quality 50
+                                    55 = -quality 55
+                                    60 = -quality 60
+                                    65 = -quality 65
+                                    70 = -quality 70
+                                    75 = -quality 75
+                                    80 = -quality 80
+                                    85 = -quality 85
+                                    90 = -quality 90
+                                    95 = -quality 95
+                                    100 = -quality 100
+                                }
+                            }
+                        }
+                    }
+                    20 {
+                        enabled = 1
+                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                        command {
+                            mask = {executable} -f {tempFile}_tmp {tempFile}
+                            exec = cp
+                          }
+                    }
+                }
+            }
+
             jpegrescan {
-                enabled = 1
+                enabled = 0
                 executors {
                     10 {
                         enabled = 1
@@ -66,7 +137,7 @@ tx_imageopt {
             }
 
             jpegtran {
-                enabled = 1
+                enabled = 0
                 executors {
                     10 {
                         enabled = 1
@@ -78,11 +149,25 @@ tx_imageopt {
                     }
                 }
             }
+
+            jpegtran-mozjpeg {
+                enabled = 0
+                executors {
+                    10 {
+                        enabled = 1
+                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                        command {
+                            mask = {executable} -copy none -optimize -outfile {tempFile} {tempFile}
+                            exec = mozjpeg-jpegtran
+                        }
+                    }
+                }
+            }
         }
 
         gif {
             gifsicle {
-                enabled = 1
+                enabled = 0
                 executors {
                     10 {
                         enabled = 1
@@ -126,49 +211,21 @@ tx_imageopt {
 
         png {
             optipng {
-                enabled = 1
+                enabled = 0
                 executors {
                     10 {
                         enabled = 1
                         class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
                         command {
-                            mask = {executable} {tempFile} -quiet -strip all {quality}
+                            mask = {executable} {tempFile} -o2 -quiet -strip all
                             exec = optipng
-                        }
-
-                        options {
-                            quality {
-                                value < tx_imageopt.default.options.quality
-                                options {
-                                    5 = -o7
-                                    10 = -o7
-                                    15 = -o7
-                                    20 = -o6
-                                    25 = -o6
-                                    30 = -o6
-                                    35 = -o5
-                                    40 = -o5
-                                    45 = -o5
-                                    50 = -o4
-                                    55 = -o4
-                                    60 = -o4
-                                    65 = -o3
-                                    70 = -o3
-                                    75 = -o3
-                                    80 = -o2
-                                    85 = -o2
-                                    90 = -o2
-                                    95 = -o1
-                                    100 = -o0
-                                }
-                            }
                         }
                     }
                 }
             }
 
             pngcrush {
-                enabled = 1
+                enabled = 0
                 executors {
                     10 {
                         enabled = 1
@@ -182,7 +239,7 @@ tx_imageopt {
             }
 
             pngquant {
-                enabled = 1
+                enabled = 0
                 executors {
                     10 {
                         enabled = 1
@@ -225,7 +282,7 @@ tx_imageopt {
             }
 
             pngquant-pngcrush {
-                enabled = 1
+                enabled = 0
                 executors {
                     10 < tx_imageopt.providers.png.pngquant.executors.10
                     20 < tx_imageopt.providers.png.pngcrush.executors.10
