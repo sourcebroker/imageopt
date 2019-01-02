@@ -46,25 +46,25 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
         } else {
             $file = '@' . $inputImageAbsolutePath;
         }
-        
-        if(isset($options['quality']))
-        {
-            $options['quality'] = (int) $options['quality']['value'];
+    
+        if (isset($options['quality'])) {
+            $options['quality'] = (int)$options['quality']['value'];
         }
-
+    
         foreach ($options as $key => $value) {
             if ($value === 'true' || $value === 'false') {
                 $options[$key] = (bool)$value;
             }
         }
-
+    
         $result = self::request([
-                'file' => $file,
-                'data' => json_encode(array_merge(['auth' => $this->settings['auth']], $options))
-            ],
+            'file' => $file,
+            'data' => json_encode(array_merge(['auth' => $this->settings['auth']], $options)),
+        ],
             $this->settings['url']['upload'],
             ['type' => 'upload']
         );
+    
         if ($result['success']) {
             if (isset($result['response']['kraked_url'])) {
                 if (!$this->getFileFromRemoteServer($inputImageAbsolutePath, $result['response']['kraked_url'])) {
@@ -75,7 +75,7 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
             }
             unset($result['response']);
         }
-
+    
         return $result;
     }
 
