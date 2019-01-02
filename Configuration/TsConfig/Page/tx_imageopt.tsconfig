@@ -30,12 +30,13 @@ tx_imageopt {
                 }
             }
           }
+
           kraken {
             enabled = 1
             executors {
               api {
-                key = 2a9f4fcb773fcf69bd05373d494641be
-                pass = 64b0db57a0613b66e4068725f38d6d8ed57c17e8
+                key = 
+                pass = 
               }
               options {
                   lossy = true
@@ -47,8 +48,7 @@ tx_imageopt {
             enabled = 1
             executors {
               api {
-                key =
-                pass =
+                key = 
               }
             }
           }
@@ -57,11 +57,11 @@ tx_imageopt {
             enabled = 1
             executors {
               api {
-                key =
-                pass =
+                key = 
               }
               options {
-                  lossy = true
+                  0 = full
+                  quality = high
               }
             }
           }
