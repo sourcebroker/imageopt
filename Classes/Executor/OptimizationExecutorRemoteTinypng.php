@@ -62,8 +62,7 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
 
         return $executorResult;
     }
-
-
+    
     /**
      * Upload file to tinypng.com and save it if optimization will be success
      *
@@ -88,8 +87,7 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
 
         return $result;
     }
-
-
+    
     /**
      * Function parsing headers from response
      *
@@ -106,7 +104,7 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
             if (empty($header)) {
                 continue;
             }
-            $split = explode(":", $header, 2);
+            $split = explode(':', $header, 2);
             if (count($split) === 2) {
                 $result[strtolower($split[0])] = trim($split[1]);
             }
@@ -114,8 +112,7 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
 
         return $result;
     }
-
-
+    
     /**
      * Request to tinypng.com using CURL
      *
@@ -171,5 +168,4 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
 
         return $result;
     }
-    
 }
