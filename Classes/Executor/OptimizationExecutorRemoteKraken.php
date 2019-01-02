@@ -31,7 +31,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
 {
 
-
     /**
      * Upload file to kraken.io and save it if optimization will be success
      *
