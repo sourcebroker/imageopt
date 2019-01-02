@@ -62,7 +62,7 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
 
         return $executorResult;
     }
-    
+
     /**
      * Upload file to tinypng.com and save it if optimization will be success
      *
@@ -87,7 +87,7 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
 
         return $result;
     }
-    
+
     /**
      * Function parsing headers from response
      *
@@ -112,7 +112,7 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
 
         return $result;
     }
-    
+
     /**
      * Request to tinypng.com using CURL
      *
