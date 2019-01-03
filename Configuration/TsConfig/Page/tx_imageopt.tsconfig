@@ -36,6 +36,9 @@ tx_imageopt {
               api {
                 key = 2a9f4fcb773fcf69bd05373d494641be
                 pass = 64b0db57a0613b66e4068725f38d6d8ed57c17e8
+                url {
+                  upload = https://api.kraken.io/v1/upload
+                }
               }
               options {
                   lossy = true
