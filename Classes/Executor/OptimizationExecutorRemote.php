@@ -27,6 +27,7 @@ namespace SourceBroker\Imageopt\Executor;
 use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class OptimizationExecutorRemote
