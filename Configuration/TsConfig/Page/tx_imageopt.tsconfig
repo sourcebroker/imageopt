@@ -57,7 +57,7 @@ tx_imageopt {
             enabled = 1
             executors {
               api {
-                key = flllxpgksm
+                key =
                 url {
                   upload = https://im2.io
                 }
