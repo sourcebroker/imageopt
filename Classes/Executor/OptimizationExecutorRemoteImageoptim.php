@@ -113,7 +113,7 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
      * @param array $params Additional parameters
      * @return array
      */
-    protected function request($data, $url, $params = [])
+    protected function request($data, string $url, array $params = []) : array
     {
         $options = [
             'curl' => [],

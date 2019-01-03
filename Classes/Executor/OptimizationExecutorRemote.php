@@ -24,29 +24,125 @@
 
 namespace SourceBroker\Imageopt\Executor;
 
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class OptimizationExecutorRemote
  */
 class OptimizationExecutorRemote extends OptimizationExecutorBase
 {
+
+    /**
+     * @var int
+     */
+    protected $timeout = 30;
+
+    /**
+     * @var mixed
+     */
+    protected $proxy = [];
+
+    /**
+     * @var string[]
+     */
+    protected $url = [];
+
+    /**
+     * @var string[]
+     */
+    protected $auth = [];
+
     /**
      * @var array
      */
-    protected $settings = [
-        'timeout' => 30,
-        'auth' => [],
-        'url' => [],
-        'proxy' => null
-    ];
+    protected $options = [];
 
     /**
-     * @param array $settings Provider settings
+     * Optimize image
+     *
+     * @param $inputImageAbsolutePath string Absolute path/file with image to be optimized
+     * @param Configurator $configurator
+     * @return ExecutorResult Optimization result
      */
-    public function initialize($settings)
+    public function optimize(string $inputImageAbsolutePath, Configurator $configurator) : ExecutorResult
     {
-        $this->settings = array_merge($this->settings, $settings);
+        $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
+        $executorResult->setExecutedSuccessfully(false);
+
+        $inited = $this->initialize($configurator);
+        if ($inited) {
+            $executorResult->setSizeBefore(filesize($inputImageAbsolutePath));
+
+            $result = $this->process($inputImageAbsolutePath);
+
+            if ($result['success']) {
+                $executorResult->setSizeAfter(filesize($inputImageAbsolutePath));
+                $executorResult->setExecutedSuccessfully(true);
+            } else {
+                $message = isset($result['providerError'])
+                    ? $result['providerError']
+                    : 'Undefined error';
+                $executorResult->setErrorMessage($message);
+            }
+        } else {
+            $executorResult->setErrorMessage('Unable to initialize executor - check configuration');
+        }
+
+        return $executorResult;
+    }
+
+    /**
+     * Initialize executor
+     *
+     * @param Configurator $configurator
+     * @return bool
+     */
+    protected function initialize(Configurator $configurator) : bool
+    {
+        $timeout = $configurator->getOption('timeout');
+        if ($timeout !== null) {
+            $this->timeout = (int)$timeout;
+        }
+
+        $proxy = $configurator->getOption('proxy');
+        if ($timeout !== null) {
+            $this->proxy = $proxy;
+        }
+
+        $apiUrl = $configurator->getOption('api.url');
+        if (!$apiUrl) {
+            return false;
+        }
+        $this->url = $apiUrl;
+
+        $apiAuth = $configurator->getOption('api.auth');
+        if (!$apiAuth) {
+            return false;
+        }
+        $this->auth = $apiAuth;
+
+        $options = $configurator->getOption('options');
+        if ($options !== null) {
+            $this->options = $options;
+        }
+
+        return true;
+    }
+
+    /**
+     * Process specific executor logic
+     *
+     * @param string $inputImageAbsolutePath Absolute path/file with original image
+     * @return array
+     */
+    protected function process(string $inputImageAbsolutePath) : array
+    {
+        return [
+            'success'       => false,
+            'providerError' => 'Process not defined',
+        ];
     }
 
     /**
@@ -57,7 +153,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param array $options Additional options
      * @return array
      */
-    protected function request($data, $url, $options = [])
+    protected function request($data, string $url, array $options = []) : array
     {
         $curl = curl_init();
 
@@ -65,21 +161,21 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
             curl_setopt_array($curl, $options['curl']);
         }
 
-        if (is_array($this->settings['proxy'])) {
-            curl_setopt($curl, CURLOPT_PROXY, $this->settings['proxy']['host']);
+        if (is_array($this->proxy)) {
+            curl_setopt($curl, CURLOPT_PROXY, $this->proxy['host']);
             curl_setopt($curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
 
-            if (isset($this->settings['proxy']['port'])) {
-                curl_setopt($curl, CURLOPT_PROXYPORT, $this->settings['proxy']['port']);
+            if (isset($this->proxy['port'])) {
+                curl_setopt($curl, CURLOPT_PROXYPORT, $this->proxy['port']);
             }
 
             $creds = '';
 
-            if (isset($this->settings['proxy']['user'])) {
-                $creds .= $this->settings['proxy']['user'];
+            if (isset($this->proxy['user'])) {
+                $creds .= $this->proxy['user'];
             }
-            if (isset($this->settings['proxy']['pass'])) {
-                $creds .= ':' . $this->settings['proxy']['pass'];
+            if (isset($this->proxy['pass'])) {
+                $creds .= ':' . $this->proxy['pass'];
             }
 
             if ($creds != '') {
@@ -96,10 +192,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
         curl_setopt($curl, CURLOPT_POST, 1);//tiny?
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         curl_setopt($curl, CURLOPT_FAILONERROR, 0);
-        curl_setopt($curl, CURLOPT_CAINFO,
-            ExtensionManagementUtility::extPath('imageopt') . 'Resources/Private/Cert/cacert.pem');
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 1);//kraken?
-        curl_setopt($curl, CURLOPT_TIMEOUT, $this->settings['timeout']);
+        curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
         //curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);//imageopt?
         $response = curl_exec($curl);
 
@@ -107,10 +200,10 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
         $headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
 
         $result = [
-            'response' => $response,
-            'http_code' => $httpCode,
+            'response'    => $response,
+            'http_code'   => $httpCode,
             'header_size' => $headerSize,
-            'error' => curl_error($curl)
+            'error'       => curl_error($curl),
         ];
         curl_close($curl);
 
@@ -124,7 +217,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param string $url Url of the image to download
      * @return bool Returns true if the image exists and will be saved
      */
-    protected function getFileFromRemoteServer($inputImageAbsolutePath, $url)
+    protected function getFileFromRemoteServer(string $inputImageAbsolutePath, string $url) : bool
     {
         $headers = get_headers($url);
 

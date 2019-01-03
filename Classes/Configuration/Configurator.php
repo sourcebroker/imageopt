@@ -27,7 +27,6 @@ namespace SourceBroker\Imageopt\Configuration;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\TypoScript\TypoScriptService;
-use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -35,6 +34,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class Configurator
 {
+
     /**
      * Configuration of module set as array
      *
@@ -95,6 +95,7 @@ class Configurator
                 }
             }
         }
+
         return $config;
     }
 
@@ -141,29 +142,27 @@ class Configurator
      * @param array $config
      * @return array
      */
-    public function mergeDefaultForProviderAndExecutor(array $config): array
+    public function mergeDefaultForProviderAndExecutor(array $config) : array
     {
         foreach ($config['providers'] as $extension => $providersForExtension) {
             foreach ($providersForExtension as $providerKey => $providerValues) {
                 if (is_array($config['default']['providers']['_all'])) {
                     $allExceptExecutors = $config['default']['providers']['_all'];
                     unset($allExceptExecutors['executors']);
-                    ArrayUtility::mergeRecursiveWithOverrule($providerValues,
-                        $allExceptExecutors);
+                    $providerValues = array_merge_recursive($allExceptExecutors, $providerValues);
                 }
                 if (is_array($config['default']['providers'][$providerKey])) {
                     $allExceptExecutors = $config['default']['providers'][$providerKey];
                     unset($allExceptExecutors['executors']);
-                    ArrayUtility::mergeRecursiveWithOverrule($providerValues,
-                        $allExceptExecutors);
+                    $providerValues = array_merge_recursive($allExceptExecutors, $providerValues);
                 }
                 foreach ($providerValues['executors'] as $executorKey => $executorValues) {
                     if (is_array($config['default']['providers']['_all']['executors'])) {
-                        ArrayUtility::mergeRecursiveWithOverrule($executorValues,
+                        $executorValues = array_replace_recursive($executorValues,
                             $config['default']['providers']['_all']['executors']);
                     }
                     if (is_array($config['default']['providers'][$providerKey]['executors'])) {
-                        ArrayUtility::mergeRecursiveWithOverrule($executorValues,
+                        $executorValues = array_replace_recursive($executorValues,
                             $config['default']['providers'][$providerKey]['executors']);
                     }
                     $providerValues['executors'][$executorKey] = $executorValues;
@@ -171,6 +170,7 @@ class Configurator
                 $config['providers'][$extension][$providerKey] = $providerValues;
             }
         }
+
         return $config;
     }
 }
