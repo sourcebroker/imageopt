@@ -25,23 +25,52 @@
 namespace SourceBroker\Imageopt\Executor;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
-use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
 {
 
+    /**
+     * Initialize executor
+     *
+     * @param Configurator $configurator
+     * @return bool
+     */
+    protected function initialize(Configurator $configurator) : bool
+    {
+        $result = parent::initialize($configurator);
+
+        if ($result) {
+            if (!isset($this->auth['key']) || !isset($this->auth['pass'])) {
+                $result = false;
+            } elseif (!isset($this->url['upload'])) {
+                $result = false;
+            }
+        }
+
+        return $result;
+    }
 
     /**
      * Upload file to kraken.io and save it if optimization will be success
      *
      * @param string $inputImageAbsolutePath Absolute path/file with original image
-     * @param array $options Additional options to optimize
-     * @return array Result of optimization
+     * @return array
      */
-    public function upload($inputImageAbsolutePath, $options = [])
+    protected function process(string $inputImageAbsolutePath) : array
     {
-        $file = '@' . $inputImageAbsolutePath;
+        $file = curl_file_create($inputImageAbsolutePath);
+
+        $options = $this->options;
+        $options['wait'] = true; // wait for processed file (forced option)
+        $options['auth'] = [
+            'api_key'    => $this->auth['key'],
+            'api_secret' => $this->auth['pass'],
+        ];
+
+        if (isset($options['quality'])) {
+            $options['quality'] = (int)$options['quality']['value'];
+        }
 
         foreach ($options as $key => $value) {
             if ($value === 'true' || $value === 'false') {
@@ -49,118 +78,92 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
             }
         }
 
-        $result = self::request([
-            'upload' => $file,
-            'data' => json_encode(array_merge(['auth' => $this->settings['auth']], $options))
-        ],
-            $this->settings['url']['upload'],
-            ['type' => 'upload']
-        );
+        $post = [
+            'file' => $file,
+            'data' => json_encode($options),
+        ];
+        $result = self::request($post, $this->url['upload'], ['type' => 'upload']);
+
         if ($result['success']) {
             if (isset($result['response']['kraked_url'])) {
-                if (!$this->getFileFromRemoteServer($inputImageAbsolutePath, $result['response']['kraked_url'])) {
+                $download = $this->getFileFromRemoteServer($inputImageAbsolutePath, $result['response']['kraked_url']);
+                if (!$download) {
                     $result['success'] = false;
+                    $result['providerError'] = 'Unable to download image';
                 }
             } else {
                 $result['success'] = false;
             }
-            unset($result['response']);
         }
 
         return $result;
     }
 
     /**
-     * Return the status of account in kraken.io
+     * Executes request to remote server
      *
-     * @return array
-     */
-    public function status()
-    {
-        $response = self::request(json_encode($this->settings['auth']), $this->settings['url']['status'], 'url');
-
-        return $response;
-    }
-
-    /**
      * @param array $data Array with data and file path
      * @param string $url API kraken.io url
      * @param array $params Additional parameters
      * @return array Result of optimization includes the response from the kraken.io
      */
-    public function request($data, $url, $params = [])
+    protected function request($data, string $url, array $params = []) : array
     {
         $options = [
-            'curl' => []
+            'curl' => [
+                CURLOPT_CAINFO         => ExtensionManagementUtility::extPath('imageopt') . 'Resources/Private/Cert/cacert.pem',
+                CURLOPT_SSL_VERIFYPEER => 1,
+            ],
         ];
 
-        if (isset($params['type']) && $params['type'] == 'url') {
+        if (isset($params['type']) && $params['type'] === 'url') {
             $options['curl'][CURLOPT_HTTPHEADER] = [
-                'Content-Type: application/json'
+                'Content-Type: application/json',
             ];
         }
+
         $responseFromAPI = parent::request($data, $url, $options);
 
-        $response = json_decode($responseFromAPI['response'], true);
-
-        if ($response === null) {
+        if ($responseFromAPI['error']) {
             $result = [
-                'success' => false,
-                'providerError' => 'cURL Error: ' . $responseFromAPI['error']
+                'success'       => false,
+                'providerError' => 'cURL Error: ' . $responseFromAPI['error'],
+            ];
+        } elseif ($responseFromAPI['http_code'] === 429) {
+            $result = [
+                'success'       => false,
+                'providerError' => 'Limit out',
+            ];
+        } elseif ($responseFromAPI['http_code'] !== 200) {
+            $result = [
+                'success'       => false,
+                'providerError' => 'Url HTTP code: ' . $responseFromAPI['http_code'],
             ];
         } else {
-            if ($responseFromAPI['http_code'] == 429) {
-                return [
-                    'success' => false,
-                    'providerError' => 'Limit out'
+            $response = json_decode($responseFromAPI['response'], true, 512);
+
+            if ($response === null) {
+                $result = [
+                    'success'       => false,
+                    'providerError' => 'Unable to decode JSON',
+                ];
+            } elseif (!isset($response['success']) || $response['success'] === false) {
+                $message = isset($response['message'])
+                    ? $response['message']
+                    : 'Undefined';
+
+                $result = [
+                    'success'       => false,
+                    'providerError' => 'API error: ' . $message,
                 ];
             } else {
-                if ($responseFromAPI['http_code'] != 200) {
-                    return [
-                        'success' => false,
-                        'providerError' => 'Url HTTP code: ' . $responseFromAPI['http_code']
-                    ];
-                }
+                $result = [
+                    'success'  => true,
+                    'response' => $response,
+                ];
             }
-
-            $result = [
-                'success' => (isset($response['success']) && $response['success'] === true) ? true : false,
-                'response' => $response
-            ];
         }
 
         return $result;
-    }
-
-    /**
-     * Optimize image
-     *
-     * @param $inputImageAbsolutePath string Absolute path/file with image to be optimized
-     * @param Configurator $configurator
-     * @return ExecutorResult Optimization result
-     */
-    public function optimize(string $inputImageAbsolutePath, Configurator $configurator): ExecutorResult
-    {
-        $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
-        $executorResult->setExecutedSuccessfully(false);
-
-        if (!empty($configurator->getOption('api.key')) && !empty($configurator->getOption('api.pass'))) {
-            $executorResult->setSizeBefore(filesize($inputImageAbsolutePath));
-            $this->initialize([
-                'auth' => [
-                    'api_key' => $configurator->getOption('api.key'),
-                    'api_secret' => $configurator->getOption('api.pass')
-                ],
-                'url' => [
-                    'upload' => 'https://api.kraken.io/v1/upload',
-                    'status' => 'https://api.kraken.io/user_status'
-                ]
-            ]);
-            $this->upload($inputImageAbsolutePath,
-                array_merge(['wait' => true], $configurator->getOption('options')));
-            $executorResult->setSizeAfter(filesize($inputImageAbsolutePath));
-            $executorResult->setExecutedSuccessfully(true);
-        }
-        return $executorResult;
     }
 }
