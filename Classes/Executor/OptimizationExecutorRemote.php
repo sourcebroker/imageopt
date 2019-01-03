@@ -24,6 +24,8 @@
 
 namespace SourceBroker\Imageopt\Executor;
 
+use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 /**
@@ -31,14 +33,15 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
  */
 class OptimizationExecutorRemote extends OptimizationExecutorBase
 {
+
     /**
      * @var array
      */
     protected $settings = [
         'timeout' => 30,
-        'auth' => [],
-        'url' => [],
-        'proxy' => null
+        'auth'    => [],
+        'url'     => [],
+        'proxy'   => null,
     ];
 
     /**
@@ -50,6 +53,65 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
     }
 
     /**
+     * Optimize image
+     *
+     * @param $inputImageAbsolutePath string Absolute path/file with image to be optimized
+     * @param Configurator $configurator
+     * @return ExecutorResult Optimization result
+     */
+    public function optimize(string $inputImageAbsolutePath, Configurator $configurator) : ExecutorResult
+    {
+        $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
+        $executorResult->setExecutedSuccessfully(false);
+
+        $valid = $this->validateConfiguration();
+        if ($valid) {
+            $executorResult->setSizeBefore(filesize($inputImageAbsolutePath));
+
+            $result = $this->process($inputImageAbsolutePath, $configurator->getOption('options'));
+
+            if ($result['success']) {
+                $executorResult->setSizeAfter(filesize($inputImageAbsolutePath));
+                $executorResult->setExecutedSuccessfully(true);
+            } else {
+                $message = isset($result['providerError'])
+                    ? $result['providerError']
+                    : 'Undefined error';
+                $executorResult->setErrorMessage($message);
+            }
+        } else {
+            $executorResult->setErrorMessage('Invalid executor configuration');
+        }
+
+        return $executorResult;
+    }
+
+    /**
+     * Validates configuration
+     *
+     * @return bool
+     */
+    protected function validateConfiguration() : bool
+    {
+        return false;
+    }
+
+    /**
+     * Process specific executor logic
+     *
+     * @param string $inputImageAbsolutePath Absolute path/file with original image
+     * @param array $options Additional options to optimize
+     * @return array
+     */
+    protected function process(string $inputImageAbsolutePath, array $options) : array
+    {
+        return [
+            'success'       => false,
+            'providerError' => 'Process not defined',
+        ];
+    }
+
+    /**
      * Executes request to remote server
      *
      * @param string|array $data Data of request
@@ -57,7 +119,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param array $options Additional options
      * @return array
      */
-    protected function request($data, $url, $options = [])
+    protected function request($data, string $url, array $options = []) : array
     {
         $curl = curl_init();
 
@@ -107,10 +169,10 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
         $headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
 
         $result = [
-            'response' => $response,
-            'http_code' => $httpCode,
+            'response'    => $response,
+            'http_code'   => $httpCode,
             'header_size' => $headerSize,
-            'error' => curl_error($curl)
+            'error'       => curl_error($curl),
         ];
         curl_close($curl);
 
@@ -124,7 +186,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param string $url Url of the image to download
      * @return bool Returns true if the image exists and will be saved
      */
-    protected function getFileFromRemoteServer($inputImageAbsolutePath, $url)
+    protected function getFileFromRemoteServer(string $inputImageAbsolutePath, string $url) : bool
     {
         $headers = get_headers($url);
 
