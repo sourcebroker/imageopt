@@ -25,7 +25,6 @@
 namespace SourceBroker\Imageopt\Executor;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
 {
