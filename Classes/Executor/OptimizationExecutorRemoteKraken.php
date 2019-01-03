@@ -25,8 +25,7 @@
 namespace SourceBroker\Imageopt\Executor;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
-use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
 {
@@ -49,10 +48,8 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
             }
         }
 
-
         return $result;
     }
-
 
     /**
      * Upload file to kraken.io and save it if optimization will be success
@@ -66,7 +63,10 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
 
         $options = $this->options;
         $options['wait'] = true; // wait for processed file (forced option)
-        $options['auth'] = $this->auth;
+        $options['auth'] = [
+            'api_key'    => $this->auth['key'],
+            'api_secret' => $this->auth['pass'],
+        ];
 
         if (isset($options['quality'])) {
             $options['quality'] = (int)$options['quality']['value'];
@@ -82,7 +82,7 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
             'file' => $file,
             'data' => json_encode($options),
         ];
-        $result = self::request($post, $this->settings['url']['upload'], ['type' => 'upload']);
+        $result = self::request($post, $this->url['upload'], ['type' => 'upload']);
 
         if ($result['success']) {
             if (isset($result['response']['kraked_url'])) {
@@ -100,6 +100,8 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
     }
 
     /**
+     * Executes request to remote server
+     *
      * @param array $data Array with data and file path
      * @param string $url API kraken.io url
      * @param array $params Additional parameters
@@ -108,7 +110,10 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
     protected function request($data, string $url, array $params = []) : array
     {
         $options = [
-            'curl' => [],
+            'curl' => [
+                CURLOPT_CAINFO         => ExtensionManagementUtility::extPath('imageopt') . 'Resources/Private/Cert/cacert.pem',
+                CURLOPT_SSL_VERIFYPEER => 1,
+            ],
         ];
 
         if (isset($params['type']) && $params['type'] === 'url') {
