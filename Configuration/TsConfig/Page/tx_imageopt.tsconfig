@@ -48,7 +48,9 @@ tx_imageopt {
             executors {
               api {
                 key =
-                pass =
+                url {
+                  upload = https://api.tinify.com/shrink
+                }
               }
             }
           }
