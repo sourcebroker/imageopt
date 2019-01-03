@@ -72,7 +72,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
         $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
         $executorResult->setExecutedSuccessfully(false);
 
-        $inited = $this->initialize();
+        $inited = $this->initialize($configurator);
         if ($inited) {
             $executorResult->setSizeBefore(filesize($inputImageAbsolutePath));
 
@@ -95,9 +95,12 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
     }
 
     /**
-     * @param array $settings Provider settings
+     * Initialize executor
+     *
+     * @param Configurator $configurator
+     * @return bool
      */
-    protected function initialize(Configurator $configurator)
+    protected function initialize(Configurator $configurator) : bool
     {
         $timeout = $configurator->getOption('timeout');
         if ($timeout !== null) {
@@ -133,10 +136,9 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * Process specific executor logic
      *
      * @param string $inputImageAbsolutePath Absolute path/file with original image
-     * @param array $options Additional options to optimize
      * @return array
      */
-    protected function process(string $inputImageAbsolutePath, array $options) : array
+    protected function process(string $inputImageAbsolutePath) : array
     {
         return [
             'success'       => false,
@@ -160,21 +162,21 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
             curl_setopt_array($curl, $options['curl']);
         }
 
-        if (is_array($this->settings['proxy'])) {
-            curl_setopt($curl, CURLOPT_PROXY, $this->settings['proxy']['host']);
+        if (is_array($this->proxy)) {
+            curl_setopt($curl, CURLOPT_PROXY, $this->proxy['host']);
             curl_setopt($curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
 
-            if (isset($this->settings['proxy']['port'])) {
-                curl_setopt($curl, CURLOPT_PROXYPORT, $this->settings['proxy']['port']);
+            if (isset($this->proxy['port'])) {
+                curl_setopt($curl, CURLOPT_PROXYPORT, $this->proxy['port']);
             }
 
             $creds = '';
 
-            if (isset($this->settings['proxy']['user'])) {
-                $creds .= $this->settings['proxy']['user'];
+            if (isset($this->proxy['user'])) {
+                $creds .= $this->proxy['user'];
             }
-            if (isset($this->settings['proxy']['pass'])) {
-                $creds .= ':' . $this->settings['proxy']['pass'];
+            if (isset($this->proxy['pass'])) {
+                $creds .= ':' . $this->proxy['pass'];
             }
 
             if ($creds != '') {
@@ -191,10 +193,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
         curl_setopt($curl, CURLOPT_POST, 1);//tiny?
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         curl_setopt($curl, CURLOPT_FAILONERROR, 0);
-        curl_setopt($curl, CURLOPT_CAINFO,
-            ExtensionManagementUtility::extPath('imageopt') . 'Resources/Private/Cert/cacert.pem');
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 1);//kraken?
-        curl_setopt($curl, CURLOPT_TIMEOUT, $this->settings['timeout']);
+        curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
         //curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);//imageopt?
         $response = curl_exec($curl);
 
