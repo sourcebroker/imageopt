@@ -66,7 +66,6 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
                 } else {
                     $executorResult->setErrorMessage('Unable to download image');
                 }
-
             } else {
                 $message = isset($result['providerError'])
                     ? $result['providerError']
