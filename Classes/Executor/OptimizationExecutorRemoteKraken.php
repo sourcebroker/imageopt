@@ -47,7 +47,6 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
                 $result = false;
             }
         }
-
         return $result;
     }
 
