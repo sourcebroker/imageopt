@@ -59,7 +59,6 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      */
     protected $options = [];
 
-
     /**
      * Optimize image
      *
