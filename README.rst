@@ -42,7 +42,7 @@ Features
 - If you enable more than one image type optimization provider then all of them will be executed and the best optimized
   image is choosen as result. All other results are stored in database so you can build results statistics later.
 
-- Own providers can be registered with page TSconfig or
+- Own providers can be registered with page TSconfig.
 
 - Providers can have more than one executors and executors can be chained. So for example you create provider that
   consist of two chained executors: first executor will optimize jpg and the second executor will make the jpg image
@@ -72,9 +72,10 @@ Installation
 3) Disable not needed providers.
 
    a) If you accept lossy optimisations then good start is:
+
       - for jpeg: mozjpeg (best results), jpgoptim
       - for git: gifsicle
-      - for png: pngquant (best results), optipng
+      - for png: pngquant
 
       So the Page TSConfig you should add that will enable providers is:
 
@@ -97,9 +98,10 @@ Installation
         }
 
    b) If you accept only lossless optimisations then good start is:
+
       - jpeg: jpegtran, jpegtran-mozjpeg (jpegrescan is wrap around jpegtran-mozjpeg)
       - git: gifsicle
-      - png: pngcrush
+      - png: pngcrush, optipng
 
       So the Page TSConfig you should add that will enable providers is:
 
