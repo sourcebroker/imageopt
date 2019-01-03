@@ -32,13 +32,25 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
 {
 
     /**
-     * Validates configuration
+     * Initialize executor
      *
+     * @param Configurator $configurator
      * @return bool
      */
-    protected function validateConfiguration(Configurator $configurator) : bool
+    protected function initialize(Configurator $configurator) : bool
     {
-        return !empty($configurator->getOption('api.key')) && !empty($configurator->getOption('api.pass'));
+        $result = parent::initialize($configurator);
+
+        if ($result) {
+            if (!isset($this->auth['key']) || !isset($this->auth['pass'])) {
+                $result = false;
+            } elseif (!isset($this->url['upload'])) {
+                $result = false;
+            }
+        }
+
+
+        return $result;
     }
 
 
@@ -46,22 +58,15 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
      * Upload file to kraken.io and save it if optimization will be success
      *
      * @param string $inputImageAbsolutePath Absolute path/file with original image
-     * @param array $options Additional options to optimize
      * @return array
      */
-    protected function process(string $inputImageAbsolutePath, array $options) : array
+    protected function process(string $inputImageAbsolutePath) : array
     {
-        $this->initialize([
-            'auth' => [
-                'api_key'    => $configurator->getOption('api.key'),
-                'api_secret' => $configurator->getOption('api.pass'),
-            ],
-            'url' => [
-                'upload' => $configurator->getOption('api.url.upload'),
-            ],
-        ]);
-
         $file = curl_file_create($inputImageAbsolutePath);
+
+        $options = $this->options;
+        $options['wait'] = true; // wait for processed file (forced option)
+        $options['auth'] = $this->auth;
 
         if (isset($options['quality'])) {
             $options['quality'] = (int)$options['quality']['value'];
@@ -72,9 +77,6 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
                 $options[$key] = (bool)$value;
             }
         }
-
-        $options['wait'] = true; // wait for processed file (forced option)
-        $options['auth'] = $this->settings['auth'];
 
         $post = [
             'file' => $file,
