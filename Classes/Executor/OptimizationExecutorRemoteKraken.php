@@ -32,62 +32,35 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
 {
 
     /**
-     * Optimize image
+     * Validates configuration
      *
-     * @param string $inputImageAbsolutePath Absolute path/file with image to be optimized
-     * @param Configurator $configurator
-     * @return ExecutorResult Optimization result
+     * @return bool
      */
-    public function optimize(string $inputImageAbsolutePath, Configurator $configurator) : ExecutorResult
+    protected function validateConfiguration(Configurator $configurator) : bool
     {
-        $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
-        $executorResult->setExecutedSuccessfully(false);
-
-        if (!empty($configurator->getOption('api.key')) && !empty($configurator->getOption('api.pass'))) {
-            $executorResult->setSizeBefore(filesize($inputImageAbsolutePath));
-            $this->initialize([
-                'auth' => [
-                    'api_key'    => $configurator->getOption('api.key'),
-                    'api_secret' => $configurator->getOption('api.pass'),
-                ],
-                'url' => [
-                    'upload' => $configurator->getOption('api.url.upload'),
-                ],
-            ]);
-
-            $result = $this->upload($inputImageAbsolutePath, $configurator->getOption('options'));
-
-            if ($result['success']) {
-                $download = $this->getFileFromRemoteServer($inputImageAbsolutePath, $result['response']['kraked_url']);
-
-                if ($download) {
-                    $executorResult->setSizeAfter(filesize($inputImageAbsolutePath));
-                    $executorResult->setExecutedSuccessfully(true);
-                } else {
-                    $executorResult->setErrorMessage('Unable to download image');
-                }
-            } else {
-                $message = isset($result['providerError'])
-                    ? $result['providerError']
-                    : 'Undefined error';
-                $executorResult->setErrorMessage($message);
-            }
-        } else {
-            $executorResult->setErrorMessage('Set API account data in config file');
-        }
-
-        return $executorResult;
+        return !empty($configurator->getOption('api.key')) && !empty($configurator->getOption('api.pass'));
     }
+
 
     /**
      * Upload file to kraken.io and save it if optimization will be success
      *
      * @param string $inputImageAbsolutePath Absolute path/file with original image
      * @param array $options Additional options to optimize
-     * @return array Result of optimization
+     * @return array
      */
-    protected function upload(string $inputImageAbsolutePath, $options = [])
+    protected function process(string $inputImageAbsolutePath, array $options) : array
     {
+        $this->initialize([
+            'auth' => [
+                'api_key'    => $configurator->getOption('api.key'),
+                'api_secret' => $configurator->getOption('api.pass'),
+            ],
+            'url' => [
+                'upload' => $configurator->getOption('api.url.upload'),
+            ],
+        ]);
+
         $file = curl_file_create($inputImageAbsolutePath);
 
         if (isset($options['quality'])) {
@@ -110,7 +83,13 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
         $result = self::request($post, $this->settings['url']['upload'], ['type' => 'upload']);
 
         if ($result['success']) {
-            if (!isset($result['response']['kraked_url'])) {
+            if (isset($result['response']['kraked_url'])) {
+                $download = $this->getFileFromRemoteServer($inputImageAbsolutePath, $result['response']['kraked_url']);
+                if (!$download) {
+                    $result['success'] = false;
+                    $result['providerError'] = 'Unable to download image';
+                }
+            } else {
                 $result['success'] = false;
             }
         }
@@ -124,7 +103,7 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
      * @param array $params Additional parameters
      * @return array Result of optimization includes the response from the kraken.io
      */
-    protected function request($data, $url, $params = [])
+    protected function request($data, string $url, array $params = []) : array
     {
         $options = [
             'curl' => [],
