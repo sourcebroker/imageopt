@@ -80,21 +80,21 @@ Installation
 
       ::
 
-      tx_imageopt {
-        providers {
-          gif {
-            gifsicle.enabled = 1
-          }
-          jpeg {
-            jpegoptim.enabled = 1
-            mozjpeg.enabled = 1
-          }
-          png {
-            pngquant.enabled = 1
-            pngquant-pngcrush.enabled = 1
+        tx_imageopt {
+          providers {
+            gif {
+              gifsicle.enabled = 1
+            }
+            jpeg {
+              jpegoptim.enabled = 1
+              mozjpeg.enabled = 1
+            }
+            png {
+              pngquant.enabled = 1
+              pngquant-pngcrush.enabled = 1
+            }
           }
         }
-      }
 
    b) If you accept only lossless optimisations then good start is:
       - jpeg: jpegtran, jpegtran-mozjpeg (jpegrescan is wrap around jpegtran-mozjpeg)
@@ -105,21 +105,21 @@ Installation
 
       ::
 
-      tx_imageopt {
-        providers {
-          gif {
-            gifsicle.enabled = 1
-          }
-          jpeg {
-            jpegtran.enabled = 1
-            jpegtran-mozjpeg.enabled = 1
-          }
-          png {
-            optipng.enabled = 1
-            pngcrush.enabled = 1
+        tx_imageopt {
+          providers {
+            gif {
+              gifsicle.enabled = 1
+            }
+            jpeg {
+              jpegtran.enabled = 1
+              jpegtran-mozjpeg.enabled = 1
+            }
+            png {
+              optipng.enabled = 1
+              pngcrush.enabled = 1
+            }
           }
         }
-      }
 
 Usage
 -----
