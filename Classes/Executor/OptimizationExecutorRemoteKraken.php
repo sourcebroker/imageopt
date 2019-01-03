@@ -140,7 +140,7 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
             'curl' => [],
         ];
 
-        if (isset($params['type']) && $params['type'] == 'url') {
+        if (isset($params['type']) && $params['type'] === 'url') {
             $options['curl'][CURLOPT_HTTPHEADER] = [
                 'Content-Type: application/json',
             ];
@@ -153,12 +153,12 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
                 'success'       => false,
                 'providerError' => 'cURL Error: ' . $responseFromAPI['error'],
             ];
-        } elseif ($responseFromAPI['http_code'] == 429) {
+        } elseif ($responseFromAPI['http_code'] === 429) {
             return [
                 'success'       => false,
                 'providerError' => 'Limit out',
             ];
-        } elseif ($responseFromAPI['http_code'] != 200) {
+        } elseif ($responseFromAPI['http_code'] !== 200) {
             return [
                 'success'       => false,
                 'providerError' => 'Url HTTP code: ' . $responseFromAPI['http_code'],
