@@ -119,16 +119,6 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
     }
 
     /**
-     * Return the status of account in kraken.io
-     *
-     * @return array
-     */
-    protected function status()
-    {
-        return self::request(json_encode($this->settings['auth']), $this->settings['url']['status'], 'url');
-    }
-
-    /**
      * @param array $data Array with data and file path
      * @param string $url API kraken.io url
      * @param array $params Additional parameters
