@@ -85,12 +85,12 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
      * @param array $params Additional parameters
      * @return array Result of optimization includes the response from the tinypng.com
      */
-    protected function request($data, $url, $params = [])
+    protected function request($data, string $url, array $params = []) : array
     {
         $options = array_merge([
             'curl' => [
                 CURLOPT_HEADER  => true,
-                CURLOPT_USERPWD => 'api:' . $this->settings['auth']['api_key'],
+                CURLOPT_USERPWD => 'api:' . $this->auth['key'],
             ],
         ], $params);
 
