@@ -25,26 +25,139 @@
 namespace SourceBroker\Imageopt\Executor;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
-use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
 {
+
     /**
-     * Optimize image using remote Tinypng
-     * Return the temporary file path
+     * Initialize executor
      *
-     * @param string $inputImageAbsolutePath Absolute path/file with image to be optimized. It will be replaced with optimized version.
-     * @param Configurator $configurator Executor configurator
-     * @return ExecutorResult Executor Result
+     * @param Configurator $configurator
+     * @return bool
      */
-    public function optimize(string $inputImageAbsolutePath, Configurator $configurator) : ExecutorResult
+    protected function initialize(Configurator $configurator) : bool
     {
-        $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
-        $executorResult->setExecutedSuccessfully(false);
+        $result = parent::initialize($configurator);
 
-        // Implement optimize image with Tinypng and fill all $execuroeResult fields
+        if ($result) {
+            if (!isset($this->auth['key'])) {
+                $result = false;
+            } elseif (!isset($this->url['upload'])) {
+                $result = false;
+            }
+        }
 
-        return $executorResult;
+        return $result;
+    }
+
+    /**
+     * Upload file to tinypng.com and save it if optimization will be success
+     *
+     * @param string $inputImageAbsolutePath Absolute path/file with original image
+     * @return array
+     */
+    protected function process(string $inputImageAbsolutePath) : array
+    {
+        $result = self::request(file_get_contents($inputImageAbsolutePath), $this->url['upload']);
+
+        if ($result['success']) {
+            if (isset($result['response']['output']['url'])) {
+                $download = $this->getFileFromRemoteServer($inputImageAbsolutePath,
+                    $result['response']['output']['url']);
+                if (!$download) {
+                    $result['success'] = false;
+                    $result['providerError'] = 'Unable to download image';
+                }
+            } else {
+                $result['success'] = false;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Request to tinypng.com using CURL
+     *
+     * @param string $data String from image file
+     * @param string $url API tinypng.com url
+     * @param array $params Additional parameters
+     * @return array Result of optimization includes the response from the tinypng.com
+     */
+    protected function request($data, $url, $params = [])
+    {
+        $options = array_merge([
+            'curl' => [
+                CURLOPT_HEADER  => true,
+                CURLOPT_USERPWD => 'api:' . $this->settings['auth']['api_key'],
+            ],
+        ], $params);
+
+        $responseFromAPI = parent::request($data, $url, $options);
+
+        if ($responseFromAPI['error']) {
+            $result = [
+                'success'       => false,
+                'providerError' => 'cURL Error: ' . $responseFromAPI['error'],
+            ];
+        } elseif ($responseFromAPI['http_code'] === 429) {
+            $this->deactivateService();
+
+            $email = $this->getConfiguration()->getOption('limits.notification.reciver.email');
+            $this->sendNotificationEmail($email, 'Your limit has been exceeded',
+                'Your limit for Tinypng.com has been exceeded');
+
+            $result = [
+                'success'       => false,
+                'providerError' => 'Limit out',
+            ];
+        } elseif ($responseFromAPI['http_code'] !== 201) {
+            $result = [
+                'success'       => false,
+                'providerError' => 'Url HTTP code: ' . $responseFromAPI['http_code'],
+            ];
+        } elseif (is_string($responseFromAPI['response'])) {
+            $headers = self::parseHeaders(substr($responseFromAPI['response'], 0, $responseFromAPI['header_size']));
+            $body = substr($responseFromAPI['response'], $responseFromAPI['header_size']);
+
+            $result = [
+                'success'                   => true,
+                'providerSubscriptionLimit' => $headers['compression-count'],
+                'response'                  => json_decode($body, true),
+            ];
+        } else {
+            $result = [
+                'success'       => false,
+                'providerError' => 'cURL Error: ' . $responseFromAPI['error'],
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Function parsing headers from response
+     *
+     * @param string $headers Headers from response
+     * @return array Array created from headers
+     */
+    protected static function parseHeaders(string $headers)
+    {
+        if (!is_array($headers)) {
+            $headers = explode("\r\n", $headers);
+        }
+        $result = [];
+        foreach ($headers as $header) {
+            if (empty($header)) {
+                continue;
+            }
+            $split = explode(':', $header, 2);
+            if (count($split) === 2) {
+                $result[strtolower($split[0])] = trim($split[1]);
+            }
+        }
+
+        return $result;
     }
 }
