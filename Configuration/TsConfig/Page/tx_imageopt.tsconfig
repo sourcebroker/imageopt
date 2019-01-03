@@ -155,7 +155,93 @@ tx_imageopt {
                 }
             }
 
+            jpegtran-mozjpeg {
+              enabled = 0
+              executors {
+                10 {
+                  enabled = 1
+                  class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                  command {
+                    mask = {executable} -copy none -optimize -outfile {tempFile} {tempFile}
+                    exec = mozjpeg-jpegtran
+                  }
+                }
+              }
+            }
+
             kraken.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
+
+            mozjpeg {
+              enabled = 0
+              executors {
+                10 {
+                  enabled = 1
+                  class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                  command {
+                    mask = {executable} -optimize -outfile {tempFile}_tmp {tempFile}
+                    exec = mozjpeg-cjpeg
+                  }
+                }
+                # cjpeg can not ouput to the same file so we need to use {tempFile}_tmp and then cp to {tempFile}
+                20 {
+                  enabled = 1
+                  class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                  command {
+                    mask = {executable} -f {tempFile}_tmp {tempFile}
+                    exec = cp
+                  }
+                }
+              }
+            }
+
+            mozjpeg-quality {
+              enabled = 0
+              executors {
+                10 {
+                  enabled = 1
+                  class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                  command {
+                    mask = {executable} {quality} -optimize -outfile {tempFile}_tmp {tempFile}
+                    exec = mozjpeg-cjpeg
+                  }
+                  options {
+                    quality {
+                      value < tx_imageopt.default.options.quality
+                      options {
+                        5 = -quality 5
+                        10 = -quality 10
+                        15 = -quality 15
+                        20 = -quality 20
+                        25 = -quality 25
+                        30 = -quality 30
+                        35 = -quality 35
+                        40 = -quality 40
+                        45 = -quality 45
+                        50 = -quality 50
+                        55 = -quality 55
+                        60 = -quality 60
+                        65 = -quality 65
+                        70 = -quality 70
+                        75 = -quality 75
+                        80 = -quality 80
+                        85 = -quality 85
+                        90 = -quality 90
+                        95 = -quality 95
+                        100 = -quality 100
+                      }
+                    }
+                  }
+                }
+                20 {
+                  enabled = 1
+                  class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                  command {
+                    mask = {executable} -f {tempFile}_tmp {tempFile}
+                    exec = cp
+                  }
+                }
+              }
+            }
 
             tinypng.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteTinypng
         }
@@ -200,6 +286,7 @@ tx_imageopt {
                     }
                 }
             }
+
             imageoptim.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteImageoptim
 
             kraken.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
