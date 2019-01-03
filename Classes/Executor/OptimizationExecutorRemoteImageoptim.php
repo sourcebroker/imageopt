@@ -123,9 +123,8 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
      */
     protected function save(string $outputImageAbsolutePath, string $imageData)
     {
-        return (bool) file_put_contents($outputImageAbsolutePath, $imageData);
+        return (bool)file_put_contents($outputImageAbsolutePath, $imageData);
     }
-
 
     /**
      * Executes request to remote server
