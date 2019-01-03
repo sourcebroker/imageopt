@@ -34,7 +34,7 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
     /**
      * Optimize image
      *
-     * @param $inputImageAbsolutePath string Absolute path/file with image to be optimized
+     * @param string $inputImageAbsolutePath Absolute path/file with image to be optimized
      * @param Configurator $configurator
      * @return ExecutorResult Optimization result
      */
@@ -50,25 +50,41 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
                     'api_key' => $configurator->getOption('api.key'),
                 ],
                 'url'  => [
-                    'upload' => 'https://im2.io',
+                    'upload' => $configurator->getOption('api.url.upload'),
                 ],
             ]);
-            $this->upload($inputImageAbsolutePath, $configurator->getOption('options'));
-            $executorResult->setSizeAfter(filesize($inputImageAbsolutePath));
-            $executorResult->setExecutedSuccessfully(true);
+            $result = $this->upload($inputImageAbsolutePath, $configurator->getOption('options'));
+
+            if ($result['success']) {
+                $saved = $this->save($inputImageAbsolutePath, $result['response']);
+
+                if ($saved) {
+                    $executorResult->setSizeAfter(filesize($inputImageAbsolutePath));
+                    $executorResult->setExecutedSuccessfully(true);
+                } else {
+                    $executorResult->setErrorMessage('Unable to save image');
+                }
+            } else {
+                $message = isset($result['providerError'])
+                    ? $result['providerError']
+                    : 'Undefined error';
+                $executorResult->setErrorMessage($message);
+            }
+        } else {
+            $executorResult->setErrorMessage('Set API account data in config file');
         }
 
         return $executorResult;
     }
 
     /**
-     * Upload file to imageoptim.com and save it if optimization will be success
+     * Upload file to imageoptim.com
      *
      * @param string $inputImageAbsolutePath Absolute path/file with original image
      * @param array $options Additional options to optimize
      * @return array Result of optimization
      */
-    public function upload($inputImageAbsolutePath, $options = [])
+    protected function upload(string $inputImageAbsolutePath, $options = [])
     {
         $file = curl_file_create($inputImageAbsolutePath);
 
@@ -87,21 +103,29 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
         $url[] = $optionsString;
         $fullUrl = implode('/', $url);
 
-        $result = self::request([
-            'file' => $file,
-        ], $fullUrl);
+        $result = self::request(['file' => $file], $fullUrl);
 
         if ($result['success']) {
-            if (isset($result['response'])) {
-                file_put_contents($inputImageAbsolutePath, $result['response']);
-            } else {
+            if (!isset($result['response'])) {
                 $result['success'] = false;
             }
-            unset($result['response']);
         }
 
         return $result;
     }
+
+    /**
+     * Save image data into file
+     *
+     * @param string $outputImageAbsolutePath
+     * @param string $imageData
+     * @return bool
+     */
+    protected function save(string $outputImageAbsolutePath, string $imageData)
+    {
+        return (bool) file_put_contents($outputImageAbsolutePath, $imageData);
+    }
+
 
     /**
      * Executes request to remote server
@@ -111,7 +135,7 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
      * @param array $params Additional parameters
      * @return array
      */
-    public function request($data, $url, $params = [])
+    protected function request($data, $url, $params = [])
     {
         $options = [
             'curl' => [],
@@ -119,16 +143,23 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
 
         $responseFromAPI = parent::request($data, $url, $options);
 
-        if ($responseFromAPI['http_code'] != 200) {
-            return [
+        if ($responseFromAPI['error']) {
+            $result = [
+                'success'       => false,
+                'providerError' => 'cURL Error: ' . $responseFromAPI['error'],
+            ];
+        } elseif ($responseFromAPI['http_code'] !== 200) {
+            $result = [
                 'success'       => false,
                 'providerError' => 'Url HTTP code: ' . $responseFromAPI['http_code'],
             ];
+        } else {
+            $result = [
+                'success'  => true,
+                'response' => $responseFromAPI['response'],
+            ];
         }
 
-        return [
-            'success'  => true,
-            'response' => $responseFromAPI['response'],
-        ];
+        return $result;
     }
 }
