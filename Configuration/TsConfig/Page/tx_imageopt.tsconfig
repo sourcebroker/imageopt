@@ -58,10 +58,13 @@ tx_imageopt {
             executors {
               api {
                 key =
-                pass =
+                url {
+                  upload = https://im2.io
+                }
               }
               options {
-                  lossy = true
+                  0 = full
+                  quality = medium
               }
             }
           }
