@@ -57,14 +57,14 @@ tx_imageopt {
             enabled = 1
             executors {
               api {
-                key =
+                key = flllxpgksm
                 url {
                   upload = https://im2.io
                 }
               }
               options {
                   0 = full
-                  quality = high
+                  quality = medium
               }
             }
           }
