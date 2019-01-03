@@ -30,12 +30,18 @@ tx_imageopt {
                 }
             }
           }
+
           kraken {
             enabled = 1
             executors {
               api {
-                key = 2a9f4fcb773fcf69bd05373d494641be
-                pass = 64b0db57a0613b66e4068725f38d6d8ed57c17e8
+                url {
+                  upload = https://api.kraken.io/v1/upload
+                }
+                auth {
+                  key = 2a9f4fcb773fcf69bd05373d494641be
+                  pass = 64b0db57a0613b66e4068725f38d6d8ed57c17e8
+                }
               }
               options {
                   lossy = true
@@ -47,8 +53,13 @@ tx_imageopt {
             enabled = 1
             executors {
               api {
-                key =
-                pass =
+                url {
+                  upload = https://api.tinify.com/shrink
+                }
+                auth {
+                  key =
+                  pass =
+                }
               }
             }
           }
@@ -57,11 +68,17 @@ tx_imageopt {
             enabled = 1
             executors {
               api {
-                key =
-                pass =
+                url {
+                  upload = https://im2.io
+                }
+                auth {
+                  key =
+                  pass =
+                }
               }
               options {
-                  lossy = true
+                  0 = full
+                  quality = medium
               }
             }
           }

@@ -35,22 +35,30 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
 {
 
     /**
-     * @var array
+     * @var int
      */
-    protected $settings = [
-        'timeout' => 30,
-        'auth'    => [],
-        'url'     => [],
-        'proxy'   => null,
-    ];
+    protected $timeout = 30;
 
     /**
-     * @param array $settings Provider settings
+     * @var mixed
      */
-    public function initialize($settings)
-    {
-        $this->settings = array_merge($this->settings, $settings);
-    }
+    protected $proxy = [];
+
+    /**
+     * @var string[]
+     */
+    protected $url = [];
+
+    /**
+     * @var string[]
+     */
+    protected $auth = [];
+
+    /**
+     * @var array
+     */
+    protected $options = [];
+
 
     /**
      * Optimize image
@@ -64,11 +72,11 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
         $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
         $executorResult->setExecutedSuccessfully(false);
 
-        $valid = $this->validateConfiguration();
-        if ($valid) {
+        $inited = $this->initialize();
+        if ($inited) {
             $executorResult->setSizeBefore(filesize($inputImageAbsolutePath));
 
-            $result = $this->process($inputImageAbsolutePath, $configurator->getOption('options'));
+            $result = $this->process($inputImageAbsolutePath);
 
             if ($result['success']) {
                 $executorResult->setSizeAfter(filesize($inputImageAbsolutePath));
@@ -80,20 +88,45 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
                 $executorResult->setErrorMessage($message);
             }
         } else {
-            $executorResult->setErrorMessage('Invalid executor configuration');
+            $executorResult->setErrorMessage('Unable to initialize executor - check configuration');
         }
 
         return $executorResult;
     }
 
     /**
-     * Validates configuration
-     *
-     * @return bool
+     * @param array $settings Provider settings
      */
-    protected function validateConfiguration() : bool
+    protected function initialize(Configurator $configurator)
     {
-        return false;
+        $timeout = $configurator->getOption('timeout');
+        if ($timeout !== null) {
+            $this->timeout = (int)$timeout;
+        }
+
+        $proxy = $configurator->getOption('proxy');
+        if ($timeout !== null) {
+            $this->proxy = $proxy;
+        }
+
+        $apiUrl = $configurator->getOption('api.url');
+        if (!$apiUrl) {
+            return false;
+        }
+        $this->url = $apiUrl;
+
+        $apiAuth = $configurator->getOption('api.auth');
+        if (!$apiAuth) {
+            return false;
+        }
+        $this->auth = $apiAuth;
+
+        $options = $configurator->getOption('options');
+        if ($options !== null) {
+            $this->options = $options;
+        }
+
+        return true;
     }
 
     /**
