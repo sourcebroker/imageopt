@@ -30,137 +30,21 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
 {
-
-
     /**
-     * Upload file to kraken.io and save it if optimization will be success
+     * Optimize image using remote Tinypng
+     * Return the temporary file path
      *
-     * @param string $inputImageAbsolutePath Absolute path/file with original image
-     * @param array $options Additional options to optimize
-     * @return array Result of optimization
+     * @param string $inputImageAbsolutePath Absolute path/file with image to be optimized. It will be replaced with optimized version.
+     * @param Configurator $configurator Executor configurator
+     * @return ExecutorResult Executor Result
      */
-    public function upload($inputImageAbsolutePath, $options = [])
-    {
-        $file = '@' . $inputImageAbsolutePath;
-
-        foreach ($options as $key => $value) {
-            if ($value === 'true' || $value === 'false') {
-                $options[$key] = (bool)$value;
-            }
-        }
-
-        $result = self::request([
-            'upload' => $file,
-            'data' => json_encode(array_merge(['auth' => $this->settings['auth']], $options))
-        ],
-            $this->settings['url']['upload'],
-            ['type' => 'upload']
-        );
-        if ($result['success']) {
-            if (isset($result['response']['kraked_url'])) {
-                if (!$this->getFileFromRemoteServer($inputImageAbsolutePath, $result['response']['kraked_url'])) {
-                    $result['success'] = false;
-                }
-            } else {
-                $result['success'] = false;
-            }
-            unset($result['response']);
-        }
-
-        return $result;
-    }
-
-    /**
-     * Return the status of account in kraken.io
-     *
-     * @return array
-     */
-    public function status()
-    {
-        $response = self::request(json_encode($this->settings['auth']), $this->settings['url']['status'], 'url');
-
-        return $response;
-    }
-
-    /**
-     * @param array $data Array with data and file path
-     * @param string $url API kraken.io url
-     * @param array $params Additional parameters
-     * @return array Result of optimization includes the response from the kraken.io
-     */
-    public function request($data, $url, $params = [])
-    {
-        $options = [
-            'curl' => []
-        ];
-
-        if (isset($params['type']) && $params['type'] == 'url') {
-            $options['curl'][CURLOPT_HTTPHEADER] = [
-                'Content-Type: application/json'
-            ];
-        }
-        $responseFromAPI = parent::request($data, $url, $options);
-
-        $response = json_decode($responseFromAPI['response'], true);
-
-        if ($response === null) {
-            $result = [
-                'success' => false,
-                'providerError' => 'cURL Error: ' . $responseFromAPI['error']
-            ];
-        } else {
-            if ($responseFromAPI['http_code'] == 429) {
-                return [
-                    'success' => false,
-                    'providerError' => 'Limit out'
-                ];
-            } else {
-                if ($responseFromAPI['http_code'] != 200) {
-                    return [
-                        'success' => false,
-                        'providerError' => 'Url HTTP code: ' . $responseFromAPI['http_code']
-                    ];
-                }
-            }
-
-            $result = [
-                'success' => (isset($response['success']) && $response['success'] === true) ? true : false,
-                'response' => $response
-            ];
-        }
-
-        return $result;
-    }
-
-    /**
-     * Optimize image
-     *
-     * @param $inputImageAbsolutePath string Absolute path/file with image to be optimized
-     * @param Configurator $configurator
-     * @return ExecutorResult Optimization result
-     */
-    public function optimize(string $inputImageAbsolutePath, Configurator $configurator): ExecutorResult
+    public function optimize(string $inputImageAbsolutePath, Configurator $configurator) : ExecutorResult
     {
         $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
         $executorResult->setExecutedSuccessfully(false);
 
-        if (!empty($configurator->getOption('api.key')) && !empty($configurator->getOption('api.pass'))) {
-            $executorResult->setSizeBefore(filesize($inputImageAbsolutePath));
-            $this->initialize([
-                'auth' => [
-                    'api_key' => $configurator->getOption('api.key'),
-                    'api_secret' => $configurator->getOption('api.pass')
-                ],
-                'url' => [
-                    'upload' => 'https://api.kraken.io/v1/upload',
-                    'status' => 'https://api.kraken.io/user_status'
-                ]
-            ]);
-            $this->upload($inputImageAbsolutePath,
-                array_merge(['wait' => true], $configurator->getOption('options')));
-            $executorResult->setSizeAfter(filesize($inputImageAbsolutePath));
-            $executorResult->setExecutedSuccessfully(true);
-        }
+        // Implement optimize image with Tinypng and fill all $execuroeResult fields
+
         return $executorResult;
     }
 }
