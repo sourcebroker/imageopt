@@ -28,7 +28,6 @@ use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Domain\Model\OptimizationResult;
 use SourceBroker\Imageopt\Provider\OptimizationProvider;
 use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
-use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**

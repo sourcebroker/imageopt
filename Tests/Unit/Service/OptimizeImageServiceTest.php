@@ -58,7 +58,7 @@ class OptimizeImageServiceTest extends UnitTestCase
         );
         if (is_readable($imageForTesting)) {
             /** @var OptimizationResult $optimizationResult */
-            $optimizationResult = $optimizeImageService->optimize($imageForTesting);
+            $optimizationResult = $optimizeImageService->optimize($imageForTesting, $image);
             $this->assertEquals(true, $optimizationResult->getExecutedSuccessfully());
         } else {
             throw new Exception('Image for testing is not existing:' . $imageForTesting);
