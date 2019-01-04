@@ -96,7 +96,7 @@ class OptimizeImagesFolderService
      */
     public function optimizeFolderFile($absoluteFilePath)
     {
-        $optimizationResult = $this->optimizeImageService->optimize($absoluteFilePath);
+        $optimizationResult = $this->optimizeImageService->optimize($absoluteFilePath, $absoluteFilePath);
         if ($optimizationResult->isExecutedSuccessfully()) {
             // Temporary resized images are created by default with permission 644.
             // We set the "execute" bit of permission for optimized images (to have 744).

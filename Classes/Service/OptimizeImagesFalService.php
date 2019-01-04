@@ -91,7 +91,7 @@ class OptimizeImagesFalService
         if (file_exists($sourceFile)) {
             if (is_readable($sourceFile)) {
                 $tmpForOptimizing = $this->objectManager->get(TemporaryFileUtility::class)->createTemporaryCopy($sourceFile);
-                $optimizationResult = $this->optimizeImageService->optimize($tmpForOptimizing, $processedFal);
+                $optimizationResult = $this->optimizeImageService->optimize($tmpForOptimizing, $sourceFile);
                 $optimizationResult->setFileRelativePath(substr($sourceFile, strlen(PATH_site)));
                 $this->objectManager->get(OptimizationResultRepository::class)->add($optimizationResult);
                 $this->objectManager->get(PersistenceManager::class)->persistAll();
