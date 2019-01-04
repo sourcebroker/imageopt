@@ -59,14 +59,14 @@ class OptimizeImageService
         $this->configurator = GeneralUtility::makeInstance(Configurator::class, $config);
         $this->temporaryFile = GeneralUtility::makeInstance(TemporaryFileUtility::class);
 
-        $allProviders = $this->configurator->getOption('providers');
-        foreach($allProviders as $extProvider)
+        $providers = $this->configurator->getOption('providers');
+        foreach($providers as $name => $provider)
         {
-            foreach($extProvider as $name => $provider)
-            {
-                if(!isset($provider['type'])) {
-                    throw new \Exception('Optimization type is not set for provider: "'. $name .'"');
-                }
+            if(!isset($provider['type'])) {
+                throw new \Exception('Provider types is not set for provider: "'. $name .'"');
+            }
+            if(!isset($provider['fileType'])) {
+                throw new \Exception('File types is not set for provider: "'. $name .'"');
             }
         }
     }
@@ -154,9 +154,9 @@ class OptimizeImageService
     protected function findProvidersForFile($imagePath)
     {
         $fileType = strtolower(explode('/', image_type_to_mime_type(getimagesize($imagePath)[2]))[1]);
-        $providersForExt = $this->configurator->getOption('providers.' . $fileType);
+        $allProviders = $this->configurator->getOption('providers');
 
-        $providers = [];
+        $suitableProviders = [];
 
         $optimizeEntries = $this->configurator->getOption('optimize');
         while ($optimizeEntry = array_shift($optimizeEntries)) {
@@ -165,18 +165,22 @@ class OptimizeImageService
                 continue;
             }
 
-            foreach ($providersForExt as $name => $provider) {
+            foreach ($allProviders as $name => $provider) {
                 $providerTypes = explode(',', $provider['type']);
-                if (in_array($optimizeEntry['providerType'], $providerTypes)) {
-                    $providers[$name] = $provider;
+                $fileTypes = explode(',', $provider['fileType']);
+
+                if (in_array($optimizeEntry['providerType'], $providerTypes)
+                    && in_array($fileType, $fileTypes)) {
+                    $suitableProviders[$name] = $provider;
                 }
+
             }
 
-            if ($providers) {
+            if ($suitableProviders) {
                 break;
             }
         }
 
-        return $providers;
+        return $suitableProviders;
     }
 }

@@ -145,30 +145,23 @@ class Configurator
      */
     public function mergeDefaultForProviderAndExecutor(array $config) : array
     {
-        foreach ($config['providers'] as $extension => $providersForExtension) {
-            foreach ($providersForExtension as $providerKey => $providerValues) {
-                if (is_array($config['default']['providers']['_all'])) {
-                    $allExceptExecutors = $config['default']['providers']['_all'];
-                    unset($allExceptExecutors['executors']);
-                    $providerValues = ArrayUtility::mergeRecursiveDistinct($allExceptExecutors, $providerValues);
-                }
-                if (is_array($config['default']['providers'][$providerKey])) {
-                    $allExceptExecutors = $config['default']['providers'][$providerKey];
-                    unset($allExceptExecutors['executors']);
-                    $providerValues = ArrayUtility::mergeRecursiveDistinct($allExceptExecutors, $providerValues);
-                }
-                foreach ($providerValues['executors'] as $executorKey => $executorValues) {
-                    if (is_array($config['default']['providers'][$providerKey]['executors'])) {
-                        $executorValues = ArrayUtility::mergeRecursiveDistinct($config['default']['providers'][$providerKey]['executors'],
+        $defaultProviderValues = null;
+
+        if(isset($config['providers']['_all'])) {
+            $defaultProviderValues = $config['providers']['_all'];
+            unset($config['providers']['_all']);
+
+            foreach ($config['providers'] as $providerKey => &$providerValues) {
+                $allExceptExecutors = $defaultProviderValues;
+                unset($allExceptExecutors['executors']);
+                $providerValues = ArrayUtility::mergeRecursiveDistinct($allExceptExecutors, $providerValues);
+
+                foreach ($providerValues['executors'] as $executorKey => &$executorValues) {
+                    if (isset($defaultProviderValues['executors'])) {
+                        $executorValues = ArrayUtility::mergeRecursiveDistinct($defaultProviderValues['executors'],
                             $executorValues);
                     }
-                    if (is_array($config['default']['providers']['_all']['executors'])) {
-                        $executorValues = ArrayUtility::mergeRecursiveDistinct($config['default']['providers']['_all']['executors'],
-                            $executorValues);
-                    }
-                    $providerValues['executors'][$executorKey] = $executorValues;
                 }
-                $config['providers'][$extension][$providerKey] = $providerValues;
             }
         }
 

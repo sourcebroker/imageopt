@@ -12,40 +12,341 @@ tx_imageopt {
         }
     }
 
-    default {
-        providers {
-            # "_all" is merged to all providers
-            _all {
-                enabled = 1
-                # "executors" is merged to each executor
-                executors {
+    providers {
+
+        # "_all" is merged to all providers
+        _all {
+            enabled = 1
+
+            # "executors" is merged to each executor
+            executors {
+                options {
+                    quality {
+                        value = 85
+                    }
+                }
+                notifications {
+                    limitsExeeded {
+                        active = 1
+                    }
+                }
+            }
+
+            email {
+                sender {
+                    email =
+                    name =
+                }
+                reciver {
+                    email =
+                    name =
+                }
+            }
+        }
+
+        jpegoptim {
+            type = lossy
+            fileType = jpeg
+            executors {
+                10 {
+                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                    command {
+                        mask = {executable} {tempFile} -o --strip-all {quality}
+                        exec = jpegoptim
+                    }
                     options {
                         quality {
-                            value = 85
+                            options {
+                                5 = --max=5
+                                10 = --max=10
+                                15 = --max=15
+                                20 = --max=20
+                                25 = --max=25
+                                30 = --max=30
+                                35 = --max=35
+                                40 = --max=40
+                                45 = --max=45
+                                50 = --max=50
+                                55 = --max=55
+                                60 = --max=60
+                                65 = --max=65
+                                70 = --max=70
+                                75 = --max=75
+                                80 = --max=80
+                                85 = --max=85
+                                90 = --max=90
+                                95 = --max=95
+                                100 = --max=100
+                            }
                         }
-                    }
-                    notifications {
-                        limitsExeeded {
-                            active = 1
-                        }
-                    }
-                }
-                email {
-                    sender {
-                        email =
-                        name =
-                    }
-                    reciver {
-                        email =
-                        name =
                     }
                 }
             }
+        }
 
-            kraken_lossy {
-                enabled = 1
-                type = lossy
-                executors {
+        jpegrescan {
+            type = lossless
+            fileType = jpeg
+            executors {
+                10 {
+                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                    command {
+                        mask = {executable} -s {tempFile} {tempFile}
+                        exec = jpegrescan
+                    }
+                }
+            }
+        }
+
+        jpegtran {
+            type = lossless
+            fileType = jpeg
+            executors {
+                10 {
+                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                    command {
+                        mask = {executable} -copy none -optimize -outfile {tempFile} {tempFile}
+                        exec = jpegtran
+                    }
+                }
+            }
+        }
+
+        jpegtran-mozjpeg {
+            type = lossless
+            fileType = jpeg
+            executors {
+                10 {
+                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                    command {
+                        mask = {executable} -copy none -optimize -outfile {tempFile} {tempFile}
+                        exec = mozjpeg-jpegtran
+                    }
+                }
+            }
+        }
+
+        mozjpeg {
+            type = lossless
+            fileType = jpeg
+            executors {
+                10 {
+                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                    command {
+                        mask = {executable} -optimize -outfile {tempFile}_tmp {tempFile}
+                        exec = mozjpeg-cjpeg
+                    }
+                }
+                # cjpeg can not ouput to the same file so we need to use {tempFile}_tmp and then cp to {tempFile}
+                20 {
+                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                    command {
+                        mask = {executable} -f {tempFile}_tmp {tempFile}
+                        exec = cp
+                    }
+                }
+            }
+        }
+
+        mozjpeg-quality {
+            type = lossy
+            fileType = jpeg
+            executors {
+                10 {
+                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                    command {
+                        mask = {executable} {quality} -optimize -outfile {tempFile}_tmp {tempFile}
+                        exec = mozjpeg-cjpeg
+                    }
+                    options {
+                        quality {
+                            value < tx_imageopt.providers._all.executors.options.quality.value
+                            options {
+                                5 = -quality 5
+                                10 = -quality 10
+                                15 = -quality 15
+                                20 = -quality 20
+                                25 = -quality 25
+                                30 = -quality 30
+                                35 = -quality 35
+                                40 = -quality 40
+                                45 = -quality 45
+                                50 = -quality 50
+                                55 = -quality 55
+                                60 = -quality 60
+                                65 = -quality 65
+                                70 = -quality 70
+                                75 = -quality 75
+                                80 = -quality 80
+                                85 = -quality 85
+                                90 = -quality 90
+                                95 = -quality 95
+                                100 = -quality 100
+                            }
+                        }
+                    }
+                }
+                20 {
+                    enabled = 1
+                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                    command {
+                        mask = {executable} -f {tempFile}_tmp {tempFile}
+                        exec = cp
+                    }
+                }
+            }
+        }
+
+        gifsicle {
+            type = lossless
+            fileType = gif
+            executors {
+                10 {
+                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                    command {
+                        mask = {executable} {quality} {tempFile} -o {tempFile}
+                        exec = gifsicle
+                    }
+                    options {
+                        quality {
+                            options {
+                                5 = --optimize=3
+                                10 = --optimize=3
+                                15 = --optimize=3
+                                20 = --optimize=3
+                                25 = --optimize=3
+                                30 = --optimize=3
+                                35 = --optimize=3
+                                40 = --optimize=2
+                                45 = --optimize=2
+                                50 = --optimize=2
+                                55 = --optimize=2
+                                60 = --optimize=2
+                                65 = --optimize=2
+                                70 = --optimize=2
+                                75 = --optimize=1
+                                80 = --optimize=1
+                                85 = --optimize=1
+                                90 = --optimize=1
+                                95 = --optimize=1
+                                100 = --optimize=1
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        optipng {
+            type = lossless
+            fileType = png
+            executors {
+                10 {
+                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                    command {
+                        mask = {executable} {tempFile} -quiet -strip all {quality}
+                        exec = optipng
+                    }
+                    options {
+                        quality {
+                            options {
+                                5 = -o7
+                                10 = -o7
+                                15 = -o7
+                                20 = -o6
+                                25 = -o6
+                                30 = -o6
+                                35 = -o5
+                                40 = -o5
+                                45 = -o5
+                                50 = -o4
+                                55 = -o4
+                                60 = -o4
+                                65 = -o3
+                                70 = -o3
+                                75 = -o3
+                                80 = -o2
+                                85 = -o2
+                                90 = -o2
+                                95 = -o1
+                                100 = -o0
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        pngcrush {
+            type = lossless
+            fileType = png
+            executors {
+                10 {
+                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                    command {
+                        mask = {executable} -s -rem alla -brute -reduce -ow {tempFile} >/dev/null
+                        exec = pngcrush
+                    }
+                }
+            }
+        }
+
+        pngquant {
+            type = lossy
+            fileType = png
+            executors {
+                10 {
+                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                    command {
+                        mask = {executable} {tempFile} --skip-if-larger --force --ext '' --strip {quality}
+                        exec = pngquant
+                        successfulExitStatus = 98
+                    }
+                    options {
+                        quality {
+                            options {
+                                5 = --speed 11
+                                10 = --speed 10
+                                15 = --speed 10
+                                20 = --speed 9
+                                25 = --speed 9
+                                30 = --speed 8
+                                35 = --speed 8
+                                40 = --speed 7
+                                45 = --speed 7
+                                50 = --speed 6
+                                55 = --speed 6
+                                60 = --speed 5
+                                65 = --speed 5
+                                70 = --speed 4
+                                75 = --speed 3
+                                80 = --speed 3
+                                85 = --speed 2
+                                90 = --speed 2
+                                95 = --speed 1
+                                100 = --speed 1
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        pngquant-pngcrush {
+            type = lossy
+            fileType = png
+            executors {
+                10 < tx_imageopt.providers.pngquant.executors.10
+                20 < tx_imageopt.providers.pngcrush.executors.10
+            }
+        }
+
+        kraken_lossy {
+            type = lossy
+            fileType = jpeg,png,gif
+            executors {
+                10 {
+                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
                     api {
                         url {
                             upload = https://api.kraken.io/v1/upload
@@ -54,17 +355,17 @@ tx_imageopt {
                             key =
                             pass =
                         }
-                        options {
-                            lossy = true
-                        }
                     }
                 }
             }
+        }
 
-            kraken_lossless {
-                enabled = 1
-                type = lossless
-                executors {
+        kraken_lossless {
+            type = lossless
+            fileType = jpeg,png,gif
+            executors {
+                10 {
+                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
                     api {
                         url {
                             upload = https://api.kraken.io/v1/upload
@@ -76,11 +377,14 @@ tx_imageopt {
                     }
                 }
             }
+        }
 
-            tinypng {
-                enabled = 1
-                type = lossy
-                executors {
+        tinypng {
+            type = lossy
+            fileType = jpeg,png,gif
+            executors {
+                10 {
+                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteTinypng
                     api {
                         url {
                             upload = https://api.tinify.com/shrink
@@ -92,11 +396,14 @@ tx_imageopt {
                     }
                 }
             }
+        }
 
-            imageoptim {
-                enabled = 1
-                type = lossy,lossless
-                executors {
+        imageoptim {
+            type = lossy,lossless
+            fileType = jpeg,png,gif
+            executors {
+                10 {
+                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteImageoptim
                     api {
                         url {
                             upload = https://im2.io
@@ -138,336 +445,7 @@ tx_imageopt {
                 }
             }
         }
+
     }
 
-    providers {
-        jpeg {
-            imageoptim.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteImageoptim
-
-            jpegoptim {
-                enabled = 1
-                type = lossy
-                executors {
-                    10 {
-                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                        command {
-                            mask = {executable} {tempFile} -o --strip-all {quality}
-                            exec = jpegoptim
-                        }
-
-                        options {
-                            quality {
-                                options {
-                                    5 = --max=5
-                                    10 = --max=10
-                                    15 = --max=15
-                                    20 = --max=20
-                                    25 = --max=25
-                                    30 = --max=30
-                                    35 = --max=35
-                                    40 = --max=40
-                                    45 = --max=45
-                                    50 = --max=50
-                                    55 = --max=55
-                                    60 = --max=60
-                                    65 = --max=65
-                                    70 = --max=70
-                                    75 = --max=75
-                                    80 = --max=80
-                                    85 = --max=85
-                                    90 = --max=90
-                                    95 = --max=95
-                                    100 = --max=100
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            jpegrescan {
-                enabled = 1
-                type = lossless
-                executors {
-                    10 {
-                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                        command {
-                            mask = {executable} -s {tempFile} {tempFile}
-                            exec = jpegrescan
-                        }
-                    }
-                }
-            }
-
-            jpegtran {
-                enabled = 1
-                type = lossless
-                executors {
-                    10 {
-                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                        command {
-                            mask = {executable} -copy none -optimize -outfile {tempFile} {tempFile}
-                            exec = jpegtran
-                        }
-                    }
-                }
-            }
-
-            jpegtran-mozjpeg {
-                enabled = 0
-                type = lossless
-                executors {
-                    10 {
-                        enabled = 1
-                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                        command {
-                            mask = {executable} -copy none -optimize -outfile {tempFile} {tempFile}
-                            exec = mozjpeg-jpegtran
-                        }
-                    }
-                }
-            }
-
-            kraken_lossy.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
-            kraken_lossless.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
-
-            mozjpeg {
-                enabled = 0
-                type = lossless
-                executors {
-                    10 {
-                        enabled = 1
-                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                        command {
-                            mask = {executable} -optimize -outfile {tempFile}_tmp {tempFile}
-                            exec = mozjpeg-cjpeg
-                        }
-                    }
-                    # cjpeg can not ouput to the same file so we need to use {tempFile}_tmp and then cp to {tempFile}
-                    20 {
-                        enabled = 1
-                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                        command {
-                            mask = {executable} -f {tempFile}_tmp {tempFile}
-                            exec = cp
-                        }
-                    }
-                }
-            }
-
-            mozjpeg-quality {
-                enabled = 0
-                type = lossy
-                executors {
-                    10 {
-                        enabled = 1
-                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                        command {
-                            mask = {executable} {quality} -optimize -outfile {tempFile}_tmp {tempFile}
-                            exec = mozjpeg-cjpeg
-                        }
-                        options {
-                            quality {
-                                value < tx_imageopt.default.options.quality
-                                options {
-                                    5 = -quality 5
-                                    10 = -quality 10
-                                    15 = -quality 15
-                                    20 = -quality 20
-                                    25 = -quality 25
-                                    30 = -quality 30
-                                    35 = -quality 35
-                                    40 = -quality 40
-                                    45 = -quality 45
-                                    50 = -quality 50
-                                    55 = -quality 55
-                                    60 = -quality 60
-                                    65 = -quality 65
-                                    70 = -quality 70
-                                    75 = -quality 75
-                                    80 = -quality 80
-                                    85 = -quality 85
-                                    90 = -quality 90
-                                    95 = -quality 95
-                                    100 = -quality 100
-                                }
-                            }
-                        }
-                    }
-                    20 {
-                        enabled = 1
-                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                        command {
-                            mask = {executable} -f {tempFile}_tmp {tempFile}
-                            exec = cp
-                        }
-                    }
-                }
-            }
-
-            tinypng.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteTinypng
-        }
-
-        gif {
-            gifsicle {
-                enabled = 1
-                type = lossless
-                executors {
-                    10 {
-                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                        command {
-                            mask = {executable} {quality} {tempFile} -o {tempFile}
-                            exec = gifsicle
-                        }
-
-                        options {
-                            quality {
-                                options {
-                                    5 = --optimize=3
-                                    10 = --optimize=3
-                                    15 = --optimize=3
-                                    20 = --optimize=3
-                                    25 = --optimize=3
-                                    30 = --optimize=3
-                                    35 = --optimize=3
-                                    40 = --optimize=2
-                                    45 = --optimize=2
-                                    50 = --optimize=2
-                                    55 = --optimize=2
-                                    60 = --optimize=2
-                                    65 = --optimize=2
-                                    70 = --optimize=2
-                                    75 = --optimize=1
-                                    80 = --optimize=1
-                                    85 = --optimize=1
-                                    90 = --optimize=1
-                                    95 = --optimize=1
-                                    100 = --optimize=1
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            imageoptim.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteImageoptim
-
-            kraken_lossy.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
-            kraken_lossless.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
-
-            tinypng.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteTinypng
-        }
-
-        png {
-            imageoptim.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteImageoptim
-
-            kraken_lossy.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
-            kraken_lossless.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
-
-            optipng {
-                enabled = 1
-                type = lossless
-                executors {
-                    10 {
-                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                        command {
-                            mask = {executable} {tempFile} -quiet -strip all {quality}
-                            exec = optipng
-                        }
-                        options {
-                            quality {
-                                options {
-                                    5 = -o7
-                                    10 = -o7
-                                    15 = -o7
-                                    20 = -o6
-                                    25 = -o6
-                                    30 = -o6
-                                    35 = -o5
-                                    40 = -o5
-                                    45 = -o5
-                                    50 = -o4
-                                    55 = -o4
-                                    60 = -o4
-                                    65 = -o3
-                                    70 = -o3
-                                    75 = -o3
-                                    80 = -o2
-                                    85 = -o2
-                                    90 = -o2
-                                    95 = -o1
-                                    100 = -o0
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            pngcrush {
-                enabled = 1
-                type = lossless
-                executors {
-                    10 {
-                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                        command {
-                            mask = {executable} -s -rem alla -brute -reduce -ow {tempFile} >/dev/null
-                            exec = pngcrush
-                        }
-                    }
-                }
-            }
-
-            pngquant {
-                enabled = 1
-                type = lossy
-                executors {
-                    10 {
-                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                        command {
-                            mask = {executable} {tempFile} --skip-if-larger --force --ext '' --strip {quality}
-                            exec = pngquant
-                            successfulExitStatus = 98
-                        }
-                        options {
-                            quality {
-                                options {
-                                    5 = --speed 11
-                                    10 = --speed 10
-                                    15 = --speed 10
-                                    20 = --speed 9
-                                    25 = --speed 9
-                                    30 = --speed 8
-                                    35 = --speed 8
-                                    40 = --speed 7
-                                    45 = --speed 7
-                                    50 = --speed 6
-                                    55 = --speed 6
-                                    60 = --speed 5
-                                    65 = --speed 5
-                                    70 = --speed 4
-                                    75 = --speed 3
-                                    80 = --speed 3
-                                    85 = --speed 2
-                                    90 = --speed 2
-                                    95 = --speed 1
-                                    100 = --speed 1
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            pngquant-pngcrush {
-                type = lossy
-                executors {
-                    10 < tx_imageopt.providers.png.pngquant.executors.10
-                    20 < tx_imageopt.providers.png.pngcrush.executors.10
-                }
-            }
-
-            tinypng.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteTinypng
-        }
-    }
 }

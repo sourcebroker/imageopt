@@ -64,19 +64,18 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
     {
         $file = curl_file_create($inputImageAbsolutePath);
 
-        $optionsString = '';
+        $optionsString = [];
         foreach ($this->apiOptions as $name => $value) {
-            $optionsString .= ($optionsString ? ',' : '');
             if (is_numeric($name)) {
-                $optionsString .= $value;
+                $optionsString[] = $value;
             } else {
-                $optionsString .= $name . '=' . $value;
+                $optionsString[] = $name . '=' . $value;
             }
         }
 
         $url[] = $this->url['upload'];
         $url[] = $this->auth['key'];
-        $url[] = $optionsString;
+        $url[] = implode(',', $optionsString);
         $fullUrl = implode('/', $url);
 
         $result = self::request(['file' => $file], $fullUrl);
