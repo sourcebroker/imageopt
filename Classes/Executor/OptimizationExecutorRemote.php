@@ -112,31 +112,31 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
         }
 
         $proxy = $configurator->getOption('proxy');
-        if (!empty($proxy)) {
+        if (is_array($proxy) && !empty($proxy)) {
             $this->proxy = $proxy;
         }
 
         $apiUrl = $configurator->getOption('api.url');
-        if (!empty($apiUrl)) {
+        if (is_array($apiUrl) && !empty($apiUrl)) {
             $this->url = $apiUrl;
         } else {
             return false;
         }
 
         $apiAuth = $configurator->getOption('api.auth');
-        if (!empty($apiAuth)) {
+        if (is_array($apiAuth) && !empty($apiAuth)) {
             $this->auth = $apiAuth;
         } else {
             return false;
         }
 
         $options = $configurator->getOption('api.options');
-        if (!empty($options)) {
+        if (is_array($options) && !empty($options)) {
             $this->apiOptions = $options;
         }
 
         $options = $configurator->getOption('options');
-        if (!empty($options)) {
+        if (is_array($options) && !empty($options)) {
             $this->executorOptions = $options;
         }
 
