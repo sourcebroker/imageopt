@@ -4,7 +4,6 @@ namespace SourceBroker\Imageopt\Utility;
 
 class ArrayUtility
 {
-
     public static function mergeRecursiveDistinct(array $array1, array $array2)
     {
         foreach ($array2 as $key => $value) {
