@@ -24,6 +24,7 @@
 
 namespace SourceBroker\Imageopt\Configuration;
 
+use SourceBroker\Imageopt\Utility\ArrayUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\TypoScript\TypoScriptService;
@@ -149,28 +150,27 @@ class Configurator
                 if (is_array($config['default']['providers']['_all'])) {
                     $allExceptExecutors = $config['default']['providers']['_all'];
                     unset($allExceptExecutors['executors']);
-                    $providerValues = array_merge_recursive($allExceptExecutors, $providerValues);
+                    $providerValues = ArrayUtility::mergeRecursiveDistinct($allExceptExecutors, $providerValues);
                 }
                 if (is_array($config['default']['providers'][$providerKey])) {
                     $allExceptExecutors = $config['default']['providers'][$providerKey];
                     unset($allExceptExecutors['executors']);
-                    $providerValues = array_merge_recursive($allExceptExecutors, $providerValues);
+                    $providerValues = ArrayUtility::mergeRecursiveDistinct($allExceptExecutors, $providerValues);
                 }
                 foreach ($providerValues['executors'] as $executorKey => $executorValues) {
-                    if (is_array($config['default']['providers']['_all']['executors'])) {
-                        $executorValues = array_replace_recursive($executorValues,
-                            $config['default']['providers']['_all']['executors']);
-                    }
                     if (is_array($config['default']['providers'][$providerKey]['executors'])) {
-                        $executorValues = array_replace_recursive($executorValues,
-                            $config['default']['providers'][$providerKey]['executors']);
+                        $defaultValues = $config['default']['providers'][$providerKey]['executors'];
+                        $executorValues = ArrayUtility::mergeRecursiveDistinct($defaultValues, $executorValues);
+                    }
+                    if (is_array($config['default']['providers']['_all']['executors'])) {
+                        $defaultValues = $config['default']['providers']['_all']['executors'];
+                        $executorValues = ArrayUtility::mergeRecursiveDistinct($defaultValues, $executorValues);
                     }
                     $providerValues['executors'][$executorKey] = $executorValues;
                 }
                 $config['providers'][$extension][$providerKey] = $providerValues;
             }
         }
-
         return $config;
     }
 }
