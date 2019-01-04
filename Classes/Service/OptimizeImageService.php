@@ -175,7 +175,7 @@ class OptimizeImageService
 
             }
 
-            if ($suitableProviders) {
+            if (!empty($suitableProviders)) {
                 break;
             }
         }

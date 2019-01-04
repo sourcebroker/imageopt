@@ -95,68 +95,18 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
 
         $responseFromAPI = parent::request($data, $url, $options);
 
-        if ($responseFromAPI['error']) {
-            $result = [
+        $handledResponse = $this->handleResponseError($responseFromAPI);
+        if ($handledResponse !== null) {
+            return [
                 'success' => false,
-                'providerError' => 'cURL Error: ' . $responseFromAPI['error'],
-            ];
-        } elseif ($responseFromAPI['http_code'] === 429) {
-            $this->deactivateService();
-
-            $email = $this->getConfiguration()->getOption('limits.notification.reciver.email');
-            $this->sendNotificationEmail($email, 'Your limit has been exceeded',
-                'Your limit for Tinypng.com has been exceeded');
-
-            $result = [
-                'success' => false,
-                'providerError' => 'Limit out',
-            ];
-        } elseif ($responseFromAPI['http_code'] !== 201) {
-            $result = [
-                'success' => false,
-                'providerError' => 'Url HTTP code: ' . $responseFromAPI['http_code'],
-            ];
-        } elseif (is_string($responseFromAPI['response'])) {
-            $headers = self::parseHeaders(substr($responseFromAPI['response'], 0, $responseFromAPI['header_size']));
-            $body = substr($responseFromAPI['response'], $responseFromAPI['header_size']);
-
-            $result = [
-                'success' => true,
-                'providerSubscriptionLimit' => $headers['compression-count'],
-                'response' => json_decode($body, true),
-            ];
-        } else {
-            $result = [
-                'success' => false,
-                'providerError' => 'cURL Error: ' . $responseFromAPI['error'],
+                'providerError' => $handledResponse
             ];
         }
 
-        return $result;
-    }
-
-    /**
-     * Function parsing headers from response
-     *
-     * @param string $headers Headers from response
-     * @return array Array created from headers
-     */
-    protected static function parseHeaders(string $headers)
-    {
-        if (!is_array($headers)) {
-            $headers = explode("\r\n", $headers);
-        }
-        $result = [];
-        foreach ($headers as $header) {
-            if (empty($header)) {
-                continue;
-            }
-            $split = explode(':', $header, 2);
-            if (count($split) === 2) {
-                $result[strtolower($split[0])] = trim($split[1]);
-            }
-        }
-
-        return $result;
+        $body = substr($responseFromAPI['response'], $responseFromAPI['header_size']);
+        return  [
+            'success' => true,
+            'response' => json_decode($body, true),
+        ];
     }
 }

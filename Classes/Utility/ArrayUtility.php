@@ -37,7 +37,7 @@ class ArrayUtility
         $node =& $root;
 
         while ($part = array_shift($plainArray)) {
-            if (!$plainArray) {
+            if (empty($plainArray)) {
                 $node = $part;
             } else {
                 $node[$part] = [];

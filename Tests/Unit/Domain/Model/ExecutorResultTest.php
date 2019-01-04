@@ -1,4 +1,5 @@
 <?php
+
 namespace SourceBroker\Imageopt\Tests\Unit\Domain\Model;
 
 use Nimut\TestingFramework\TestCase\UnitTestCase;

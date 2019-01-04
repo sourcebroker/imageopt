@@ -51,7 +51,7 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
                 $this->apiOptions['quality'] = (int)$this->executorOptions['quality']['value'];
             }
             if (isset($this->apiOptions['quality'])) {
-                $this->apiOptions['quality'] = (int)$this->options['quality'];
+                $this->apiOptions['quality'] = (int)$this->apiOptions['quality'];
             }
         }
 
@@ -127,44 +127,35 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
 
         $responseFromAPI = parent::request($data, $url, $options);
 
-        if ($responseFromAPI['error']) {
-            $result = [
+        $handledResponse = $this->handleResponseError($responseFromAPI);
+        if ($handledResponse !== null) {
+            return [
                 'success' => false,
-                'providerError' => 'cURL Error: ' . $responseFromAPI['error'],
+                'providerError' => $handledResponse
             ];
-        } elseif ($responseFromAPI['http_code'] === 429) {
+        }
+
+        $response = json_decode($responseFromAPI['response'], true, 512);
+
+        if ($response === null) {
             $result = [
                 'success' => false,
-                'providerError' => 'Limit out',
+                'providerError' => 'Unable to decode JSON',
             ];
-        } elseif ($responseFromAPI['http_code'] !== 200) {
+        } elseif (!isset($response['success']) || $response['success'] === false) {
+            $message = isset($response['message'])
+                ? $response['message']
+                : 'Undefined';
+
             $result = [
                 'success' => false,
-                'providerError' => 'Url HTTP code: ' . $responseFromAPI['http_code'],
+                'providerError' => 'API error: ' . $message,
             ];
         } else {
-            $response = json_decode($responseFromAPI['response'], true, 512);
-
-            if ($response === null) {
-                $result = [
-                    'success' => false,
-                    'providerError' => 'Unable to decode JSON',
-                ];
-            } elseif (!isset($response['success']) || $response['success'] === false) {
-                $message = isset($response['message'])
-                    ? $response['message']
-                    : 'Undefined';
-
-                $result = [
-                    'success' => false,
-                    'providerError' => 'API error: ' . $message,
-                ];
-            } else {
-                $result = [
-                    'success' => true,
-                    'response' => $response,
-                ];
-            }
+            $result = [
+                'success' => true,
+                'response' => $response,
+            ];
         }
 
         return $result;

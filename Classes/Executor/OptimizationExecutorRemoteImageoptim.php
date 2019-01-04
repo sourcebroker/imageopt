@@ -38,20 +38,22 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
     protected function initialize(Configurator $configurator): bool
     {
         $result = parent::initialize($configurator);
-
-        if ($result) {
-            if (!isset($this->auth['key'])) {
-                $result = false;
-            } elseif (!isset($this->url['upload'])) {
-                $result = false;
-            }
-
-            if (!isset($this->apiOptions['quality']) && isset($this->executorOptions['quality'])) {
-                $this->apiOptions['quality'] = $this->getExecutorQuality($configurator);
-            }
+        if (!$result) {
+            return false;
         }
 
-        return $result;
+        if (!isset($this->auth['key'])) {
+            return false;
+        }
+        if (!isset($this->url['upload'])) {
+            return false;
+        }
+
+        if (!isset($this->apiOptions['quality']) && isset($this->executorOptions['quality'])) {
+            $this->apiOptions['quality'] = $this->getExecutorQuality($configurator);
+        }
+
+        return true;
     }
 
     /**
@@ -73,6 +75,7 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
             }
         }
 
+        $url = [];
         $url[] = $this->url['upload'];
         $url[] = $this->auth['key'];
         $url[] = implode(',', $optionsString);
@@ -124,23 +127,17 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
 
         $responseFromAPI = parent::request($data, $url, $options);
 
-        if ($responseFromAPI['error']) {
-            $result = [
+        $handledResponse = $this->handleResponseError($responseFromAPI);
+        if ($handledResponse !== null) {
+            return [
                 'success' => false,
-                'providerError' => 'cURL Error: ' . $responseFromAPI['error'],
-            ];
-        } elseif ($responseFromAPI['http_code'] !== 200) {
-            $result = [
-                'success' => false,
-                'providerError' => 'Url HTTP code: ' . $responseFromAPI['http_code'],
-            ];
-        } else {
-            $result = [
-                'success' => true,
-                'response' => $responseFromAPI['response'],
+                'providerError' => $handledResponse
             ];
         }
 
-        return $result;
+        return [
+            'success' => true,
+            'response' => $responseFromAPI['response'],
+        ];
     }
 }

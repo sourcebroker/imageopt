@@ -61,7 +61,7 @@ class OptimizeImageServiceTest extends UnitTestCase
         if (is_readable($imageForTesting)) {
             /** @var OptimizationResult $optimizationResult */
             $optimizationResult = $optimizeImageService->optimize($imageForTesting, $orignalImagePath);
-            echo "\n". CliDisplayUtility::displayOptimizationResult($optimizationResult);
+            echo "\n" . CliDisplayUtility::displayOptimizationResult($optimizationResult);
 
             $this->assertEquals(true, $optimizationResult->getExecutedSuccessfully());
         } else {
@@ -92,7 +92,7 @@ class OptimizeImageServiceTest extends UnitTestCase
             $originalFileSize = filesize($imageForTesting);
             /** @var OptimizationResult $optimizationResult */
             $optimizationResult = $optimizeImageService->optimize($imageForTesting, $orignalImagePath);
-            echo "\n". CliDisplayUtility::displayOptimizationResult($optimizationResult);
+            echo "\n" . CliDisplayUtility::displayOptimizationResult($optimizationResult);
 
             $this->assertGreaterThan($optimizationResult->getSizeAfter(), $originalFileSize);
         } else {
@@ -132,11 +132,11 @@ class OptimizeImageServiceTest extends UnitTestCase
         $typoscriptParser->parse(file_get_contents(realpath(__DIR__ . '/../../../Configuration/TsConfig/Page/tx_imageopt.tsconfig')));
 
         $rawConfig = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Service\TypoScriptService::class)
-                        ->convertTypoScriptArrayToPlainArray($typoscriptParser->setup)['tx_imageopt'];
+            ->convertTypoScriptArrayToPlainArray($typoscriptParser->setup)['tx_imageopt'];
 
-        if(file_exists(__DIR__.'/../../../.env')) {
+        if (file_exists(__DIR__ . '/../../../.env')) {
             $dotenv = new Dotenv();
-            $dotenv->load(__DIR__.'/../../../.env');
+            $dotenv->load(__DIR__ . '/../../../.env');
         }
 
         $envConfig = [];

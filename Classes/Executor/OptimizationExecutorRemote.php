@@ -112,29 +112,31 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
         }
 
         $proxy = $configurator->getOption('proxy');
-        if ($timeout !== null) {
+        if (is_array($proxy) && !empty($proxy)) {
             $this->proxy = $proxy;
         }
 
         $apiUrl = $configurator->getOption('api.url');
-        if (!$apiUrl) {
+        if (is_array($apiUrl) && !empty($apiUrl)) {
+            $this->url = $apiUrl;
+        } else {
             return false;
         }
-        $this->url = $apiUrl;
 
         $apiAuth = $configurator->getOption('api.auth');
-        if (!$apiAuth) {
+        if (is_array($apiAuth) && !empty($apiAuth)) {
+            $this->auth = $apiAuth;
+        } else {
             return false;
         }
-        $this->auth = $apiAuth;
 
         $options = $configurator->getOption('api.options');
-        if ($options !== null) {
+        if (is_array($options) && !empty($options)) {
             $this->apiOptions = $options;
         }
 
         $options = $configurator->getOption('options');
-        if ($options !== null) {
+        if (is_array($options) && !empty($options)) {
             $this->executorOptions = $options;
         }
 
@@ -221,6 +223,29 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
     }
 
     /**
+     * Handles response errors
+     *
+     * @param array $response
+     * @return string|null
+     */
+    protected function handleResponseError(array $response)
+    {
+        $result = null;
+
+        if ($response['error']) {
+            $result = 'cURL Error: ' . $response['error'];
+        } elseif ($response['http_code'] === 429) {
+            $result = 'Limit out';
+        } elseif (!in_array($response['http_code'], [200,201])) {
+            $result = 'Url HTTP code: ' . $response['http_code'];
+        } elseif (empty($response['response'])) {
+            $result = 'Empty response';
+        }
+
+        return $result;
+    }
+
+    /**
      * Gets the image and saves
      *
      * @param string $inputImageAbsolutePath Absolute path to target image
@@ -233,7 +258,6 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
 
         if (stripos($headers[0], '200 OK')) {
             file_put_contents($inputImageAbsolutePath, fopen($url, 'r'));
-
             return true;
         }
 
