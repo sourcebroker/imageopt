@@ -3,14 +3,10 @@ tx_imageopt {
 
     optimize {
         10 {
-            fileRegexp = _optimized_
-            providerType = lossless
-        }
-        20 {
             fileRegexp = .*
             providerType = lossy
         }
-        30 {
+        20 {
             fileRegexp = .*
             providerType = lossless
         }
