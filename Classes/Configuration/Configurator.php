@@ -159,18 +159,19 @@ class Configurator
                 }
                 foreach ($providerValues['executors'] as $executorKey => $executorValues) {
                     if (is_array($config['default']['providers'][$providerKey]['executors'])) {
-                        $defaultValues = $config['default']['providers'][$providerKey]['executors'];
-                        $executorValues = ArrayUtility::mergeRecursiveDistinct($defaultValues, $executorValues);
+                        $executorValues = ArrayUtility::mergeRecursiveDistinct($config['default']['providers'][$providerKey]['executors'],
+                            $executorValues);
                     }
                     if (is_array($config['default']['providers']['_all']['executors'])) {
-                        $defaultValues = $config['default']['providers']['_all']['executors'];
-                        $executorValues = ArrayUtility::mergeRecursiveDistinct($defaultValues, $executorValues);
+                        $executorValues = ArrayUtility::mergeRecursiveDistinct($config['default']['providers']['_all']['executors'],
+                            $executorValues);
                     }
                     $providerValues['executors'][$executorKey] = $executorValues;
                 }
                 $config['providers'][$extension][$providerKey] = $providerValues;
             }
         }
+
         return $config;
     }
 }
