@@ -1,87 +1,105 @@
 tx_imageopt {
     directories = typo3temp/pics*jpg|gif|png,typo3temp/GB*jpg|gif|png,typo3temp/assets/images*jpg|gif|png,
 
+    optimize {
+        10 {
+            fileRegexp = _optimized_
+            providerType = lossless
+        }
+        20 {
+            fileRegexp = .*
+            providerType = lossy
+        }
+        30 {
+            fileRegexp = .*
+            providerType = lossless
+        }
+    }
+
     default {
         providers {
-          # "_all" is merged to all providers
-          _all {
-            enabled = 1
-            # "executors" is merged to each executor
-            executors {
-              options {
-                quality {
-                  value = 85
+            # "_all" is merged to all providers
+            _all {
+                enabled = 1
+                # "executors" is merged to each executor
+                executors {
+                    options {
+                        quality {
+                            value = 85
+                        }
+                    }
+                    notifications {
+                        limitsExeeded {
+                            active = 1
+                        }
+                    }
                 }
-              }
-              notifications {
-                limitsExeeded {
-                  active = 1
+                email {
+                    sender {
+                        email =
+                        name =
+                    }
+                    reciver {
+                        email =
+                        name =
+                    }
                 }
-              }
             }
-            email {
-                sender {
-                    email =
-                    name =
-                }
-                reciver {
-                    email =
-                    name =
-                }
-            }
-          }
 
-          kraken {
-            enabled = 1
-            executors {
-              api {
-                url {
-                  upload = https://api.kraken.io/v1/upload
+            kraken {
+                enabled = 1
+                type = lossy
+                executors {
+                    api {
+                        url {
+                            upload = https://api.kraken.io/v1/upload
+                        }
+                        auth {
+                            key =
+                            pass =
+                        }
+                    }
+                    options {
+                        lossy = true
+                    }
                 }
-                auth {
-                  key =
-                  pass =
-                }
-              }
-              options {
-                  lossy = true
-              }
             }
-          }
 
-          tinypng {
-            enabled = 1
-            executors {
-              api {
-                url {
-                  upload = https://api.tinify.com/shrink
+            tinypng {
+                enabled = 1
+                type = lossy
+                executors {
+                    api {
+                        url {
+                            upload = https://api.tinify.com/shrink
+                        }
+                        auth {
+                            key =
+                            pass =
+                        }
+                    }
                 }
-                auth {
-                  key =
-                  pass =
-                }
-              }
             }
-          }
 
-          imageoptim {
-            enabled = 1
-            executors {
-              api {
-                url {
-                  upload = https://im2.io
+            imageoptim {
+                enabled = 1
+                type = lossless
+                executors {
+                    api {
+                        url {
+                            upload = https://im2.io
+                        }
+                        auth {
+                            key =
+                            pass =
+                        }
+                    }
+                    options {
+                        0 = full
+                        quality = medium
+                    }
                 }
-                auth {
-                  key =
-                  pass =
-                }
-              }
-              options {
-                  0 = full
-                  quality = medium
-              }
             }
-          }
         }
     }
 
@@ -91,6 +109,7 @@ tx_imageopt {
 
             jpegoptim {
                 enabled = 1
+                type = lossy
                 executors {
                     10 {
                         class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
@@ -131,6 +150,7 @@ tx_imageopt {
 
             jpegrescan {
                 enabled = 1
+                type = lossless
                 executors {
                     10 {
                         class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
@@ -144,6 +164,7 @@ tx_imageopt {
 
             jpegtran {
                 enabled = 1
+                type = lossless
                 executors {
                     10 {
                         class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
@@ -156,91 +177,94 @@ tx_imageopt {
             }
 
             jpegtran-mozjpeg {
-              enabled = 0
-              executors {
-                10 {
-                  enabled = 1
-                  class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                  command {
-                    mask = {executable} -copy none -optimize -outfile {tempFile} {tempFile}
-                    exec = mozjpeg-jpegtran
-                  }
+                enabled = 0
+                type = lossless
+                executors {
+                    10 {
+                        enabled = 1
+                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                        command {
+                            mask = {executable} -copy none -optimize -outfile {tempFile} {tempFile}
+                            exec = mozjpeg-jpegtran
+                        }
+                    }
                 }
-              }
             }
 
             kraken.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
 
             mozjpeg {
-              enabled = 0
-              executors {
-                10 {
-                  enabled = 1
-                  class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                  command {
-                    mask = {executable} -optimize -outfile {tempFile}_tmp {tempFile}
-                    exec = mozjpeg-cjpeg
-                  }
+                enabled = 0
+                type = lossless
+                executors {
+                    10 {
+                        enabled = 1
+                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                        command {
+                            mask = {executable} -optimize -outfile {tempFile}_tmp {tempFile}
+                            exec = mozjpeg-cjpeg
+                        }
+                    }
+                    # cjpeg can not ouput to the same file so we need to use {tempFile}_tmp and then cp to {tempFile}
+                    20 {
+                        enabled = 1
+                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                        command {
+                            mask = {executable} -f {tempFile}_tmp {tempFile}
+                            exec = cp
+                        }
+                    }
                 }
-                # cjpeg can not ouput to the same file so we need to use {tempFile}_tmp and then cp to {tempFile}
-                20 {
-                  enabled = 1
-                  class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                  command {
-                    mask = {executable} -f {tempFile}_tmp {tempFile}
-                    exec = cp
-                  }
-                }
-              }
             }
 
             mozjpeg-quality {
-              enabled = 0
-              executors {
-                10 {
-                  enabled = 1
-                  class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                  command {
-                    mask = {executable} {quality} -optimize -outfile {tempFile}_tmp {tempFile}
-                    exec = mozjpeg-cjpeg
-                  }
-                  options {
-                    quality {
-                      value < tx_imageopt.default.options.quality
-                      options {
-                        5 = -quality 5
-                        10 = -quality 10
-                        15 = -quality 15
-                        20 = -quality 20
-                        25 = -quality 25
-                        30 = -quality 30
-                        35 = -quality 35
-                        40 = -quality 40
-                        45 = -quality 45
-                        50 = -quality 50
-                        55 = -quality 55
-                        60 = -quality 60
-                        65 = -quality 65
-                        70 = -quality 70
-                        75 = -quality 75
-                        80 = -quality 80
-                        85 = -quality 85
-                        90 = -quality 90
-                        95 = -quality 95
-                        100 = -quality 100
-                      }
+                enabled = 0
+                type = lossy
+                executors {
+                    10 {
+                        enabled = 1
+                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                        command {
+                            mask = {executable} {quality} -optimize -outfile {tempFile}_tmp {tempFile}
+                            exec = mozjpeg-cjpeg
+                        }
+                        options {
+                            quality {
+                                value < tx_imageopt.default.options.quality
+                                options {
+                                    5 = -quality 5
+                                    10 = -quality 10
+                                    15 = -quality 15
+                                    20 = -quality 20
+                                    25 = -quality 25
+                                    30 = -quality 30
+                                    35 = -quality 35
+                                    40 = -quality 40
+                                    45 = -quality 45
+                                    50 = -quality 50
+                                    55 = -quality 55
+                                    60 = -quality 60
+                                    65 = -quality 65
+                                    70 = -quality 70
+                                    75 = -quality 75
+                                    80 = -quality 80
+                                    85 = -quality 85
+                                    90 = -quality 90
+                                    95 = -quality 95
+                                    100 = -quality 100
+                                }
+                            }
+                        }
                     }
-                  }
+                    20 {
+                        enabled = 1
+                        class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                        command {
+                            mask = {executable} -f {tempFile}_tmp {tempFile}
+                            exec = cp
+                        }
+                    }
                 }
-                20 {
-                  enabled = 1
-                  class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                  command {
-                    mask = {executable} -f {tempFile}_tmp {tempFile}
-                    exec = cp
-                  }
-                }
-              }
             }
 
             tinypng.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteTinypng
@@ -249,6 +273,7 @@ tx_imageopt {
         gif {
             gifsicle {
                 enabled = 1
+                type = lossless
                 executors {
                     10 {
                         class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
@@ -301,6 +326,7 @@ tx_imageopt {
 
             optipng {
                 enabled = 1
+                type = lossless
                 executors {
                     10 {
                         class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
@@ -340,6 +366,7 @@ tx_imageopt {
 
             pngcrush {
                 enabled = 1
+                type = lossless
                 executors {
                     10 {
                         class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
@@ -353,6 +380,7 @@ tx_imageopt {
 
             pngquant {
                 enabled = 1
+                type = lossy
                 executors {
                     10 {
                         class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
@@ -392,6 +420,7 @@ tx_imageopt {
             }
 
             pngquant-pngcrush {
+                type = lossy
                 executors {
                     10 < tx_imageopt.providers.png.pngquant.executors.10
                     20 < tx_imageopt.providers.png.pngcrush.executors.10

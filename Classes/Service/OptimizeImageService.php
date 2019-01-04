@@ -28,6 +28,7 @@ use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Domain\Model\OptimizationResult;
 use SourceBroker\Imageopt\Provider\OptimizationProvider;
 use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
+use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -67,7 +68,7 @@ class OptimizeImageService
      * @return OptimizationResult Optimization result
      * @throws \Exception
      */
-    public function optimize($inputImageAbsolutePath)
+    public function optimize($inputImageAbsolutePath, ProcessedFile $processedFile)
     {
         $optimizationResult = GeneralUtility::makeInstance(OptimizationResult::class);
         $optimizationResult->setFileRelativePath(substr($inputImageAbsolutePath, strlen(PATH_site)));
@@ -75,9 +76,8 @@ class OptimizeImageService
         clearstatcache(true, $inputImageAbsolutePath);
         if (file_exists($inputImageAbsolutePath) && filesize($inputImageAbsolutePath)) {
             $optimizationResult->setSizeBefore(filesize($inputImageAbsolutePath));
-            $fileType = strtolower(explode('/', image_type_to_mime_type(getimagesize($inputImageAbsolutePath)[2]))[1]);
             $temporaryBestOptimizedImageAbsolutePath = $this->temporaryFile->createTemporaryCopy($inputImageAbsolutePath);
-            $imageOpimalizationsProviders = $this->configurator->getOption('providers.' . $fileType);
+            $imageOpimalizationsProviders = $this->findProvidersForFile($processedFile);
             if (!empty($imageOpimalizationsProviders)) {
                 $providerExecuted = $providerExecutedSuccessfully = 0;
                 foreach ($imageOpimalizationsProviders as $providerKey => $imageOpimalizationsProviderConfig) {
@@ -126,11 +126,46 @@ class OptimizeImageService
                     }
                 }
             } else {
-                $optimizationResult->setInfo('There is no providers for file with extension: "' . $fileType . '"');
+                $optimizationResult->setInfo('No suitable provider with proper optimization mode found for given file');
             }
         } else {
             $optimizationResult->setInfo('Can not read file to optimize. File: "' . $inputImageAbsolutePath . '"');
         }
         return $optimizationResult;
+    }
+
+    /**
+     * Finds all providers available for given type of file
+     *
+     * @param \TYPO3\CMS\Core\Resource\ProcessedFile $processedFile
+     * @return array
+     */
+    protected function findProvidersForFile(ProcessedFile $processedFile)
+    {
+        $path = $processedFile->getForLocalProcessing(false);
+        $fileType = strtolower(explode('/', image_type_to_mime_type(getimagesize($path)[2]))[1]);
+        $providersForExt = $this->configurator->getOption('providers.' . $fileType);
+
+        $providers = [];
+
+        $optimizeEntries = $this->configurator->getOption('optimize');
+        while ($optimizeEntry = array_shift($optimizeEntries)) {
+            $pattern = '@' . $optimizeEntry['fileRegexp'] . '@i';
+            if (!preg_match($pattern, $path)) {
+                continue;
+            }
+
+            foreach ($providersForExt as $name => $provider) {
+                if ($provider['type'] === $optimizeEntry['providerType']) {
+                    $providers[$name] = $provider;
+                }
+            }
+
+            if ($providers) {
+                break;
+            }
+        }
+
+        return $providers;
     }
 }
