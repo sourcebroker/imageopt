@@ -27,9 +27,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class OptimizeFolderImages extends BaseCommand
 {
-    /**
-     * Configure the command by defining the name, options and arguments
-     */
     public function configure()
     {
         $this->setDescription('Optimize images in folders')
