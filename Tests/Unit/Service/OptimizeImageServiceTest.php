@@ -134,8 +134,10 @@ class OptimizeImageServiceTest extends UnitTestCase
         $rawConfig = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Service\TypoScriptService::class)
                         ->convertTypoScriptArrayToPlainArray($typoscriptParser->setup)['tx_imageopt'];
 
-        $dotenv = new Dotenv();
-        $dotenv->load(__DIR__.'/../../../.env');
+        if(file_exists(__DIR__.'/../../../.env')) {
+            $dotenv = new Dotenv();
+            $dotenv->load(__DIR__.'/../../../.env');
+        }
 
         $envConfig = [];
         foreach ($_ENV as $key => $value) {
@@ -144,9 +146,16 @@ class OptimizeImageServiceTest extends UnitTestCase
                 $envConfig[$key] = $value;
             }
         }
+        foreach ($_SERVER as $key => $value) {
+            if (strpos($key, 'tx_imageopt__') === 0) {
+                $key = substr($key, 13);
+                $envConfig[$key] = $value;
+            }
+        }
 
         foreach ($envConfig as $name => $value) {
             $plainConfig = explode('__', $name);
+
             $plainConfig[] = $value;
             $nestedConfig = ArrayUtility::plainToNested($plainConfig);
             $rawConfig = ArrayUtility::mergeRecursiveDistinct($rawConfig, $nestedConfig);
