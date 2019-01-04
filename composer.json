@@ -10,7 +10,8 @@
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^2.0",
-    "nimut/testing-framework": "^1.0 || ^2.0 || ^3.0 || ^4.0"
+    "nimut/testing-framework": "^1.0 || ^2.0 || ^3.0 || ^4.0",
+    "symfony/dotenv": "^4.2 || ^3.4"
   },
   "suggest": {
     "typo3/cms-scheduler": "^8.7 || ^9.5"

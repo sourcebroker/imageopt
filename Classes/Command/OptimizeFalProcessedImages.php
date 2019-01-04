@@ -17,6 +17,7 @@ namespace SourceBroker\Imageopt\Command;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Service\OptimizeImagesFalService;
+use SourceBroker\Imageopt\Utility\CliDisplayUtility;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -73,7 +74,7 @@ class OptimizeFalProcessedImages extends BaseCommand
         if (!empty($filesToProcess)) {
             foreach ($filesToProcess as $fileToProcess) {
                 $optimizationResult = $optimizeImagesFalService->optimizeFalProcessedFile($fileToProcess);
-                $io->write($this->showResult($optimizationResult));
+                $io->write(CliDisplayUtility::displayOptimizationResult($optimizationResult));
             }
         } else {
             if (!$io->isQuiet()) {

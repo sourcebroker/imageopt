@@ -46,7 +46,15 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
             } elseif (!isset($this->url['upload'])) {
                 $result = false;
             }
+
+            if (!isset($this->apiOptions['quality']) && isset($this->executorOptions['quality'])) {
+                $this->apiOptions['quality'] = (int)$this->executorOptions['quality']['value'];
+            }
+            if (isset($this->apiOptions['quality'])) {
+                $this->apiOptions['quality'] = (int)$this->options['quality'];
+            }
         }
+
         return $result;
     }
 
@@ -60,20 +68,16 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
     {
         $file = curl_file_create($inputImageAbsolutePath);
 
-        $options = $this->options;
+        $options = $this->apiOptions;
         $options['wait'] = true; // wait for processed file (forced option)
         $options['auth'] = [
             'api_key'    => $this->auth['key'],
             'api_secret' => $this->auth['pass'],
         ];
 
-        if (isset($options['quality'])) {
-            $options['quality'] = (int)$options['quality']['value'];
-        }
-
         foreach ($options as $key => $value) {
             if ($value === 'true' || $value === 'false') {
-                $options[$key] = (bool)$value;
+                $options[$key] = $value === 'true';
             }
         }
 
