@@ -143,11 +143,11 @@ class Configurator
      * @param array $config
      * @return array
      */
-    public function mergeDefaultForProviderAndExecutor(array $config) : array
+    public function mergeDefaultForProviderAndExecutor(array $config): array
     {
         $defaultProviderValues = null;
 
-        if(isset($config['providers']['_all'])) {
+        if (isset($config['providers']['_all'])) {
             $defaultProviderValues = $config['providers']['_all'];
             unset($config['providers']['_all']);
 

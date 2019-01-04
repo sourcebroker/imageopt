@@ -35,7 +35,7 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
      * @param Configurator $configurator
      * @return bool
      */
-    protected function initialize(Configurator $configurator) : bool
+    protected function initialize(Configurator $configurator): bool
     {
         $result = parent::initialize($configurator);
 
@@ -56,7 +56,7 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
      * @param string $inputImageAbsolutePath Absolute path/file with original image
      * @return array
      */
-    protected function process(string $inputImageAbsolutePath) : array
+    protected function process(string $inputImageAbsolutePath): array
     {
         $result = self::request(file_get_contents($inputImageAbsolutePath), $this->url['upload']);
 
@@ -84,11 +84,11 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
      * @param array $params Additional parameters
      * @return array Result of optimization includes the response from the tinypng.com
      */
-    protected function request($data, string $url, array $params = []) : array
+    protected function request($data, string $url, array $params = []): array
     {
         $options = array_merge([
             'curl' => [
-                CURLOPT_HEADER  => true,
+                CURLOPT_HEADER => true,
                 CURLOPT_USERPWD => 'api:' . $this->auth['key'],
             ],
         ], $params);
@@ -97,7 +97,7 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
 
         if ($responseFromAPI['error']) {
             $result = [
-                'success'       => false,
+                'success' => false,
                 'providerError' => 'cURL Error: ' . $responseFromAPI['error'],
             ];
         } elseif ($responseFromAPI['http_code'] === 429) {
@@ -108,12 +108,12 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
                 'Your limit for Tinypng.com has been exceeded');
 
             $result = [
-                'success'       => false,
+                'success' => false,
                 'providerError' => 'Limit out',
             ];
         } elseif ($responseFromAPI['http_code'] !== 201) {
             $result = [
-                'success'       => false,
+                'success' => false,
                 'providerError' => 'Url HTTP code: ' . $responseFromAPI['http_code'],
             ];
         } elseif (is_string($responseFromAPI['response'])) {
@@ -121,13 +121,13 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
             $body = substr($responseFromAPI['response'], $responseFromAPI['header_size']);
 
             $result = [
-                'success'                   => true,
+                'success' => true,
                 'providerSubscriptionLimit' => $headers['compression-count'],
-                'response'                  => json_decode($body, true),
+                'response' => json_decode($body, true),
             ];
         } else {
             $result = [
-                'success'       => false,
+                'success' => false,
                 'providerError' => 'cURL Error: ' . $responseFromAPI['error'],
             ];
         }

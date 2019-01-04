@@ -35,7 +35,7 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
      * @param Configurator $configurator
      * @return bool
      */
-    protected function initialize(Configurator $configurator) : bool
+    protected function initialize(Configurator $configurator): bool
     {
         $result = parent::initialize($configurator);
 
@@ -60,7 +60,7 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
      * @param string $inputImageAbsolutePath Absolute path/file with original image
      * @return array
      */
-    protected function process(string $inputImageAbsolutePath) : array
+    protected function process(string $inputImageAbsolutePath): array
     {
         $file = curl_file_create($inputImageAbsolutePath);
 
@@ -116,7 +116,7 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
      * @param array $params Additional parameters
      * @return array
      */
-    protected function request($data, string $url, array $params = []) : array
+    protected function request($data, string $url, array $params = []): array
     {
         $options = [
             'curl' => [],
@@ -126,17 +126,17 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
 
         if ($responseFromAPI['error']) {
             $result = [
-                'success'       => false,
+                'success' => false,
                 'providerError' => 'cURL Error: ' . $responseFromAPI['error'],
             ];
         } elseif ($responseFromAPI['http_code'] !== 200) {
             $result = [
-                'success'       => false,
+                'success' => false,
                 'providerError' => 'Url HTTP code: ' . $responseFromAPI['http_code'],
             ];
         } else {
             $result = [
-                'success'  => true,
+                'success' => true,
                 'response' => $responseFromAPI['response'],
             ];
         }

@@ -36,7 +36,7 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
      * @param Configurator $configurator
      * @return bool
      */
-    protected function initialize(Configurator $configurator) : bool
+    protected function initialize(Configurator $configurator): bool
     {
         $result = parent::initialize($configurator);
 
@@ -64,14 +64,14 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
      * @param string $inputImageAbsolutePath Absolute path/file with original image
      * @return array
      */
-    protected function process(string $inputImageAbsolutePath) : array
+    protected function process(string $inputImageAbsolutePath): array
     {
         $file = curl_file_create($inputImageAbsolutePath);
 
         $options = $this->apiOptions;
         $options['wait'] = true; // wait for processed file (forced option)
         $options['auth'] = [
-            'api_key'    => $this->auth['key'],
+            'api_key' => $this->auth['key'],
             'api_secret' => $this->auth['pass'],
         ];
 
@@ -110,11 +110,11 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
      * @param array $params Additional parameters
      * @return array Result of optimization includes the response from the kraken.io
      */
-    protected function request($data, string $url, array $params = []) : array
+    protected function request($data, string $url, array $params = []): array
     {
         $options = [
             'curl' => [
-                CURLOPT_CAINFO         => ExtensionManagementUtility::extPath('imageopt') . 'Resources/Private/Cert/cacert.pem',
+                CURLOPT_CAINFO => ExtensionManagementUtility::extPath('imageopt') . 'Resources/Private/Cert/cacert.pem',
                 CURLOPT_SSL_VERIFYPEER => 1,
             ],
         ];
@@ -129,17 +129,17 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
 
         if ($responseFromAPI['error']) {
             $result = [
-                'success'       => false,
+                'success' => false,
                 'providerError' => 'cURL Error: ' . $responseFromAPI['error'],
             ];
         } elseif ($responseFromAPI['http_code'] === 429) {
             $result = [
-                'success'       => false,
+                'success' => false,
                 'providerError' => 'Limit out',
             ];
         } elseif ($responseFromAPI['http_code'] !== 200) {
             $result = [
-                'success'       => false,
+                'success' => false,
                 'providerError' => 'Url HTTP code: ' . $responseFromAPI['http_code'],
             ];
         } else {
@@ -147,7 +147,7 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
 
             if ($response === null) {
                 $result = [
-                    'success'       => false,
+                    'success' => false,
                     'providerError' => 'Unable to decode JSON',
                 ];
             } elseif (!isset($response['success']) || $response['success'] === false) {
@@ -156,12 +156,12 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
                     : 'Undefined';
 
                 $result = [
-                    'success'       => false,
+                    'success' => false,
                     'providerError' => 'API error: ' . $message,
                 ];
             } else {
                 $result = [
-                    'success'  => true,
+                    'success' => true,
                     'response' => $response,
                 ];
             }

@@ -71,7 +71,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param Configurator $configurator
      * @return ExecutorResult Optimization result
      */
-    public function optimize(string $inputImageAbsolutePath, Configurator $configurator) : ExecutorResult
+    public function optimize(string $inputImageAbsolutePath, Configurator $configurator): ExecutorResult
     {
         $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
         $executorResult->setExecutedSuccessfully(false);
@@ -104,7 +104,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param Configurator $configurator
      * @return bool
      */
-    protected function initialize(Configurator $configurator) : bool
+    protected function initialize(Configurator $configurator): bool
     {
         $timeout = $configurator->getOption('timeout');
         if ($timeout !== null) {
@@ -147,10 +147,10 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param string $inputImageAbsolutePath Absolute path/file with original image
      * @return array
      */
-    protected function process(string $inputImageAbsolutePath) : array
+    protected function process(string $inputImageAbsolutePath): array
     {
         return [
-            'success'       => false,
+            'success' => false,
             'providerError' => 'Process not defined',
         ];
     }
@@ -163,7 +163,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param array $options Additional options
      * @return array
      */
-    protected function request($data, string $url, array $options = []) : array
+    protected function request($data, string $url, array $options = []): array
     {
         $curl = curl_init();
 
@@ -210,10 +210,10 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
         $headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
 
         $result = [
-            'response'    => $response,
-            'http_code'   => $httpCode,
+            'response' => $response,
+            'http_code' => $httpCode,
             'header_size' => $headerSize,
-            'error'       => curl_error($curl),
+            'error' => curl_error($curl),
         ];
         curl_close($curl);
 
@@ -227,7 +227,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param string $url Url of the image to download
      * @return bool Returns true if the image exists and will be saved
      */
-    protected function getFileFromRemoteServer(string $inputImageAbsolutePath, string $url) : bool
+    protected function getFileFromRemoteServer(string $inputImageAbsolutePath, string $url): bool
     {
         $headers = get_headers($url);
 

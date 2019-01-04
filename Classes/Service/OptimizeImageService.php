@@ -60,13 +60,12 @@ class OptimizeImageService
         $this->temporaryFile = GeneralUtility::makeInstance(TemporaryFileUtility::class);
 
         $providers = $this->configurator->getOption('providers');
-        foreach($providers as $name => $provider)
-        {
-            if(empty($provider['type'])) {
-                throw new \Exception('Provider types is not set for provider: "'. $name .'"');
+        foreach ($providers as $name => $provider) {
+            if (empty($provider['type'])) {
+                throw new \Exception('Provider types is not set for provider: "' . $name . '"');
             }
-            if(empty($provider['fileType'])) {
-                throw new \Exception('File types is not set for provider: "'. $name .'"');
+            if (empty($provider['fileType'])) {
+                throw new \Exception('File types is not set for provider: "' . $name . '"');
             }
         }
     }

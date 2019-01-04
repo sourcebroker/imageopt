@@ -15,9 +15,6 @@ namespace SourceBroker\Imageopt\Command;
  * The TYPO3 project - inspiring people to share!
  */
 
-use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
-use SourceBroker\Imageopt\Domain\Model\OptimizationResult;
-use SourceBroker\Imageopt\Domain\Model\ProviderResult;
 use Symfony\Component\Console\Command\Command;
 
 class BaseCommand extends Command
