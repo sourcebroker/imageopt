@@ -67,8 +67,11 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
             'api_secret' => $this->auth['pass'],
         ];
 
-        if (isset($options['quality'])) {
+        if (isset($options['quality']['value'])) {
             $options['quality'] = (int)$options['quality']['value'];
+        }
+        if (isset($options['quality'])) {
+            $options['quality'] = (int)$options['quality'];
         }
 
         foreach ($options as $key => $value) {
