@@ -305,6 +305,22 @@ class OptimizationResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 
     /**
+     * Returns number of successfully runned executors
+     *
+     * @return int
+     */
+    public function getExecutedSuccessfullyNum() : int
+    {
+        $num = 0;
+        foreach($this->providersResults as $result) {
+            if($result->isExecutedSuccessfully()) {
+                ++$num;
+            }
+        }
+        return $num;
+    }
+
+    /**
      * Returns the info
      *
      * @return string $info

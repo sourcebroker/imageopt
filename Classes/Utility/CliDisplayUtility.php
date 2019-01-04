@@ -17,12 +17,13 @@ class CliDisplayUtility
     {
         /** @var  $optimizationResult */
         $providersScore = [];
-        $success = $nr = 0;
+        $nr = 0;
+
         /** @var ProviderResult $providerResult */
-        foreach ($optimizationResult->getProvidersResults()->toArray() as $providerResult) {
+        $providerResults = $optimizationResult->getProvidersResults()->toArray();
+        foreach ($providerResults as $providerResult) {
             $nr++;
             if ($providerResult->isExecutedSuccessfully()) {
-                $success++;
                 $percentage = round((
                         $providerResult->getSizeBefore() - $providerResult->getSizeAfter()) * 100
                     / $providerResult->getSizeBefore(), 2);
@@ -43,7 +44,7 @@ class CliDisplayUtility
             '---------------------------------' . "\n" .
             "File\t\t| " . $optimizationResult->getFileRelativePath() . "\n" .
             "Info\t\t| " . implode("\n\t\t| ", explode("\n", wordwrap($optimizationResult->getInfo(), 70))) . "\n" .
-            "Provider stats\t| " . $success . ' out of ' . $optimizationResult->getProvidersResults()->count() . ' providers finished successfully:' . "\n" .
+            "Provider stats\t| " . $optimizationResult->getExecutedSuccessfullyNum() . ' out of ' . $optimizationResult->getProvidersResults()->count() . ' providers finished successfully:' . "\n" .
             "\t\t| " . implode("\n\t\t| ", $providersScore) . "\n";
     }
 }
