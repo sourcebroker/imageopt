@@ -4,7 +4,7 @@ namespace SourceBroker\Imageopt\Utility;
 
 use SourceBroker\Imageopt\Domain\Model\OptimizationResult;
 
-class CLIDiplayUtility
+class CliDisplayUtility
 {
 
     /**

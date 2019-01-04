@@ -8,7 +8,7 @@ use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Domain\Model\OptimizationResult;
 use SourceBroker\Imageopt\Service\OptimizeImageService;
 use SourceBroker\Imageopt\Utility\ArrayUtility;
-use SourceBroker\Imageopt\Utility\CLIDiplayUtility;
+use SourceBroker\Imageopt\Utility\CliDisplayUtility;
 use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
 use TYPO3\CMS\Core\TypoScript\Parser\TypoScriptParser;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -60,7 +60,7 @@ class OptimizeImageServiceTest extends UnitTestCase
         if (is_readable($imageForTesting)) {
             /** @var OptimizationResult $optimizationResult */
             $optimizationResult = $optimizeImageService->optimize($imageForTesting, $orignalImagePath);
-            echo "\n". CLIDiplayUtility::displayOptimizationResult($optimizationResult);
+            echo "\n". CliDisplayUtility::displayOptimizationResult($optimizationResult);
 
             $this->assertEquals(true, $optimizationResult->getExecutedSuccessfully());
         } else {
@@ -91,7 +91,7 @@ class OptimizeImageServiceTest extends UnitTestCase
             $originalFileSize = filesize($imageForTesting);
             /** @var OptimizationResult $optimizationResult */
             $optimizationResult = $optimizeImageService->optimize($imageForTesting, $orignalImagePath);
-            echo "\n". CLIDiplayUtility::displayOptimizationResult($optimizationResult);
+            echo "\n". CliDisplayUtility::displayOptimizationResult($optimizationResult);
 
             $this->assertGreaterThan($optimizationResult->getSizeAfter(), $originalFileSize);
         } else {

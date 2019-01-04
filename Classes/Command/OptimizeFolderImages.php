@@ -17,7 +17,7 @@ namespace SourceBroker\Imageopt\Command;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Service\OptimizeImagesFolderService;
-use SourceBroker\Imageopt\Utility\CLIDiplayUtility;
+use SourceBroker\Imageopt\Utility\CliDisplayUtility;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -74,7 +74,7 @@ class OptimizeFolderImages extends BaseCommand
         if (!empty($filesToProcess)) {
             foreach ($filesToProcess as $fileToProcess) {
                 $optimizationResult = $optimizeImagesFolderService->optimizeFolderFile($fileToProcess);
-                $io->write(CLIDiplayUtility::displayOptimizationResult($optimizationResult));
+                $io->write(CliDisplayUtility::displayOptimizationResult($optimizationResult));
             }
         } else {
             if (!$io->isQuiet()) {
