@@ -42,10 +42,7 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
             return false;
         }
 
-        if (!isset($this->auth['key'])) {
-            return false;
-        }
-        if (!isset($this->url['upload'])) {
+        if (!isset($this->auth['key']) || !isset($this->url['upload'])) {
             return false;
         }
 
