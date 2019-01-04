@@ -62,10 +62,10 @@ class OptimizeImageService
         $providers = $this->configurator->getOption('providers');
         foreach($providers as $name => $provider)
         {
-            if(!isset($provider['type'])) {
+            if(empty($provider['type'])) {
                 throw new \Exception('Provider types is not set for provider: "'. $name .'"');
             }
-            if(!isset($provider['fileType'])) {
+            if(empty($provider['fileType'])) {
                 throw new \Exception('File types is not set for provider: "'. $name .'"');
             }
         }
