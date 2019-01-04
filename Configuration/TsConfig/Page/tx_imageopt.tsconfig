@@ -356,6 +356,10 @@ tx_imageopt {
                             key =
                             pass =
                         }
+                        options {
+                            lossy = true
+                            quality = 85
+                        }
                     }
                 }
             }

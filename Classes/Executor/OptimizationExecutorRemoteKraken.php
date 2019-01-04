@@ -47,8 +47,11 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
                 $result = false;
             }
 
-            if (!isset($options['quality']) && isset($this->executorOptions['quality'])) {
-                $options['quality'] = (int)$this->executorOptions['quality']['value'];
+            if (!isset($this->apiOptions['quality']) && isset($this->executorOptions['quality'])) {
+                $this->apiOptions['quality'] = (int)$this->executorOptions['quality']['value'];
+            }
+            if (isset($this->apiOptions['quality'])) {
+                $this->apiOptions['quality'] = (int)$this->options['quality'];
             }
         }
 
