@@ -299,7 +299,7 @@ tx_imageopt {
                 10 {
                     class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
                     command {
-                        mask = {executable} {tempFile} --skip-if-larger --force --ext '' --strip {quality}
+                        mask = {executable} {tempFile} --force --ext '' --strip {quality}
                         exec = pngquant
                         successfulExitStatus = 98
                     }
