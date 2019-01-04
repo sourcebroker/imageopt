@@ -16,4 +16,22 @@ class ArrayUtility
 
         return $array1;
     }
+
+    public static function plainToNested(array $plainArray)
+    {
+        $root = [];
+        $node =& $root;
+
+        while($part = array_shift($plainArray))
+        {
+            if(!$plainArray) {
+                $node = $part;
+            } else {
+                $node[ $part ] = [];
+                $node =& $node[ $part ];
+            }
+        }
+
+        return $root;
+    }
 }

@@ -7,6 +7,7 @@ use Nimut\TestingFramework\TestCase\UnitTestCase;
 use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Domain\Model\OptimizationResult;
 use SourceBroker\Imageopt\Service\OptimizeImageService;
+use SourceBroker\Imageopt\Utility\ArrayUtility;
 use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
 use TYPO3\CMS\Core\TypoScript\Parser\TypoScriptParser;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -123,9 +124,25 @@ class OptimizeImageServiceTest extends UnitTestCase
         $configurator = GeneralUtility::makeInstance(Configurator::class);
         $typoscriptParser = GeneralUtility::makeInstance(TypoScriptParser::class);
         $typoscriptParser->parse(file_get_contents(realpath(__DIR__ . '/../../../Configuration/TsConfig/Page/tx_imageopt.tsconfig')));
-        return $configurator->mergeDefaultForProviderAndExecutor(
-            GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Service\TypoScriptService::class)
-                ->convertTypoScriptArrayToPlainArray($typoscriptParser->setup)['tx_imageopt']
-        );
+
+        $rawConfig = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Service\TypoScriptService::class)
+                        ->convertTypoScriptArrayToPlainArray($typoscriptParser->setup)['tx_imageopt'];
+
+        $envConfig = [];
+        foreach ($_ENV as $key => $value) {
+            if (strpos($key, 'tx_imageopt__') === 0) {
+                $key = substr($key, 13);
+                $envConfig[$key] = $value;
+            }
+        }
+
+        foreach ($envConfig as $name => $value) {
+            $plainConfig = explode('__', $name);
+            $plainConfig[] = $value;
+            $nestedConfig = ArrayUtility::plainToNested($plainConfig);
+            $rawConfig = ArrayUtility::mergeRecursiveDistinct($rawConfig, $nestedConfig);
+        }
+
+        return $configurator->mergeDefaultForProviderAndExecutor($rawConfig);
     }
 }

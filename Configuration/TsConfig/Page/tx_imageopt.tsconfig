@@ -42,7 +42,7 @@ tx_imageopt {
                 }
             }
 
-            kraken-lossy {
+            kraken_lossy {
                 enabled = 1
                 type = lossy
                 executors {
@@ -61,7 +61,7 @@ tx_imageopt {
                 }
             }
 
-            kraken-lossless {
+            kraken_lossless {
                 enabled = 1
                 type = lossless
                 executors {
@@ -203,8 +203,8 @@ tx_imageopt {
                 }
             }
 
-            kraken-lossy.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
-            kraken-lossless.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
+            kraken_lossy.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
+            kraken_lossless.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
 
             mozjpeg {
                 enabled = 0
@@ -327,8 +327,8 @@ tx_imageopt {
 
             imageoptim.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteImageoptim
 
-            kraken-lossy.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
-            kraken-lossless.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
+            kraken_lossy.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
+            kraken_lossless.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
 
             tinypng.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteTinypng
         }
@@ -336,8 +336,8 @@ tx_imageopt {
         png {
             imageoptim.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteImageoptim
 
-            kraken-lossy.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
-            kraken-lossless.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
+            kraken_lossy.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
+            kraken_lossless.executors.10.class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
 
             optipng {
                 enabled = 1
