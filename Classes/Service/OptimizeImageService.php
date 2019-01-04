@@ -58,6 +58,17 @@ class OptimizeImageService
         }
         $this->configurator = GeneralUtility::makeInstance(Configurator::class, $config);
         $this->temporaryFile = GeneralUtility::makeInstance(TemporaryFileUtility::class);
+
+        $allProviders = $this->configurator->getOption('providers');
+        foreach($allProviders as $extProvider)
+        {
+            foreach($extProvider as $name => $provider)
+            {
+                if(!isset($provider['type'])) {
+                    throw new \Exception('Optimization type is not set for provider: "'. $name .'"');
+                }
+            }
+        }
     }
 
     /**
@@ -155,7 +166,8 @@ class OptimizeImageService
             }
 
             foreach ($providersForExt as $name => $provider) {
-                if ($provider['type'] === $optimizeEntry['providerType']) {
+                $providerTypes = explode(',', $provider['type']);
+                if (in_array($optimizeEntry['providerType'], $providerTypes)) {
                     $providers[$name] = $provider;
                 }
             }

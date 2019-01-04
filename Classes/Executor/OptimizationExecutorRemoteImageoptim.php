@@ -45,6 +45,10 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
             } elseif (!isset($this->url['upload'])) {
                 $result = false;
             }
+
+            if (!isset($this->apiOptions['quality']) && isset($this->executorOptions['quality'])) {
+                $this->apiOptions['quality'] = $this->getExecutorQuality($configurator);
+            }
         }
 
         return $result;
@@ -61,7 +65,7 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
         $file = curl_file_create($inputImageAbsolutePath);
 
         $optionsString = '';
-        foreach ($this->options as $name => $value) {
+        foreach ($this->apiOptions as $name => $value) {
             $optionsString .= ($optionsString ? ',' : '');
             if (is_numeric($name)) {
                 $optionsString .= $value;

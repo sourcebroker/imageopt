@@ -51,12 +51,12 @@ tx_imageopt {
                             upload = https://api.kraken.io/v1/upload
                         }
                         auth {
-                            key =
-                            pass =
+                            key = 2a9f4fcb773fcf69bd05373d494641be
+                            pass = 64b0db57a0613b66e4068725f38d6d8ed57c17e8
                         }
-                    }
-                    options {
-                        lossy = true
+                        options {
+                            lossy = true
+                        }
                     }
                 }
             }
@@ -70,8 +70,8 @@ tx_imageopt {
                             upload = https://api.kraken.io/v1/upload
                         }
                         auth {
-                            key =
-                            pass =
+                            key = 2a9f4fcb773fcf69bd05373d494641be
+                            pass = 64b0db57a0613b66e4068725f38d6d8ed57c17e8
                         }
                     }
                 }
@@ -86,7 +86,7 @@ tx_imageopt {
                             upload = https://api.tinify.com/shrink
                         }
                         auth {
-                            key =
+                            key = 09R8911NbSTngvdKzc7gwDpznhnchCr4
                             pass =
                         }
                     }
@@ -95,20 +95,45 @@ tx_imageopt {
 
             imageoptim {
                 enabled = 1
-                type = lossless
+                type = lossy,lossless
                 executors {
                     api {
                         url {
                             upload = https://im2.io
                         }
                         auth {
-                            key =
+                            key = flllxpgksm
                             pass =
+                        }
+                        options {
+                            10 = full
                         }
                     }
                     options {
-                        0 = full
-                        quality = medium
+                        quality {
+                            options {
+                                5 = low
+                                10 = low
+                                15 = low
+                                20 = low
+                                25 = low
+                                30 = low
+                                35 = low
+                                40 = low
+                                45 = low
+                                50 = medium
+                                55 = medium
+                                60 = medium
+                                65 = medium
+                                70 = medium
+                                75 = medium
+                                80 = high
+                                85 = high
+                                90 = high
+                                95 = high
+                                100 = lossless
+                            }
+                        }
                     }
                 }
             }

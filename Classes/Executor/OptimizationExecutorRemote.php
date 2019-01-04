@@ -57,7 +57,12 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
     /**
      * @var array
      */
-    protected $options = [];
+    protected $apiOptions = [];
+
+    /**
+     * @var array
+     */
+    protected $executorOptions = [];
 
     /**
      * Optimize image
@@ -123,9 +128,14 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
         }
         $this->auth = $apiAuth;
 
+        $options = $configurator->getOption('api.options');
+        if ($options !== null) {
+            $this->apiOptions = $options;
+        }
+
         $options = $configurator->getOption('options');
         if ($options !== null) {
-            $this->options = $options;
+            $this->executorOptions = $options;
         }
 
         return true;
