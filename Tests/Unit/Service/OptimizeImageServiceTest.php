@@ -53,12 +53,11 @@ class OptimizeImageServiceTest extends UnitTestCase
             ->getMock();
 
         $temporaryFileUtility = GeneralUtility::makeInstance(TemporaryFileUtility::class);
-        $imageForTesting = $temporaryFileUtility->createTemporaryCopy(
-            $this->typo3WebRoot . '/typo3conf/ext/imageopt/Tests/Fixture/Unit/OptimizeImageService/' . $image
-        );
+        $orignalImagePath = $this->typo3WebRoot . '/typo3conf/ext/imageopt/Tests/Fixture/Unit/OptimizeImageService/' . $image;
+        $imageForTesting = $temporaryFileUtility->createTemporaryCopy($orignalImagePath);
         if (is_readable($imageForTesting)) {
             /** @var OptimizationResult $optimizationResult */
-            $optimizationResult = $optimizeImageService->optimize($imageForTesting, $image);
+            $optimizationResult = $optimizeImageService->optimize($imageForTesting, $orignalImagePath);
             $this->assertEquals(true, $optimizationResult->getExecutedSuccessfully());
         } else {
             throw new Exception('Image for testing is not existing:' . $imageForTesting);
@@ -82,13 +81,12 @@ class OptimizeImageServiceTest extends UnitTestCase
             ->getMock();
 
         $temporaryFileUtility = GeneralUtility::makeInstance(TemporaryFileUtility::class);
-        $imageForTesting = $temporaryFileUtility->createTemporaryCopy(
-            $this->typo3WebRoot . '/typo3conf/ext/imageopt/Tests/Fixture/Unit/OptimizeImageService/' . $image
-        );
+        $orignalImagePath = $this->typo3WebRoot . '/typo3conf/ext/imageopt/Tests/Fixture/Unit/OptimizeImageService/' . $image;
+        $imageForTesting = $temporaryFileUtility->createTemporaryCopy($orignalImagePath);
         if (is_readable($imageForTesting)) {
             $originalFileSize = filesize($imageForTesting);
             /** @var OptimizationResult $optimizationResult */
-            $optimizationResult = $optimizeImageService->optimize($imageForTesting, $image);
+            $optimizationResult = $optimizeImageService->optimize($imageForTesting, $orignalImagePath);
             $this->assertGreaterThan($optimizationResult->getSizeAfter(), $originalFileSize);
         } else {
             throw new Exception('Image for testing is not existing:' . $imageForTesting);
