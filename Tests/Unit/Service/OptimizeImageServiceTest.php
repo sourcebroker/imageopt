@@ -10,6 +10,7 @@ use SourceBroker\Imageopt\Service\OptimizeImageService;
 use SourceBroker\Imageopt\Utility\ArrayUtility;
 use SourceBroker\Imageopt\Utility\CliDisplayUtility;
 use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
+use Symfony\Component\Dotenv\Dotenv;
 use TYPO3\CMS\Core\TypoScript\Parser\TypoScriptParser;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -132,6 +133,9 @@ class OptimizeImageServiceTest extends UnitTestCase
 
         $rawConfig = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Service\TypoScriptService::class)
                         ->convertTypoScriptArrayToPlainArray($typoscriptParser->setup)['tx_imageopt'];
+
+        $dotenv = new Dotenv();
+        $dotenv->load(__DIR__.'/../../../.env');
 
         $envConfig = [];
         foreach ($_ENV as $key => $value) {

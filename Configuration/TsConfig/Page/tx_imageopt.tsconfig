@@ -127,7 +127,7 @@ tx_imageopt {
         }
 
         mozjpeg {
-            type = lossless
+            type = lossy
             fileType = jpeg
             executors {
                 10 {
@@ -149,6 +149,7 @@ tx_imageopt {
         }
 
         mozjpeg-quality {
+            enabled = 0
             type = lossy
             fileType = jpeg
             executors {
