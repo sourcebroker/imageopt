@@ -89,13 +89,16 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
                 $saved = $this->save($inputImageAbsolutePath, $result['response']);
 
                 if ($saved) {
+                    $executorResult->setCommandStatus('Done');
                     return true;
                 } else {
                     $executorResult->setErrorMessage('Unable to save image');
+                    $executorResult->setCommandStatus('Failed');
                 }
             } else {
                 $message = $result['error'] ?? 'Undefined error';
                 $executorResult->setErrorMessage($message);
+                $executorResult->setCommandStatus('Failed');
             }
         }
 

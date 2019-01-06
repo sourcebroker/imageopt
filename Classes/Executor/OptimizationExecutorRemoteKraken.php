@@ -97,15 +97,19 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
                 $download = $this->getFileFromRemoteServer($inputImageAbsolutePath, $result['response']['kraked_url']);
 
                 if ($download) {
+                    $executorResult->setCommandStatus('Done');
                     return true;
                 } else {
                     $executorResult->setErrorMessage('Unable to download image');
+                    $executorResult->setCommandStatus('Failed');
                 }
             } else {
                 $executorResult->setErrorMessage('Download URL not defined');
+                $executorResult->setCommandStatus('Failed');
             }
         } else {
             $executorResult->setErrorMessage($result['error']);
+            $executorResult->setCommandStatus('Failed');
         }
 
         return false;
