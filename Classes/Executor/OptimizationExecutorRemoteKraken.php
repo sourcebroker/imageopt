@@ -64,7 +64,7 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
      * @param string $inputImageAbsolutePath Absolute path/file with original image
      * @return array
      */
-    protected function process(string $inputImageAbsolutePath): array
+    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): array
     {
         $file = curl_file_create($inputImageAbsolutePath);
 

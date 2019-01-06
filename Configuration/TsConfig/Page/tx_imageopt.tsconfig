@@ -343,7 +343,7 @@ tx_imageopt {
         }
 
         kraken {
-            type = lossy,losseless
+            type = lossy,lossless
             fileType = jpeg,png,gif
             executors {
                 10 {
@@ -357,13 +357,12 @@ tx_imageopt {
                             pass =
                         }
                         options {
-                            lossy = true
                             quality = 85
                         }
                     }
                 }
             }
-            typeOverride.losseless.executors.10.api.options.lossy = false
+            typeOverride.lossy.executors.10.api.options.lossy = true
         }
 
         tinypng {

@@ -56,7 +56,7 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
      * @param string $inputImageAbsolutePath Absolute path/file with original image
      * @return array
      */
-    protected function process(string $inputImageAbsolutePath): array
+    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): array
     {
         $result = self::request(file_get_contents($inputImageAbsolutePath), $this->url['upload']);
 

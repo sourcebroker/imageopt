@@ -161,6 +161,9 @@ class OptimizeImageServiceTest extends UnitTestCase
             $rawConfig = ArrayUtility::mergeRecursiveDistinct($rawConfig, $nestedConfig);
         }
 
-        return $configurator->mergeDefaultForProviderAndExecutor($rawConfig);
+        $configurator->setConfig($rawConfig);
+        $configurator->init();
+
+        return $configurator->getConfig();
     }
 }

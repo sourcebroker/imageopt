@@ -80,17 +80,9 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
         if ($inited) {
             $executorResult->setSizeBefore(filesize($inputImageAbsolutePath));
 
-            $result = $this->process($inputImageAbsolutePath);
+            $this->process($inputImageAbsolutePath, $executorResult);
 
-            if ($result['success']) {
-                $executorResult->setSizeAfter(filesize($inputImageAbsolutePath));
-                $executorResult->setExecutedSuccessfully(true);
-            } else {
-                $message = isset($result['providerError'])
-                    ? $result['providerError']
-                    : 'Undefined error';
-                $executorResult->setErrorMessage($message);
-            }
+            $executorResult->setSizeAfter(filesize($inputImageAbsolutePath));
         } else {
             $executorResult->setErrorMessage('Unable to initialize executor - check configuration');
         }
@@ -147,14 +139,10 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * Process specific executor logic
      *
      * @param string $inputImageAbsolutePath Absolute path/file with original image
-     * @return array
+     * @param ExecutorResult Optimization result
      */
-    protected function process(string $inputImageAbsolutePath): array
+    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult)
     {
-        return [
-            'success' => false,
-            'providerError' => 'Process not defined',
-        ];
     }
 
     /**

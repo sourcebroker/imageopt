@@ -44,14 +44,33 @@ class Configurator
     protected $config = null;
 
     /**
-     * Configurator constructor.
+     * @var array[]
+     */
+    protected $providers = [];
+
+    public function __construct(array $config = null)
+    {
+        $this->config = $config;
+    }
+
+    /**
+     * Set configuration via direct array
+     *
      * @param array $config
      */
-    public function __construct($config = null)
+    public function setConfig(array $config)
     {
-        if ($config !== null) {
-            $this->setConfig($config);
-        }
+        $this->config = $config;
+    }
+
+    /**
+     * Set configuration via page Id
+     *
+     * @param int|null $pageId
+     */
+    public function setConfigByPage($pageId)
+    {
+        $this->config = $this->getConfigForPage($pageId);
     }
 
     /**
@@ -63,11 +82,100 @@ class Configurator
     }
 
     /**
-     * @param array|null $config
+     * Returns providers with given type
+     *
+     * @param string|null $providerType
      */
-    public function setConfig($config)
+    public function getProviders(string $providerType = null)
     {
-        $this->config = $config;
+        return $this->providers[$providerType] ?? [];
+    }
+
+    /**
+     * Initialize configurator
+     *
+     * @throws \Exception
+     */
+    public function init()
+    {
+        if ($this->config === null) {
+            throw new \Exception('Configuration not set for ImageOpt ext');
+        }
+
+        $this->config = $this->mergeDefaultForProviderAndExecutor($this->config);
+
+        if (empty($this->config['providers'])) {
+            throw new \Exception('Providers not defined');
+        }
+
+        foreach ($this->config['providers'] as $name => $provider) {
+            if (empty($provider['type'])) {
+                throw new \Exception('Provider types is not set for provider: "' . $name . '"');
+            }
+            if (empty($provider['fileType'])) {
+                throw new \Exception('File types is not set for provider: "' . $name . '"');
+            }
+        }
+
+        $this->createVirtualProviders();
+    }
+
+    /**
+     * For convinience values from tx_imageopt are merged to corensponding providers and executors defaults
+     *
+     * @param array $config
+     * @return array
+     */
+    protected function mergeDefaultForProviderAndExecutor(array $config): array
+    {
+        $defaultProviderValues = null;
+
+        if (isset($config['providers']['_all'])) {
+            $defaultProviderValues = $config['providers']['_all'];
+            unset($config['providers']['_all']);
+
+            foreach ($config['providers'] as $providerKey => &$providerValues) {
+                $allExceptExecutors = $defaultProviderValues;
+                unset($allExceptExecutors['executors']);
+                $providerValues = ArrayUtility::mergeRecursiveDistinct($allExceptExecutors, $providerValues);
+
+                foreach ($providerValues['executors'] as $executorKey => &$executorValues) {
+                    if (isset($defaultProviderValues['executors'])) {
+                        $executorValues = ArrayUtility::mergeRecursiveDistinct($defaultProviderValues['executors'],
+                            $executorValues);
+                    }
+                }
+            }
+        }
+
+        return $config;
+    }
+
+    /**
+     * Creates virtual providers for each optimization option
+     */
+    protected function createVirtualProviders()
+    {
+        foreach ($this->config['providers'] as $name => $provider) {
+            $types = explode(',', $provider['type']);
+
+            foreach ($types as $type) {
+                $providerTyped = $provider;
+                $providerTyped['type'] = $type;
+
+                if (isset($providerTyped['typeOverride'][$type])) {
+                    $providerTyped = ArrayUtility::mergeRecursiveDistinct($provider, $provider['typeOverride'][$type]);
+                }
+
+                unset($providerTyped['typeOverride']);
+
+                if (!isset($this->providers[$type])) {
+                    $this->providers[$type] = [];
+                }
+
+                $this->providers[$type][$name] = $providerTyped;
+            }
+        }
     }
 
     /**
@@ -103,7 +211,7 @@ class Configurator
     /**
      * Return config for given page.
      *
-     * @param int $rootPageForTsConfig
+     * @param int|null $rootPageForTsConfig
      * @return array
      * @throws \Exception
      */
@@ -127,7 +235,7 @@ class Configurator
             $serviceConfig = GeneralUtility::makeInstance(TypoScriptService::class)
                 ->convertTypoScriptArrayToPlainArray(BackendUtility::getPagesTSconfig($rootPageForTsConfig));
             if (isset($serviceConfig['tx_imageopt'])) {
-                return $this->mergeDefaultForProviderAndExecutor($serviceConfig['tx_imageopt']);
+                return $serviceConfig['tx_imageopt'];
             } else {
                 throw new \Exception('There is no TSconfig for tx_imageopt in the root page id=' . $rootPageForTsConfig,
                     1501692752398);
@@ -135,36 +243,5 @@ class Configurator
         } else {
             throw new \Exception('Can not detect the root page to generate page TSconfig.', 1501700792654);
         }
-    }
-
-    /**
-     * For convinience values from tx_imageopt are merged to corensponding providers and executors defaults
-     *
-     * @param array $config
-     * @return array
-     */
-    public function mergeDefaultForProviderAndExecutor(array $config): array
-    {
-        $defaultProviderValues = null;
-
-        if (isset($config['providers']['_all'])) {
-            $defaultProviderValues = $config['providers']['_all'];
-            unset($config['providers']['_all']);
-
-            foreach ($config['providers'] as $providerKey => &$providerValues) {
-                $allExceptExecutors = $defaultProviderValues;
-                unset($allExceptExecutors['executors']);
-                $providerValues = ArrayUtility::mergeRecursiveDistinct($allExceptExecutors, $providerValues);
-
-                foreach ($providerValues['executors'] as $executorKey => &$executorValues) {
-                    if (isset($defaultProviderValues['executors'])) {
-                        $executorValues = ArrayUtility::mergeRecursiveDistinct($defaultProviderValues['executors'],
-                            $executorValues);
-                    }
-                }
-            }
-        }
-
-        return $config;
     }
 }

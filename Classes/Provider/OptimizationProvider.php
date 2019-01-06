@@ -66,9 +66,7 @@ class OptimizationProvider
                     $imageOptimizationProvider = GeneralUtility::makeInstance($executor['class']);
                     $executorResult = $imageOptimizationProvider->optimize(
                         $image,
-                        GeneralUtility::makeInstance(
-                            Configurator::class,
-                            $executor)
+                        GeneralUtility::makeInstance(Configurator::class, $executor)
                     );
                     $providerResult->addExecutorsResult($executorResult);
                     if ($executorResult->isExecutedSuccessfully()) {

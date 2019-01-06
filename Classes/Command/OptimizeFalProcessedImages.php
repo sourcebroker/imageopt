@@ -56,14 +56,21 @@ class OptimizeFalProcessedImages extends BaseCommand
         $io = new SymfonyStyle($input, $output);
         $io->title($this->getDescription());
 
-        $numberOfImagesToProcess = $input->hasOption('numberOfImagesToProcess') && $input->getOption('numberOfImagesToProcess') !== null ? $input->getOption('numberOfImagesToProcess') : 50;
-        $rootPageForTsConfig = $input->hasOption('rootPageForTsConfig') && $input->getOption('rootPageForTsConfig') !== null ? $input->getOption('rootPageForTsConfig') : null;
+        $numberOfImagesToProcess = $input->hasOption('numberOfImagesToProcess') && $input->getOption('numberOfImagesToProcess') !== null
+            ? $input->getOption('numberOfImagesToProcess')
+            : 50;
+        $rootPageForTsConfig = $input->hasOption('rootPageForTsConfig') && $input->getOption('rootPageForTsConfig') !== null
+            ? $input->getOption('rootPageForTsConfig')
+            : null;
 
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $optimizeImagesFalService = $objectManager->get(
-            OptimizeImagesFalService::class,
-            GeneralUtility::makeInstance(Configurator::class)->getConfigForPage($rootPageForTsConfig)
-        );
+
+        $configurator = GeneralUtility::makeInstance(Configurator::class);
+        $configurator->setConfigByPage($rootPageForTsConfig);
+        $configurator->init();
+
+        $optimizeImagesFalService = $objectManager->get(OptimizeImagesFalService::class, $configurator->getConfig());
+
         $filesToProcess = $optimizeImagesFalService->getFalProcessedFilesToOptimize($numberOfImagesToProcess);
         if (!empty($filesToProcess)) {
             foreach ($filesToProcess as $fileToProcess) {

@@ -25,6 +25,7 @@
 namespace SourceBroker\Imageopt\Executor;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
 
 class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
 {
@@ -57,9 +58,9 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
      * Upload file to imageoptim.com and save it if optimization will be success
      *
      * @param string $inputImageAbsolutePath Absolute path/file with original image
-     * @return array
+     * @param ExecutorResult Optimization result
      */
-    protected function process(string $inputImageAbsolutePath): array
+    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult)
     {
         $file = curl_file_create($inputImageAbsolutePath);
 
@@ -78,20 +79,29 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
         $url[] = implode(',', $optionsString);
         $fullUrl = implode('/', $url);
 
+        $command = 'URL: '. $url;
+        $executorResult->setCommand($command);
+
         $result = self::request(['file' => $file], $fullUrl);
 
         if ($result['success']) {
             if (isset($result['response'])) {
                 $saved = $this->save($inputImageAbsolutePath, $result['response']);
 
-                if (!$saved) {
-                    $result['success'] = false;
-                    $result['providerError'] = 'Unable to save image';
+                if ($saved) {
+                    $executorResult->setExecutedSuccessfully(true);
+                } else {
+                    $executorResult->setErrorMessage('Unable to save image');
                 }
             } else {
-                $result['success'] = false;
+                $message = isset($result['providerError'])
+                    ? $result['providerError']
+                    : 'Undefined error';
+                $executorResult->setErrorMessage($message);
             }
         }
+
+        $executorResult->setExecutedSuccessfully(true);
 
         return $result;
     }
