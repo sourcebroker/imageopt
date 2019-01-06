@@ -25,6 +25,7 @@
 namespace SourceBroker\Imageopt\Executor;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
 
 class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
 {
@@ -35,32 +36,31 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
      * @param Configurator $configurator
      * @return bool
      */
-    protected function initialize(Configurator $configurator) : bool
+    protected function initialize(Configurator $configurator): bool
     {
         $result = parent::initialize($configurator);
-
-        if ($result) {
-            if (!isset($this->auth['key'])) {
-                $result = false;
-            } elseif (!isset($this->url['upload'])) {
-                $result = false;
-            }
-
-            if (!isset($this->apiOptions['quality']) && isset($this->executorOptions['quality'])) {
-                $this->apiOptions['quality'] = $this->getExecutorQuality($configurator);
-            }
+        if (!$result) {
+            return false;
         }
 
-        return $result;
+        if (!isset($this->auth['key']) || !isset($this->url['upload'])) {
+            return false;
+        }
+
+        if (!isset($this->apiOptions['quality']) && isset($this->executorOptions['quality'])) {
+            $this->apiOptions['quality'] = $this->getExecutorQuality($configurator);
+        }
+
+        return true;
     }
 
     /**
      * Upload file to imageoptim.com and save it if optimization will be success
      *
      * @param string $inputImageAbsolutePath Absolute path/file with original image
-     * @return array
+     * @param bool Optimization result
      */
-    protected function process(string $inputImageAbsolutePath) : array
+    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): bool
     {
         $file = curl_file_create($inputImageAbsolutePath);
 
@@ -73,10 +73,14 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
             }
         }
 
+        $url = [];
         $url[] = $this->url['upload'];
         $url[] = $this->auth['key'];
         $url[] = implode(',', $optionsString);
         $fullUrl = implode('/', $url);
+
+        $command = 'URL: ' . $fullUrl . " \n";
+        $executorResult->setCommand($command);
 
         $result = self::request(['file' => $file], $fullUrl);
 
@@ -84,16 +88,20 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
             if (isset($result['response'])) {
                 $saved = $this->save($inputImageAbsolutePath, $result['response']);
 
-                if (!$saved) {
-                    $result['success'] = false;
-                    $result['providerError'] = 'Unable to save image';
+                if ($saved) {
+                    return true;
+                } else {
+                    $executorResult->setErrorMessage('Unable to save image');
                 }
             } else {
-                $result['success'] = false;
+                $message = $result['error'] ?? 'Undefined error';
+                $executorResult->setErrorMessage($message);
             }
+        } else {
+            $executorResult->setErrorMessage($result['error']);
         }
 
-        return $result;
+        return false;
     }
 
     /**
@@ -116,7 +124,7 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
      * @param array $params Additional parameters
      * @return array
      */
-    protected function request($data, string $url, array $params = []) : array
+    protected function request($data, string $url, array $params = []): array
     {
         $options = [
             'curl' => [],
@@ -124,23 +132,17 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
 
         $responseFromAPI = parent::request($data, $url, $options);
 
-        if ($responseFromAPI['error']) {
-            $result = [
-                'success'       => false,
-                'providerError' => 'cURL Error: ' . $responseFromAPI['error'],
-            ];
-        } elseif ($responseFromAPI['http_code'] !== 200) {
-            $result = [
-                'success'       => false,
-                'providerError' => 'Url HTTP code: ' . $responseFromAPI['http_code'],
-            ];
-        } else {
-            $result = [
-                'success'  => true,
-                'response' => $responseFromAPI['response'],
+        $handledResponse = $this->handleResponseError($responseFromAPI);
+        if ($handledResponse !== null) {
+            return [
+                'success' => false,
+                'error' => $handledResponse
             ];
         }
 
-        return $result;
+        return [
+            'success' => true,
+            'response' => $responseFromAPI['response'],
+        ];
     }
 }

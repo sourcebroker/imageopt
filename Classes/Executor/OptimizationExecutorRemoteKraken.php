@@ -25,6 +25,7 @@
 namespace SourceBroker\Imageopt\Executor;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
@@ -36,7 +37,7 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
      * @param Configurator $configurator
      * @return bool
      */
-    protected function initialize(Configurator $configurator) : bool
+    protected function initialize(Configurator $configurator): bool
     {
         $result = parent::initialize($configurator);
 
@@ -51,7 +52,7 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
                 $this->apiOptions['quality'] = (int)$this->executorOptions['quality']['value'];
             }
             if (isset($this->apiOptions['quality'])) {
-                $this->apiOptions['quality'] = (int)$this->options['quality'];
+                $this->apiOptions['quality'] = (int)$this->apiOptions['quality'];
             }
         }
 
@@ -62,16 +63,16 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
      * Upload file to kraken.io and save it if optimization will be success
      *
      * @param string $inputImageAbsolutePath Absolute path/file with original image
-     * @return array
+     * @return bool
      */
-    protected function process(string $inputImageAbsolutePath) : array
+    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): bool
     {
         $file = curl_file_create($inputImageAbsolutePath);
 
         $options = $this->apiOptions;
         $options['wait'] = true; // wait for processed file (forced option)
         $options['auth'] = [
-            'api_key'    => $this->auth['key'],
+            'api_key' => $this->auth['key'],
             'api_secret' => $this->auth['pass'],
         ];
 
@@ -87,19 +88,27 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
         ];
         $result = self::request($post, $this->url['upload'], ['type' => 'upload']);
 
+        $command = 'URL: ' . $this->url['upload'] . " \n";
+        $command .= 'POST: ' . $post['data'];
+        $executorResult->setCommand($command);
+
         if ($result['success']) {
             if (isset($result['response']['kraked_url'])) {
                 $download = $this->getFileFromRemoteServer($inputImageAbsolutePath, $result['response']['kraked_url']);
-                if (!$download) {
-                    $result['success'] = false;
-                    $result['providerError'] = 'Unable to download image';
+
+                if ($download) {
+                    return true;
+                } else {
+                    $executorResult->setErrorMessage('Unable to download image');
                 }
             } else {
-                $result['success'] = false;
+                $executorResult->setErrorMessage('Download URL not defined');
             }
+        } else {
+            $executorResult->setErrorMessage($result['error']);
         }
 
-        return $result;
+        return false;
     }
 
     /**
@@ -110,11 +119,11 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
      * @param array $params Additional parameters
      * @return array Result of optimization includes the response from the kraken.io
      */
-    protected function request($data, string $url, array $params = []) : array
+    protected function request($data, string $url, array $params = []): array
     {
         $options = [
             'curl' => [
-                CURLOPT_CAINFO         => ExtensionManagementUtility::extPath('imageopt') . 'Resources/Private/Cert/cacert.pem',
+                CURLOPT_CAINFO => ExtensionManagementUtility::extPath('imageopt') . 'Resources/Private/Cert/cacert.pem',
                 CURLOPT_SSL_VERIFYPEER => 1,
             ],
         ];
@@ -127,44 +136,35 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
 
         $responseFromAPI = parent::request($data, $url, $options);
 
-        if ($responseFromAPI['error']) {
-            $result = [
-                'success'       => false,
-                'providerError' => 'cURL Error: ' . $responseFromAPI['error'],
+        $handledResponse = $this->handleResponseError($responseFromAPI);
+        if ($handledResponse !== null) {
+            return [
+                'success' => false,
+                'error' => $handledResponse
             ];
-        } elseif ($responseFromAPI['http_code'] === 429) {
+        }
+
+        $response = json_decode($responseFromAPI['response'], true, 512);
+
+        if ($response === null) {
             $result = [
-                'success'       => false,
-                'providerError' => 'Limit out',
+                'success' => false,
+                'error' => 'Unable to decode JSON',
             ];
-        } elseif ($responseFromAPI['http_code'] !== 200) {
+        } elseif (!isset($response['success']) || $response['success'] === false) {
+            $message = isset($response['message'])
+                ? $response['message']
+                : 'Undefined error';
+
             $result = [
-                'success'       => false,
-                'providerError' => 'Url HTTP code: ' . $responseFromAPI['http_code'],
+                'success' => false,
+                'error' => 'API error: ' . $message,
             ];
         } else {
-            $response = json_decode($responseFromAPI['response'], true, 512);
-
-            if ($response === null) {
-                $result = [
-                    'success'       => false,
-                    'providerError' => 'Unable to decode JSON',
-                ];
-            } elseif (!isset($response['success']) || $response['success'] === false) {
-                $message = isset($response['message'])
-                    ? $response['message']
-                    : 'Undefined';
-
-                $result = [
-                    'success'       => false,
-                    'providerError' => 'API error: ' . $message,
-                ];
-            } else {
-                $result = [
-                    'success'  => true,
-                    'response' => $response,
-                ];
-            }
+            $result = [
+                'success' => true,
+                'response' => $response,
+            ];
         }
 
         return $result;

@@ -25,6 +25,7 @@
 namespace SourceBroker\Imageopt\Executor;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
 
 class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
 {
@@ -35,7 +36,7 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
      * @param Configurator $configurator
      * @return bool
      */
-    protected function initialize(Configurator $configurator) : bool
+    protected function initialize(Configurator $configurator): bool
     {
         $result = parent::initialize($configurator);
 
@@ -54,26 +55,33 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
      * Upload file to tinypng.com and save it if optimization will be success
      *
      * @param string $inputImageAbsolutePath Absolute path/file with original image
-     * @return array
+     * @return bool
      */
-    protected function process(string $inputImageAbsolutePath) : array
+    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): bool
     {
+        $command = 'URL: ' . $this->url['upload'];
+        $executorResult->setCommand($command);
+
         $result = self::request(file_get_contents($inputImageAbsolutePath), $this->url['upload']);
 
         if ($result['success']) {
             if (isset($result['response']['output']['url'])) {
                 $download = $this->getFileFromRemoteServer($inputImageAbsolutePath,
                     $result['response']['output']['url']);
-                if (!$download) {
-                    $result['success'] = false;
-                    $result['providerError'] = 'Unable to download image';
+
+                if ($download) {
+                    return true;
+                } else {
+                    $executorResult->setErrorMessage('Unable to download image');
                 }
             } else {
-                $result['success'] = false;
+                $executorResult->setErrorMessage('Download URL not defined');
             }
+        } else {
+            $executorResult->setErrorMessage($result['error']);
         }
 
-        return $result;
+        return false;
     }
 
     /**
@@ -84,79 +92,29 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
      * @param array $params Additional parameters
      * @return array Result of optimization includes the response from the tinypng.com
      */
-    protected function request($data, string $url, array $params = []) : array
+    protected function request($data, string $url, array $params = []): array
     {
         $options = array_merge([
             'curl' => [
-                CURLOPT_HEADER  => true,
+                CURLOPT_HEADER => true,
                 CURLOPT_USERPWD => 'api:' . $this->auth['key'],
             ],
         ], $params);
 
         $responseFromAPI = parent::request($data, $url, $options);
 
-        if ($responseFromAPI['error']) {
-            $result = [
-                'success'       => false,
-                'providerError' => 'cURL Error: ' . $responseFromAPI['error'],
-            ];
-        } elseif ($responseFromAPI['http_code'] === 429) {
-            $this->deactivateService();
-
-            $email = $this->getConfiguration()->getOption('limits.notification.reciver.email');
-            $this->sendNotificationEmail($email, 'Your limit has been exceeded',
-                'Your limit for Tinypng.com has been exceeded');
-
-            $result = [
-                'success'       => false,
-                'providerError' => 'Limit out',
-            ];
-        } elseif ($responseFromAPI['http_code'] !== 201) {
-            $result = [
-                'success'       => false,
-                'providerError' => 'Url HTTP code: ' . $responseFromAPI['http_code'],
-            ];
-        } elseif (is_string($responseFromAPI['response'])) {
-            $headers = self::parseHeaders(substr($responseFromAPI['response'], 0, $responseFromAPI['header_size']));
-            $body = substr($responseFromAPI['response'], $responseFromAPI['header_size']);
-
-            $result = [
-                'success'                   => true,
-                'providerSubscriptionLimit' => $headers['compression-count'],
-                'response'                  => json_decode($body, true),
-            ];
-        } else {
-            $result = [
-                'success'       => false,
-                'providerError' => 'cURL Error: ' . $responseFromAPI['error'],
+        $handledResponse = $this->handleResponseError($responseFromAPI);
+        if ($handledResponse !== null) {
+            return [
+                'success' => false,
+                'error' => $handledResponse
             ];
         }
 
-        return $result;
-    }
-
-    /**
-     * Function parsing headers from response
-     *
-     * @param string $headers Headers from response
-     * @return array Array created from headers
-     */
-    protected static function parseHeaders(string $headers)
-    {
-        if (!is_array($headers)) {
-            $headers = explode("\r\n", $headers);
-        }
-        $result = [];
-        foreach ($headers as $header) {
-            if (empty($header)) {
-                continue;
-            }
-            $split = explode(':', $header, 2);
-            if (count($split) === 2) {
-                $result[strtolower($split[0])] = trim($split[1]);
-            }
-        }
-
-        return $result;
+        $body = substr($responseFromAPI['response'], $responseFromAPI['header_size']);
+        return [
+            'success' => true,
+            'response' => json_decode($body, true),
+        ];
     }
 }

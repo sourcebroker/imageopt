@@ -31,7 +31,8 @@ class BaseTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
     public function getConfiguratorForPage($page = null)
     {
         $configurator = GeneralUtility::makeInstance(Configurator::class);
-        $configurator->setConfig($configurator->getConfigForPage($page));
+        $configurator->setConfigByPage($page);
+        $configurator->init();
         return $configurator;
     }
 

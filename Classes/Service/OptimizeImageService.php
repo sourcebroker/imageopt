@@ -57,18 +57,9 @@ class OptimizeImageService
             throw new \Exception('Configuration not set for OptimizeImageService class');
         }
         $this->configurator = GeneralUtility::makeInstance(Configurator::class, $config);
-        $this->temporaryFile = GeneralUtility::makeInstance(TemporaryFileUtility::class);
+        $this->configurator->init();
 
-        $providers = $this->configurator->getOption('providers');
-        foreach($providers as $name => $provider)
-        {
-            if(empty($provider['type'])) {
-                throw new \Exception('Provider types is not set for provider: "'. $name .'"');
-            }
-            if(empty($provider['fileType'])) {
-                throw new \Exception('File types is not set for provider: "'. $name .'"');
-            }
-        }
+        $this->temporaryFile = GeneralUtility::makeInstance(TemporaryFileUtility::class);
     }
 
     /**
@@ -154,7 +145,6 @@ class OptimizeImageService
     protected function findProvidersForFile($imagePath)
     {
         $fileType = strtolower(explode('/', image_type_to_mime_type(getimagesize($imagePath)[2]))[1]);
-        $allProviders = $this->configurator->getOption('providers');
 
         $suitableProviders = [];
 
@@ -165,18 +155,18 @@ class OptimizeImageService
                 continue;
             }
 
-            foreach ($allProviders as $name => $provider) {
-                $providerTypes = explode(',', $provider['type']);
-                $fileTypes = explode(',', $provider['fileType']);
+            $providers = $this->configurator->getProviders($optimizeEntry['providerType']);
+            if (!empty($providers)) {
+                foreach ($providers as $name => $provider) {
+                    $fileTypes = explode(',', $provider['fileType']);
 
-                if (in_array($optimizeEntry['providerType'], $providerTypes)
-                    && in_array($fileType, $fileTypes)) {
-                    $suitableProviders[$name] = $provider;
+                    if (in_array($fileType, $fileTypes)) {
+                        $suitableProviders[$name] = $provider;
+                    }
                 }
-
             }
 
-            if ($suitableProviders) {
+            if (!empty($suitableProviders)) {
                 break;
             }
         }

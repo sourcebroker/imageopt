@@ -71,7 +71,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param Configurator $configurator
      * @return ExecutorResult Optimization result
      */
-    public function optimize(string $inputImageAbsolutePath, Configurator $configurator) : ExecutorResult
+    public function optimize(string $inputImageAbsolutePath, Configurator $configurator): ExecutorResult
     {
         $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
         $executorResult->setExecutedSuccessfully(false);
@@ -80,16 +80,10 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
         if ($inited) {
             $executorResult->setSizeBefore(filesize($inputImageAbsolutePath));
 
-            $result = $this->process($inputImageAbsolutePath);
-
-            if ($result['success']) {
-                $executorResult->setSizeAfter(filesize($inputImageAbsolutePath));
+            $result = $this->process($inputImageAbsolutePath, $executorResult);
+            if ($result) {
                 $executorResult->setExecutedSuccessfully(true);
-            } else {
-                $message = isset($result['providerError'])
-                    ? $result['providerError']
-                    : 'Undefined error';
-                $executorResult->setErrorMessage($message);
+                $executorResult->setSizeAfter(filesize($inputImageAbsolutePath));
             }
         } else {
             $executorResult->setErrorMessage('Unable to initialize executor - check configuration');
@@ -104,7 +98,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param Configurator $configurator
      * @return bool
      */
-    protected function initialize(Configurator $configurator) : bool
+    protected function initialize(Configurator $configurator): bool
     {
         $timeout = $configurator->getOption('timeout');
         if ($timeout !== null) {
@@ -112,29 +106,31 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
         }
 
         $proxy = $configurator->getOption('proxy');
-        if ($timeout !== null) {
+        if (is_array($proxy) && !empty($proxy)) {
             $this->proxy = $proxy;
         }
 
         $apiUrl = $configurator->getOption('api.url');
-        if (!$apiUrl) {
+        if (is_array($apiUrl) && !empty($apiUrl)) {
+            $this->url = $apiUrl;
+        } else {
             return false;
         }
-        $this->url = $apiUrl;
 
         $apiAuth = $configurator->getOption('api.auth');
-        if (!$apiAuth) {
+        if (is_array($apiAuth) && !empty($apiAuth)) {
+            $this->auth = $apiAuth;
+        } else {
             return false;
         }
-        $this->auth = $apiAuth;
 
         $options = $configurator->getOption('api.options');
-        if ($options !== null) {
+        if (is_array($options) && !empty($options)) {
             $this->apiOptions = $options;
         }
 
         $options = $configurator->getOption('options');
-        if ($options !== null) {
+        if (is_array($options) && !empty($options)) {
             $this->executorOptions = $options;
         }
 
@@ -145,14 +141,11 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * Process specific executor logic
      *
      * @param string $inputImageAbsolutePath Absolute path/file with original image
-     * @return array
+     * @param bool Optimization result
      */
-    protected function process(string $inputImageAbsolutePath) : array
+    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): bool
     {
-        return [
-            'success'       => false,
-            'providerError' => 'Process not defined',
-        ];
+        return false;
     }
 
     /**
@@ -163,7 +156,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param array $options Additional options
      * @return array
      */
-    protected function request($data, string $url, array $options = []) : array
+    protected function request($data, string $url, array $options = []): array
     {
         $curl = curl_init();
 
@@ -210,12 +203,39 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
         $headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
 
         $result = [
-            'response'    => $response,
-            'http_code'   => $httpCode,
+            'response' => $response,
+            'http_code' => $httpCode,
             'header_size' => $headerSize,
-            'error'       => curl_error($curl),
+            'error' => curl_error($curl),
         ];
         curl_close($curl);
+
+        return $result;
+    }
+
+    /**
+     * Handles response errors
+     *
+     * @param array $response
+     * @return string|null
+     */
+    protected function handleResponseError(array $response)
+    {
+        $result = null;
+
+        if ($response['error']) {
+            $result = 'cURL Error: ' . $response['error'];
+        } elseif ($response['http_code'] === 401) {
+            $result = 'HTTP unauthorized';
+        } elseif ($response['http_code'] === 403) {
+            $result = 'HTTP forbidden';
+        } elseif ($response['http_code'] === 429) {
+            $result = 'Limit out';
+        } elseif (!in_array($response['http_code'], [200, 201])) {
+            $result = 'HTTP code: ' . $response['http_code'];
+        } elseif (empty($response['response'])) {
+            $result = 'Empty response';
+        }
 
         return $result;
     }
@@ -227,13 +247,12 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param string $url Url of the image to download
      * @return bool Returns true if the image exists and will be saved
      */
-    protected function getFileFromRemoteServer(string $inputImageAbsolutePath, string $url) : bool
+    protected function getFileFromRemoteServer(string $inputImageAbsolutePath, string $url): bool
     {
         $headers = get_headers($url);
 
         if (stripos($headers[0], '200 OK')) {
             file_put_contents($inputImageAbsolutePath, fopen($url, 'r'));
-
             return true;
         }
 

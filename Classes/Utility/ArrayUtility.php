@@ -36,13 +36,12 @@ class ArrayUtility
         $root = [];
         $node =& $root;
 
-        while($part = array_shift($plainArray))
-        {
-            if(!$plainArray) {
+        while ($part = array_shift($plainArray)) {
+            if (empty($plainArray)) {
                 $node = $part;
             } else {
-                $node[ $part ] = [];
-                $node =& $node[ $part ];
+                $node[$part] = [];
+                $node =& $node[$part];
             }
         }
 

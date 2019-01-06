@@ -69,8 +69,10 @@ class OptimizeImagesFalService
         if ($config === null) {
             throw new \Exception('Configuration not set for OptimizeImagesFalService class');
         }
+
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->falProcessedFileRepository = $this->objectManager->get(ProcessedFileRepository::class);
+
         $this->optimizeImageService = $this->objectManager->get(OptimizeImageService::class, $config);
     }
 
