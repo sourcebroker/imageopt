@@ -140,7 +140,7 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
         if ($handledResponse !== null) {
             return [
                 'success' => false,
-                'providerError' => $handledResponse
+                'error' => $handledResponse
             ];
         }
 
