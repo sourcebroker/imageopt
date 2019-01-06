@@ -40,11 +40,11 @@ class CliDisplayUtility
 
                 $limit = 41 - strlen($providerResult->getName());
                 $errors = implode(', ', $error);
-                if(strlen($errors) > $limit) {
-                    $errors = substr($errors, 0,$limit-2) .'..';
+                if (strlen($errors) > $limit) {
+                    $errors = substr($errors, 0, $limit - 2) . '..';
                 }
 
-                $providers[] = $providerResult->getName() . ' - <fg=red>failed: ' . $errors .'</>';
+                $providers[] = $providerResult->getName() . ' - <fg=red>failed: ' . $errors . '</>';
                 $providersScore[] = -99999;
             }
         }
@@ -56,7 +56,7 @@ class CliDisplayUtility
         $providers = array_values($providers);
 
         foreach ($providers as $i => &$provider) {
-            $provider = ($i + 1) .') '. $provider;
+            $provider = ($i + 1) . ') ' . $provider;
         }
 
         return
