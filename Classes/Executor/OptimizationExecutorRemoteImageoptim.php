@@ -97,6 +97,8 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
                 $message = $result['error'] ?? 'Undefined error';
                 $executorResult->setErrorMessage($message);
             }
+        } else {
+            $executorResult->setErrorMessage($result['error']);
         }
 
         return false;
