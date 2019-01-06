@@ -25,6 +25,7 @@
 namespace SourceBroker\Imageopt\Executor;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
@@ -62,9 +63,9 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
      * Upload file to kraken.io and save it if optimization will be success
      *
      * @param string $inputImageAbsolutePath Absolute path/file with original image
-     * @return array
+     * @return bool
      */
-    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): array
+    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): bool
     {
         $file = curl_file_create($inputImageAbsolutePath);
 
@@ -87,19 +88,27 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
         ];
         $result = self::request($post, $this->url['upload'], ['type' => 'upload']);
 
+        $command = 'URL: ' . $this->url['upload'] . " \n";
+        $command .= 'POST: ' . $post['data'];
+        $executorResult->setCommand($command);
+
         if ($result['success']) {
             if (isset($result['response']['kraked_url'])) {
                 $download = $this->getFileFromRemoteServer($inputImageAbsolutePath, $result['response']['kraked_url']);
-                if (!$download) {
-                    $result['success'] = false;
-                    $result['providerError'] = 'Unable to download image';
+
+                if ($download) {
+                    return true;
+                } else {
+                    $executorResult->setErrorMessage('Unable to download image');
                 }
             } else {
-                $result['success'] = false;
+                $executorResult->setErrorMessage('Download URL not defined');
             }
+        } else {
+            $executorResult->setErrorMessage($result['error']);
         }
 
-        return $result;
+        return false;
     }
 
     /**
@@ -140,16 +149,16 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
         if ($response === null) {
             $result = [
                 'success' => false,
-                'providerError' => 'Unable to decode JSON',
+                'error' => 'Unable to decode JSON',
             ];
         } elseif (!isset($response['success']) || $response['success'] === false) {
             $message = isset($response['message'])
                 ? $response['message']
-                : 'Undefined';
+                : 'Undefined error';
 
             $result = [
                 'success' => false,
-                'providerError' => 'API error: ' . $message,
+                'error' => 'API error: ' . $message,
             ];
         } else {
             $result = [

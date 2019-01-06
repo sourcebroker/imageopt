@@ -55,7 +55,8 @@ class ResetOptimizationFlagForFolders extends BaseCommand
         $configurator->setConfigByPage($rootPageForTsConfig);
         $configurator->init();
 
-        $optimizeImagesFolderService = $objectManager->get(OptimizeImagesFolderService::class, $configurator->getConfig());
+        $optimizeImagesFolderService = $objectManager->get(OptimizeImagesFolderService::class,
+            $configurator->getConfig());
         $optimizeImagesFolderService->resetOptimizationFlag();
 
         $io->writeln('Done succesfully.');

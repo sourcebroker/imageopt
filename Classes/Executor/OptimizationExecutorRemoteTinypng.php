@@ -25,6 +25,7 @@
 namespace SourceBroker\Imageopt\Executor;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
 
 class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
 {
@@ -54,26 +55,33 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
      * Upload file to tinypng.com and save it if optimization will be success
      *
      * @param string $inputImageAbsolutePath Absolute path/file with original image
-     * @return array
+     * @return bool
      */
-    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): array
+    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): bool
     {
+        $command = 'URL: ' . $this->url['upload'];
+        $executorResult->setCommand($command);
+
         $result = self::request(file_get_contents($inputImageAbsolutePath), $this->url['upload']);
 
         if ($result['success']) {
             if (isset($result['response']['output']['url'])) {
                 $download = $this->getFileFromRemoteServer($inputImageAbsolutePath,
                     $result['response']['output']['url']);
-                if (!$download) {
-                    $result['success'] = false;
-                    $result['providerError'] = 'Unable to download image';
+
+                if ($download) {
+                    return true;
+                } else {
+                    $executorResult->setErrorMessage('Unable to download image');
                 }
             } else {
-                $result['success'] = false;
+                $executorResult->setErrorMessage('Download URL not defined');
             }
+        } else {
+            $executorResult->setErrorMessage($result['error']);
         }
 
-        return $result;
+        return false;
     }
 
     /**
@@ -99,12 +107,12 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
         if ($handledResponse !== null) {
             return [
                 'success' => false,
-                'providerError' => $handledResponse
+                'error' => $handledResponse
             ];
         }
 
         $body = substr($responseFromAPI['response'], $responseFromAPI['header_size']);
-        return  [
+        return [
             'success' => true,
             'response' => json_decode($body, true),
         ];

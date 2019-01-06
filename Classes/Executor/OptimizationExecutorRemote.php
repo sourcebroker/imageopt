@@ -80,9 +80,11 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
         if ($inited) {
             $executorResult->setSizeBefore(filesize($inputImageAbsolutePath));
 
-            $this->process($inputImageAbsolutePath, $executorResult);
-
-            $executorResult->setSizeAfter(filesize($inputImageAbsolutePath));
+            $result = $this->process($inputImageAbsolutePath, $executorResult);
+            if ($result) {
+                $executorResult->setExecutedSuccessfully(true);
+                $executorResult->setSizeAfter(filesize($inputImageAbsolutePath));
+            }
         } else {
             $executorResult->setErrorMessage('Unable to initialize executor - check configuration');
         }
@@ -139,10 +141,11 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * Process specific executor logic
      *
      * @param string $inputImageAbsolutePath Absolute path/file with original image
-     * @param ExecutorResult Optimization result
+     * @param bool Optimization result
      */
-    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult)
+    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): bool
     {
+        return false;
     }
 
     /**
@@ -224,7 +227,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
             $result = 'cURL Error: ' . $response['error'];
         } elseif ($response['http_code'] === 429) {
             $result = 'Limit out';
-        } elseif (!in_array($response['http_code'], [200,201])) {
+        } elseif (!in_array($response['http_code'], [200, 201])) {
             $result = 'Url HTTP code: ' . $response['http_code'];
         } elseif (empty($response['response'])) {
             $result = 'Empty response';

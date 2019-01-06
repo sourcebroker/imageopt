@@ -63,7 +63,8 @@ class OptimizeImageServiceTest extends UnitTestCase
             $optimizationResult = $optimizeImageService->optimize($imageForTesting, $orignalImagePath);
             echo "\n" . CliDisplayUtility::displayOptimizationResult($optimizationResult);
 
-            $this->assertEquals($optimizationResult->getProvidersResults()->count(), $optimizationResult->getExecutedSuccessfullyNum());
+            $this->assertEquals($optimizationResult->getProvidersResults()->count(),
+                $optimizationResult->getExecutedSuccessfullyNum());
         } else {
             throw new Exception('Image for testing is not existing:' . $imageForTesting);
         }

@@ -309,11 +309,11 @@ class OptimizationResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return int
      */
-    public function getExecutedSuccessfullyNum() : int
+    public function getExecutedSuccessfullyNum(): int
     {
         $num = 0;
-        foreach($this->providersResults as $result) {
-            if($result->isExecutedSuccessfully()) {
+        foreach ($this->providersResults as $result) {
+            if ($result->isExecutedSuccessfully()) {
                 ++$num;
             }
         }

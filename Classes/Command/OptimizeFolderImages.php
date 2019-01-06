@@ -65,7 +65,8 @@ class OptimizeFolderImages extends BaseCommand
         $configurator->setConfigByPage($rootPageForTsConfig);
         $configurator->init();
 
-        $optimizeImagesFolderService = $objectManager->get(OptimizeImagesFolderService::class, $configurator->getConfig());
+        $optimizeImagesFolderService = $objectManager->get(OptimizeImagesFolderService::class,
+            $configurator->getConfig());
 
         $filesToProcess = $optimizeImagesFolderService->getFilesToOptimize($numberOfImagesToProcess);
         if (!empty($filesToProcess)) {

@@ -367,7 +367,7 @@ tx_imageopt {
 
         tinypng {
             type = lossy
-            fileType = jpeg,png,gif
+            fileType = jpeg,png
             executors {
                 10 {
                     class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteTinypng

@@ -58,9 +58,9 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
      * Upload file to imageoptim.com and save it if optimization will be success
      *
      * @param string $inputImageAbsolutePath Absolute path/file with original image
-     * @param ExecutorResult Optimization result
+     * @param bool Optimization result
      */
-    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult)
+    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): bool
     {
         $file = curl_file_create($inputImageAbsolutePath);
 
@@ -79,7 +79,7 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
         $url[] = implode(',', $optionsString);
         $fullUrl = implode('/', $url);
 
-        $command = 'URL: '. $url;
+        $command = 'URL: ' . $fullUrl . " \n";
         $executorResult->setCommand($command);
 
         $result = self::request(['file' => $file], $fullUrl);
@@ -89,21 +89,17 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
                 $saved = $this->save($inputImageAbsolutePath, $result['response']);
 
                 if ($saved) {
-                    $executorResult->setExecutedSuccessfully(true);
+                    return true;
                 } else {
                     $executorResult->setErrorMessage('Unable to save image');
                 }
             } else {
-                $message = isset($result['providerError'])
-                    ? $result['providerError']
-                    : 'Undefined error';
+                $message = $result['error'] ?? 'Undefined error';
                 $executorResult->setErrorMessage($message);
             }
         }
 
-        $executorResult->setExecutedSuccessfully(true);
-
-        return $result;
+        return false;
     }
 
     /**
@@ -138,7 +134,7 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
         if ($handledResponse !== null) {
             return [
                 'success' => false,
-                'providerError' => $handledResponse
+                'error' => $handledResponse
             ];
         }
 
