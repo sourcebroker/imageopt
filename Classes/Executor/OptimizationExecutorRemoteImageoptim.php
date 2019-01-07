@@ -100,6 +100,9 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
                 $executorResult->setErrorMessage($message);
                 $executorResult->setCommandStatus('Failed');
             }
+        } else {
+            $executorResult->setErrorMessage($result['error']);
+            $executorResult->setCommandStatus('Failed');
         }
 
         return false;
