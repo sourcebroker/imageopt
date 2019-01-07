@@ -15,13 +15,41 @@ matrix:
 
 sudo: false
 
+install:
+  - export PROJECT_DIR=$PWD
+  - sudo apt-get update -y
+  - sudo apt-get -y install build-essential cmake git libtool libwebp-dev unzip python-dev aptitude autoconf automake m4 nasm pkg-config libpng-dev libmagickcore-dev libmagickwand-dev pngnq pngcrush
+  - pip install setuptools
+
+  # install pngquant2
+  - cd ~
+  - git clone --recursive https://github.com/kornelski/pngquant.git
+  - cd pngquant
+  - make
+  - sudo make install
+  - sudo ln -s /usr/local/bin/pngquant /usr/bin/pngquant
+
+  # intall mozjpeg
+  - cd ~
+  - wget https://github.com/mozilla/mozjpeg/archive/v3.3.1.tar.gz
+  - tar xf v3.3.1.tar.gz
+  - cd mozjpeg-3.3.1
+  - autoreconf -fiv
+  - mkdir build
+  - cd build
+  - sh ../configure --disable-shared --enable-static --prefix=/usr/local
+  - sudo make install
+  - sudo ln -s /usr/local/bin/cjpeg /usr/bin/mozjpeg-cjpeg
+  - sudo ln -s /usr/local/bin/jpegtran /usr/bin/mozjpeg-jpegtran
+
+  - cd $PROJECT_DIR
+
 addons:
   apt:
     packages:
       - parallel
       - jpegoptim
       - optipng
-      - pngquant
       - pngcrush
       - gifsicle
       # jpgrescan
@@ -38,6 +66,9 @@ before_install:
   - composer --version
 
 before_script:
+  - pwd
+  - cd $PROJECT_DIR
+  - pwd
   - phpenv config-rm xdebug.ini
   - composer require typo3/minimal=$TYPO3_VERSION
   # Restore composer.json
