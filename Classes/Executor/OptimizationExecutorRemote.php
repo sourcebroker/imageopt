@@ -225,16 +225,24 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
 
         if ($response['error']) {
             $result = 'cURL Error: ' . $response['error'];
-        } elseif ($response['http_code'] === 401) {
-            $result = 'HTTP unauthorized';
-        } elseif ($response['http_code'] === 403) {
-            $result = 'HTTP forbidden';
-        } elseif ($response['http_code'] === 429) {
-            $result = 'Limit out';
-        } elseif (!in_array($response['http_code'], [200, 201])) {
-            $result = 'HTTP code: ' . $response['http_code'];
-        } elseif (empty($response['response'])) {
-            $result = 'Empty response';
+        } else {
+            switch ($response['http_code']) {
+                case 401:
+                    $result = 'HTTP unauthorized';
+                    break;
+                case 403:
+                    $result = 'HTTP forbidden';
+                    break;
+                case 429:
+                    $result = 'Limit out';
+                    break;
+                default:
+                    if (!in_array($response['http_code'], [200, 201])) {
+                        $result = 'HTTP code: ' . $response['http_code'];
+                    } elseif (empty($response['response'])) {
+                        $result = 'Empty response';
+                    }
+            }
         }
 
         return $result;
