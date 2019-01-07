@@ -73,16 +73,16 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
             }
         }
 
-        $url = [];
-        $url[] = $this->url['upload'];
-        $url[] = $this->auth['key'];
-        $url[] = implode(',', $optionsString);
-        $fullUrl = implode('/', $url);
+        $url = implode('/', [
+            $this->url['upload'],
+            $this->auth['key'],
+            implode(',', $optionsString)
+        ]);
 
-        $command = 'URL: ' . $fullUrl . " \n";
+        $command = 'URL: ' . $url . " \n";
         $executorResult->setCommand($command);
 
-        $result = self::request(['file' => $file], $fullUrl);
+        $result = self::request(['file' => $file], $url);
 
         if ($result['success']) {
             if (isset($result['response'])) {
