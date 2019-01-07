@@ -18,7 +18,7 @@ sudo: false
 install:
   - export PROJECT_DIR=$PWD
   - sudo apt-get update -y
-  - sudo apt-get -y install build-essential cmake git libtool libwebp-dev unzip python-dev aptitude autoconf automake m4 nasm pkg-config libpng-dev libmagickcore-dev libmagickwand-dev pngnq pngcrush pngquant
+  - sudo apt-get -y install build-essential cmake git libtool libwebp-dev unzip python-dev aptitude autoconf automake m4 nasm pkg-config libpng-dev libmagickcore-dev libmagickwand-dev pngnq pngcrush
   - pip install setuptools
 
   # install pngquant2
@@ -27,6 +27,7 @@ install:
   - cd pngquant
   - make
   - sudo make install
+  - sudo ln -s /usr/local/bin/pngquant /usr/bin/pngquant
 
   # intall mozjpeg
   - cd ~
