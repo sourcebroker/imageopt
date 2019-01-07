@@ -24,7 +24,7 @@ install:
   - cd ~
   - wget https://github.com/kornelski/pngquant/archive/2.12.1.tar.gz
   - tar xf 2.12.1.tar.gz
-  - cd pngquant-2.12.1make
+  - cd pngquant-2.12.1
   - make
   - sudo make install
 
