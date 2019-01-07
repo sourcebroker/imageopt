@@ -22,7 +22,7 @@ install:
 
   # install pngquant2
   - cd ~
-  - git clone --recursive git@github.com:kornelski/pngquant.git
+  - git clone --recursive https://github.com/kornelski/pngquant.git
   - cd pngquant
   - make
   - sudo make install
