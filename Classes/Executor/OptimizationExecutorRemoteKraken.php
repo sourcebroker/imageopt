@@ -63,9 +63,9 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
      * Upload file to kraken.io and save it if optimization will be success
      *
      * @param string $inputImageAbsolutePath Absolute path/file with original image
-     * @return bool
+     * @param ExecutorResult $executorResult
      */
-    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): bool
+    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult)
     {
         $options = $this->apiOptions;
         $options['wait'] = true; // wait for processed file (forced option)
@@ -95,24 +95,20 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
                 $download = $this->getFileFromRemoteServer($inputImageAbsolutePath, $result['response']['kraked_url']);
 
                 if ($download) {
+                    $executorResult->setExecutedSuccessfully(true);
                     $executorResult->setCommandStatus('Done');
                 } else {
-                    $result['success'] = false;
                     $executorResult->setErrorMessage('Unable to download image');
                     $executorResult->setCommandStatus('Failed');
                 }
             } else {
-                $result['success'] = false;
                 $executorResult->setErrorMessage('Download URL not defined');
                 $executorResult->setCommandStatus('Failed');
             }
         } else {
-            $result['success'] = false;
             $executorResult->setErrorMessage($result['error']);
             $executorResult->setCommandStatus('Failed');
         }
-
-        return $result['success'];
     }
 
     /**
@@ -141,36 +137,34 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
         $responseFromAPI = parent::request($data, $url, $options);
 
         $handledResponse = $this->handleResponseError($responseFromAPI);
-        $result = null;
-
         if ($handledResponse !== null) {
-            $result = [
+            return [
                 'success' => false,
                 'error' => $handledResponse
             ];
+        }
+
+        $response = json_decode($responseFromAPI['response'], true, 512);
+
+        if ($response === null) {
+            $result = [
+                'success' => false,
+                'error' => 'Unable to decode JSON',
+            ];
+        } elseif (!isset($response['success']) || $response['success'] === false) {
+            $message = isset($response['message'])
+                ? $response['message']
+                : 'Undefined error';
+
+            $result = [
+                'success' => false,
+                'error' => 'API error: ' . $message,
+            ];
         } else {
-            $response = json_decode($responseFromAPI['response'], true, 512);
-
-            if ($response === null) {
-                $result = [
-                    'success' => false,
-                    'error' => 'Unable to decode JSON',
-                ];
-            } elseif (!isset($response['success']) || $response['success'] === false) {
-                $message = isset($response['message'])
-                    ? $response['message']
-                    : 'Undefined error';
-
-                $result = [
-                    'success' => false,
-                    'error' => 'API error: ' . $message,
-                ];
-            } else {
-                $result = [
-                    'success' => true,
-                    'response' => $response,
-                ];
-            }
+            $result = [
+                'success' => true,
+                'response' => $response,
+            ];
         }
 
         return $result;
