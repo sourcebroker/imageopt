@@ -16,7 +16,7 @@ tx_imageopt {
 
         # "_all" is merged to all providers
         _all {
-            enabled = 1
+            enabled = 0
 
             # "executors" is merged to each executor
             executors {
