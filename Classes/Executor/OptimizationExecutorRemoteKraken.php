@@ -40,14 +40,12 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
     protected function initConfiguration(Configurator $configurator): bool
     {
         $result = parent::initConfiguration($configurator);
-
         if ($result) {
             if (!isset($this->auth['key']) || !isset($this->auth['pass'])) {
                 $result = false;
             } elseif (!isset($this->url['upload'])) {
                 $result = false;
             }
-
             if (!isset($this->apiOptions['quality']) && isset($this->executorOptions['quality'])) {
                 $this->apiOptions['quality'] = (int)$this->executorOptions['quality']['value'];
             }
@@ -55,7 +53,6 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
                 $this->apiOptions['quality'] = (int)$this->apiOptions['quality'];
             }
         }
-
         return $result;
     }
 
@@ -73,27 +70,20 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
             'api_key' => $this->auth['key'],
             'api_secret' => $this->auth['pass'],
         ];
-
         foreach ($options as $key => $value) {
             if ($value === 'true' || $value === 'false') {
                 $options[$key] = $value === 'true';
             }
         }
-
         $post = [
             'file' => curl_file_create($inputImageAbsolutePath),
             'data' => json_encode($options),
         ];
         $result = self::request($post, $this->url['upload'], ['type' => 'upload']);
-
-        $command = 'URL: ' . $this->url['upload'] . " \n";
-        $command .= 'POST: ' . $post['data'];
-        $executorResult->setCommand($command);
-
+        $executorResult->setCommand('URL: ' . $this->url['upload'] . " \n" . 'POST: ' . $post['data']);
         if ($result['success']) {
             if (isset($result['response']['kraked_url'])) {
                 $download = $this->getFileFromRemoteServer($inputImageAbsolutePath, $result['response']['kraked_url']);
-
                 if ($download) {
                     $executorResult->setExecutedSuccessfully(true);
                     $executorResult->setCommandStatus('Done');
@@ -127,15 +117,12 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
                 CURLOPT_SSL_VERIFYPEER => 1,
             ],
         ];
-
         if (isset($params['type']) && $params['type'] === 'url') {
             $options['curl'][CURLOPT_HTTPHEADER] = [
                 'Content-Type: application/json',
             ];
         }
-
         $responseFromAPI = parent::request($data, $url, $options);
-
         $handledResponse = $this->handleResponseError($responseFromAPI);
         if ($handledResponse !== null) {
             return [
@@ -143,9 +130,7 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
                 'error' => $handledResponse
             ];
         }
-
         $response = json_decode($responseFromAPI['response'], true, 512);
-
         if ($response === null) {
             $result = [
                 'success' => false,
@@ -166,7 +151,6 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
                 'response' => $response,
             ];
         }
-
         return $result;
     }
 }

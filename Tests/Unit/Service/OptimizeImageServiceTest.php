@@ -49,7 +49,7 @@ class OptimizeImageServiceTest extends UnitTestCase
      */
     public function allProvidersSuccessful($image)
     {
-        echo "\n\e[93mTEST allProvidersSuccessful\e[97m";
+        fwrite(STDOUT, "\n" . 'TEST allProvidersSuccessful' . "\n");
 
         /** @var \SourceBroker\Imageopt\Service\OptimizeImageService $optimizeImageService */
         $optimizeImageService = $this->getMockBuilder(OptimizeImageService::class)
@@ -63,8 +63,7 @@ class OptimizeImageServiceTest extends UnitTestCase
         if (is_readable($imageForTesting)) {
             /** @var OptimizationResult $optimizationResult */
             $optimizationResult = $optimizeImageService->optimize($imageForTesting, $orignalImagePath);
-            echo "\n" . CliDisplayUtility::displayOptimizationResult($optimizationResult);
-
+            fwrite(STDOUT, CliDisplayUtility::displayOptimizationResult($optimizationResult));
             $this->assertEquals($optimizationResult->getProvidersResults()->count(),
                 $optimizationResult->getExecutedSuccessfullyNum());
         } else {
@@ -82,7 +81,7 @@ class OptimizeImageServiceTest extends UnitTestCase
      */
     public function imageIsOptimized($image)
     {
-        echo "\n\e[93mTEST imageIsOptimized\e[97m";
+        fwrite(STDOUT, "\n" . 'TEST imageIsOptimized' . "\n");
 
         /** @var \SourceBroker\Imageopt\Service\OptimizeImageService $optimizeImageService */
         $optimizeImageService = $this->getMockBuilder(OptimizeImageService::class)
@@ -97,8 +96,7 @@ class OptimizeImageServiceTest extends UnitTestCase
             $originalFileSize = filesize($imageForTesting);
             /** @var OptimizationResult $optimizationResult */
             $optimizationResult = $optimizeImageService->optimize($imageForTesting, $orignalImagePath);
-            echo "\n" . CliDisplayUtility::displayOptimizationResult($optimizationResult);
-
+            fwrite(STDOUT, CliDisplayUtility::displayOptimizationResult($optimizationResult));
             $this->assertGreaterThan($optimizationResult->getSizeAfter(), $originalFileSize);
         } else {
             throw new Exception('Image for testing is not existing:' . $imageForTesting);
@@ -129,6 +127,7 @@ class OptimizeImageServiceTest extends UnitTestCase
      * Return static config for module.
      *
      * @return array
+     * @throws Exception
      */
     public function pluginConfig()
     {

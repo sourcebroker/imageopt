@@ -77,7 +77,6 @@ class OptimizationExecutorShell extends OptimizationExecutorBase
                     $executorResult->setCommand($shellCommand);
                     $executorResult->setCommandStatus($commandStatus);
                     $executorResult->setCommandOutput($output);
-
                     $executorResult->setExecutedSuccessfully(
                         in_array($commandStatus, $successfulStatuses) ? true : false
                     );

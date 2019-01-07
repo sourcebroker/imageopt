@@ -39,7 +39,6 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
     protected function initConfiguration(Configurator $configurator): bool
     {
         $result = parent::initConfiguration($configurator);
-
         if ($result) {
             if (!isset($this->auth['key'])) {
                 $result = false;
@@ -47,7 +46,6 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
                 $result = false;
             }
         }
-
         return $result;
     }
 
@@ -60,9 +58,7 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
     protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult)
     {
         $executorResult->setCommand('URL: ' . $this->url['upload']);
-
         $result = self::request(file_get_contents($inputImageAbsolutePath), $this->url['upload']);
-
         if ($result['success']) {
             if (isset($result['response']['output']['url'])) {
                 $download = $this->getFileFromRemoteServer($inputImageAbsolutePath,

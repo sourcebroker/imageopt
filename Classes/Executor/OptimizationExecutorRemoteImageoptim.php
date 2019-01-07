@@ -38,19 +38,15 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
      */
     protected function initConfiguration(Configurator $configurator): bool
     {
-        $result = parent::initConfiguration($configurator);
-        if (!$result) {
+        if (!parent::initConfiguration($configurator)) {
             return false;
         }
-
         if (!isset($this->auth['key']) || !isset($this->url['upload'])) {
             return false;
         }
-
         if (!isset($this->apiOptions['quality']) && isset($this->executorOptions['quality'])) {
             $this->apiOptions['quality'] = $this->getExecutorQuality($configurator);
         }
-
         return true;
     }
 
@@ -62,8 +58,6 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
      */
     protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult)
     {
-        $file = curl_file_create($inputImageAbsolutePath);
-
         $optionsString = [];
         foreach ($this->apiOptions as $name => $value) {
             if (is_numeric($name)) {
@@ -72,23 +66,16 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
                 $optionsString[] = $name . '=' . $value;
             }
         }
-
-        $url = [];
-        $url[] = $this->url['upload'];
-        $url[] = $this->auth['key'];
-        $url[] = implode(',', $optionsString);
-        $fullUrl = implode('/', $url);
-
-        $command = 'URL: ' . $fullUrl . " \n";
-        $executorResult->setCommand($command);
-
-        $result = self::request(['file' => $file], $fullUrl);
-
+        $url = implode('/', [
+            $this->url['upload'],
+            $this->auth['key'],
+            implode(',', $optionsString)
+        ]);
+        $executorResult->setCommand('URL: ' . $url . " \n");
+        $result = self::request(['file' => curl_file_create($inputImageAbsolutePath)], $url);
         if ($result['success']) {
             if (isset($result['response'])) {
-                $saved = (bool) file_put_contents($inputImageAbsolutePath, $result['response']);;
-
-                if ($saved) {
+                if ((bool)file_put_contents($inputImageAbsolutePath, $result['response'])) {
                     $executorResult->setExecutedSuccessfully(true);
                     $executorResult->setCommandStatus('Done');
                 } else {
@@ -116,15 +103,11 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
      */
     protected function request($data, string $url, array $params = []): array
     {
-        $options = [
+        $responseFromAPI = parent::request($data, $url, [
             'curl' => [],
-        ];
-
-        $responseFromAPI = parent::request($data, $url, $options);
-
+        ]);
         $handledResponse = $this->handleResponseError($responseFromAPI);
         $result = null;
-
         if ($handledResponse !== null) {
             $result = [
                 'success' => false,
@@ -136,7 +119,6 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
                 'response' => $responseFromAPI['response'],
             ];
         }
-
         return $result;
     }
 }

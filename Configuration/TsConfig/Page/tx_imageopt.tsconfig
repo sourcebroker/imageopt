@@ -305,7 +305,7 @@ tx_imageopt {
                             pass =
                         }
                         options {
-                            quality = 85
+                            quality < tx_imageopt.providers._all.executors.options.quality.value
                         }
                     }
                 }

@@ -33,7 +33,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class OptimizationExecutorRemote extends OptimizationExecutorBase
 {
-
     /**
      * @var int
      */
@@ -75,18 +74,13 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
     {
         $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
         $executorResult->setExecutedSuccessfully(false);
-
-        $inited = $this->initConfiguration($configurator);
-        if ($inited) {
+        if ($this->initConfiguration($configurator)) {
             $executorResult->setSizeBefore(filesize($inputImageAbsolutePath));
-
             $this->process($inputImageAbsolutePath, $executorResult);
-
             $executorResult->setSizeAfter(filesize($inputImageAbsolutePath));
         } else {
             $executorResult->setErrorMessage('Unable to initialize executor - check configuration');
         }
-
         return $executorResult;
     }
 
