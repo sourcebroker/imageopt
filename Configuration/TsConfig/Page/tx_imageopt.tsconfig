@@ -342,8 +342,8 @@ tx_imageopt {
             }
         }
 
-        kraken_lossy {
-            type = lossy
+        kraken {
+            type = lossy,lossless
             fileType = jpeg,png,gif
             executors {
                 10 {
@@ -357,36 +357,17 @@ tx_imageopt {
                             pass =
                         }
                         options {
-                            lossy = true
                             quality = 85
                         }
                     }
                 }
             }
-        }
-
-        kraken_lossless {
-            type = lossless
-            fileType = jpeg,png,gif
-            executors {
-                10 {
-                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteKraken
-                    api {
-                        url {
-                            upload = https://api.kraken.io/v1/upload
-                        }
-                        auth {
-                            key =
-                            pass =
-                        }
-                    }
-                }
-            }
+            typeOverride.lossy.executors.10.api.options.lossy = true
         }
 
         tinypng {
             type = lossy
-            fileType = jpeg,png,gif
+            fileType = jpeg,png
             executors {
                 10 {
                     class = SourceBroker\Imageopt\Executor\OptimizationExecutorRemoteTinypng
@@ -443,12 +424,14 @@ tx_imageopt {
                                 85 = high
                                 90 = high
                                 95 = high
-                                100 = lossless
+                                100 = high
+                                lossless = lossless
                             }
                         }
                     }
                 }
             }
+            typeOverride.lossless.executors.10.options.quality.value = lossless
         }
 
     }
