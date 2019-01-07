@@ -15,6 +15,9 @@ matrix:
 
 sudo: false
 
+env:
+  - PROJECT_DIR=$PWD
+
 install:
   - sudo apt-get update -y
   - sudo apt-get -y install build-essential cmake git libtool libwebp-dev unzip python-dev aptitude autoconf automake m4 nasm pkg-config libpng-dev libmagickcore-dev libmagickwand-dev pngnq pngcrush pngquant
@@ -39,6 +42,8 @@ install:
   - sudo make install
   - sudo ln -s /usr/local/bin/cjpeg /usr/bin/mozjpeg-cjpeg
   - sudo ln -s /usr/local/bin/jpegtran /usr/bin/mozjpeg-jpegtran
+
+  - cd $PROJECT_DIR
 
 addons:
   apt:
