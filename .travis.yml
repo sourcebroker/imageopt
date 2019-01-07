@@ -66,7 +66,9 @@ before_install:
   - composer --version
 
 before_script:
+  - pwd
   - cd $PROJECT_DIR
+  - pwd
   - phpenv config-rm xdebug.ini
   - composer require typo3/minimal=$TYPO3_VERSION
   # Restore composer.json
