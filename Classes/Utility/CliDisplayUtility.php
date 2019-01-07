@@ -44,7 +44,7 @@ class CliDisplayUtility
                     $errors = substr($errors, 0, $limit - 2) . '..';
                 }
 
-                $providers[] = $providerResult->getName() . " - \e[91mfailed: " . $errors . "\e[97m";
+                $providers[] = $providerResult->getName() . " - failed: " . $errors;
                 $providersScore[] = -99999;
             }
         }
