@@ -133,16 +133,15 @@ class Configurator
         if (isset($config['providers']['_all'])) {
             $defaultProviderValues = $config['providers']['_all'];
             unset($config['providers']['_all']);
-
             foreach ($config['providers'] as $providerKey => &$providerValues) {
                 $allExceptExecutors = $defaultProviderValues;
                 unset($allExceptExecutors['executors']);
-                $providerValues = ArrayUtility::mergeRecursiveDistinct($allExceptExecutors, $providerValues);
-
+                \TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule($providerValues, $allExceptExecutors);
                 foreach ($providerValues['executors'] as $executorKey => &$executorValues) {
                     if (isset($defaultProviderValues['executors'])) {
-                        $executorValues = ArrayUtility::mergeRecursiveDistinct($defaultProviderValues['executors'],
-                            $executorValues);
+                        \TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule(
+                            $executorValues,
+                            $defaultProviderValues['executors']);
                     }
                 }
             }
@@ -157,22 +156,16 @@ class Configurator
     protected function createVirtualProviders()
     {
         foreach ($this->config['providers'] as $name => $provider) {
-            $types = explode(',', $provider['type']);
-
-            foreach ($types as $type) {
+            foreach (GeneralUtility::trimExplode(',', $provider['type']) as $type) {
                 $providerTyped = $provider;
                 $providerTyped['type'] = $type;
-
                 if (isset($providerTyped['typeOverride'][$type])) {
-                    $providerTyped = ArrayUtility::mergeRecursiveDistinct($provider, $provider['typeOverride'][$type]);
+                    \TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule($providerTyped, $provider['typeOverride'][$type]);
                 }
-
                 unset($providerTyped['typeOverride']);
-
                 if (!isset($this->providers[$type])) {
                     $this->providers[$type] = [];
                 }
-
                 $this->providers[$type][$name] = $providerTyped;
             }
         }

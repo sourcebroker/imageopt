@@ -156,18 +156,14 @@ class OptimizeImageServiceTest extends UnitTestCase
                 $envConfig[$key] = $value;
             }
         }
-
         foreach ($envConfig as $name => $value) {
             $plainConfig = explode('__', $name);
-
             $plainConfig[] = $value;
             $nestedConfig = ArrayUtility::plainToNested($plainConfig);
-            $rawConfig = ArrayUtility::updateRecursiveDistinct($rawConfig, $nestedConfig);
+            \TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule($rawConfig, $nestedConfig, false);
         }
-
         $configurator->setConfig($rawConfig);
         $configurator->init();
-
         return $configurator->getConfig();
     }
 }
