@@ -37,9 +37,9 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
      * @param Configurator $configurator
      * @return bool
      */
-    protected function initialize(Configurator $configurator): bool
+    protected function initConfiguration(Configurator $configurator): bool
     {
-        $result = parent::initialize($configurator);
+        $result = parent::initConfiguration($configurator);
 
         if ($result) {
             if (!isset($this->auth['key']) || !isset($this->auth['pass'])) {
@@ -67,8 +67,6 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
      */
     protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): bool
     {
-        $file = curl_file_create($inputImageAbsolutePath);
-
         $options = $this->apiOptions;
         $options['wait'] = true; // wait for processed file (forced option)
         $options['auth'] = [
@@ -83,7 +81,7 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
         }
 
         $post = [
-            'file' => $file,
+            'file' => curl_file_create($inputImageAbsolutePath),
             'data' => json_encode($options),
         ];
         $result = self::request($post, $this->url['upload'], ['type' => 'upload']);
@@ -98,21 +96,23 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
 
                 if ($download) {
                     $executorResult->setCommandStatus('Done');
-                    return true;
                 } else {
+                    $result['success'] = false;
                     $executorResult->setErrorMessage('Unable to download image');
                     $executorResult->setCommandStatus('Failed');
                 }
             } else {
+                $result['success'] = false;
                 $executorResult->setErrorMessage('Download URL not defined');
                 $executorResult->setCommandStatus('Failed');
             }
         } else {
+            $result['success'] = false;
             $executorResult->setErrorMessage($result['error']);
             $executorResult->setCommandStatus('Failed');
         }
 
-        return false;
+        return $result['success'];
     }
 
     /**
@@ -141,34 +141,36 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
         $responseFromAPI = parent::request($data, $url, $options);
 
         $handledResponse = $this->handleResponseError($responseFromAPI);
+        $result = null;
+
         if ($handledResponse !== null) {
-            return [
+            $result = [
                 'success' => false,
                 'error' => $handledResponse
             ];
-        }
-
-        $response = json_decode($responseFromAPI['response'], true, 512);
-
-        if ($response === null) {
-            $result = [
-                'success' => false,
-                'error' => 'Unable to decode JSON',
-            ];
-        } elseif (!isset($response['success']) || $response['success'] === false) {
-            $message = isset($response['message'])
-                ? $response['message']
-                : 'Undefined error';
-
-            $result = [
-                'success' => false,
-                'error' => 'API error: ' . $message,
-            ];
         } else {
-            $result = [
-                'success' => true,
-                'response' => $response,
-            ];
+            $response = json_decode($responseFromAPI['response'], true, 512);
+
+            if ($response === null) {
+                $result = [
+                    'success' => false,
+                    'error' => 'Unable to decode JSON',
+                ];
+            } elseif (!isset($response['success']) || $response['success'] === false) {
+                $message = isset($response['message'])
+                    ? $response['message']
+                    : 'Undefined error';
+
+                $result = [
+                    'success' => false,
+                    'error' => 'API error: ' . $message,
+                ];
+            } else {
+                $result = [
+                    'success' => true,
+                    'response' => $response,
+                ];
+            }
         }
 
         return $result;

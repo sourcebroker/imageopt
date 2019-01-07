@@ -49,6 +49,8 @@ class OptimizeImageServiceTest extends UnitTestCase
      */
     public function allProvidersSuccessful($image)
     {
+        echo "\n\e[93mTEST allProvidersSuccessful\e[97m";
+
         /** @var \SourceBroker\Imageopt\Service\OptimizeImageService $optimizeImageService */
         $optimizeImageService = $this->getMockBuilder(OptimizeImageService::class)
             ->setConstructorArgs([$this->pluginConfig()])
@@ -80,6 +82,8 @@ class OptimizeImageServiceTest extends UnitTestCase
      */
     public function imageIsOptimized($image)
     {
+        echo "\n\e[93mTEST imageIsOptimized\e[97m";
+
         /** @var \SourceBroker\Imageopt\Service\OptimizeImageService $optimizeImageService */
         $optimizeImageService = $this->getMockBuilder(OptimizeImageService::class)
             ->setConstructorArgs([$this->pluginConfig()])
@@ -159,7 +163,7 @@ class OptimizeImageServiceTest extends UnitTestCase
 
             $plainConfig[] = $value;
             $nestedConfig = ArrayUtility::plainToNested($plainConfig);
-            $rawConfig = ArrayUtility::mergeRecursiveDistinct($rawConfig, $nestedConfig);
+            $rawConfig = ArrayUtility::updateRecursiveDistinct($rawConfig, $nestedConfig);
         }
 
         $configurator->setConfig($rawConfig);

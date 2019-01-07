@@ -36,9 +36,9 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
      * @param Configurator $configurator
      * @return bool
      */
-    protected function initialize(Configurator $configurator): bool
+    protected function initConfiguration(Configurator $configurator): bool
     {
-        $result = parent::initialize($configurator);
+        $result = parent::initConfiguration($configurator);
         if (!$result) {
             return false;
         }
@@ -86,38 +86,28 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
 
         if ($result['success']) {
             if (isset($result['response'])) {
-                $saved = $this->save($inputImageAbsolutePath, $result['response']);
+                $saved = (bool) file_put_contents($inputImageAbsolutePath, $result['response']);;
 
                 if ($saved) {
                     $executorResult->setCommandStatus('Done');
-                    return true;
                 } else {
+                    $result['success'] = false;
                     $executorResult->setErrorMessage('Unable to save image');
                     $executorResult->setCommandStatus('Failed');
                 }
             } else {
+                $result['success'] = false;
                 $message = $result['error'] ?? 'Undefined error';
                 $executorResult->setErrorMessage($message);
                 $executorResult->setCommandStatus('Failed');
             }
         } else {
+            $result['success'] = false;
             $executorResult->setErrorMessage($result['error']);
             $executorResult->setCommandStatus('Failed');
         }
 
-        return false;
-    }
-
-    /**
-     * Save image data into file
-     *
-     * @param string $outputImageAbsolutePath
-     * @param string $imageData
-     * @return bool
-     */
-    protected function save(string $outputImageAbsolutePath, string $imageData)
-    {
-        return (bool)file_put_contents($outputImageAbsolutePath, $imageData);
+        return $result['success'];
     }
 
     /**
@@ -137,16 +127,20 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
         $responseFromAPI = parent::request($data, $url, $options);
 
         $handledResponse = $this->handleResponseError($responseFromAPI);
+        $result = null;
+
         if ($handledResponse !== null) {
-            return [
+            $result = [
                 'success' => false,
                 'error' => $handledResponse
             ];
+        } else {
+            $result = [
+                'success' => true,
+                'response' => $responseFromAPI['response'],
+            ];
         }
 
-        return [
-            'success' => true,
-            'response' => $responseFromAPI['response'],
-        ];
+        return $result;
     }
 }
