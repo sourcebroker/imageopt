@@ -24,7 +24,6 @@
 
 namespace SourceBroker\Imageopt\Configuration;
 
-use SourceBroker\Imageopt\Utility\ArrayUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\TypoScript\TypoScriptService;
@@ -117,7 +116,21 @@ class Configurator
             }
         }
 
-        $this->createVirtualProviders();
+        foreach ($this->config['providers'] as $name => $provider) {
+            foreach (GeneralUtility::trimExplode(',', $provider['type']) as $type) {
+                $providerTyped = $provider;
+                $providerTyped['type'] = $type;
+                if (isset($providerTyped['typeOverride'][$type])) {
+                    \TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule($providerTyped,
+                        $provider['typeOverride'][$type]);
+                }
+                unset($providerTyped['typeOverride']);
+                if (!isset($this->providers[$type])) {
+                    $this->providers[$type] = [];
+                }
+                $this->providers[$type][$name] = $providerTyped;
+            }
+        }
     }
 
     /**
@@ -148,27 +161,6 @@ class Configurator
         }
 
         return $config;
-    }
-
-    /**
-     * Creates virtual providers for each optimization option
-     */
-    protected function createVirtualProviders()
-    {
-        foreach ($this->config['providers'] as $name => $provider) {
-            foreach (GeneralUtility::trimExplode(',', $provider['type']) as $type) {
-                $providerTyped = $provider;
-                $providerTyped['type'] = $type;
-                if (isset($providerTyped['typeOverride'][$type])) {
-                    \TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule($providerTyped, $provider['typeOverride'][$type]);
-                }
-                unset($providerTyped['typeOverride']);
-                if (!isset($this->providers[$type])) {
-                    $this->providers[$type] = [];
-                }
-                $this->providers[$type][$name] = $providerTyped;
-            }
-        }
     }
 
     /**
