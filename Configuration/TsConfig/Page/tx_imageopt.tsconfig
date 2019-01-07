@@ -205,34 +205,8 @@ tx_imageopt {
                 10 {
                     class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
                     command {
-                        mask = {executable} {quality} {tempFile} -o {tempFile}
+                        mask = {executable} --optimize=3 {tempFile} -o {tempFile}
                         exec = gifsicle
-                    }
-                    options {
-                        quality {
-                            options {
-                                5 = --optimize=3
-                                10 = --optimize=3
-                                15 = --optimize=3
-                                20 = --optimize=3
-                                25 = --optimize=3
-                                30 = --optimize=3
-                                35 = --optimize=3
-                                40 = --optimize=2
-                                45 = --optimize=2
-                                50 = --optimize=2
-                                55 = --optimize=2
-                                60 = --optimize=2
-                                65 = --optimize=2
-                                70 = --optimize=2
-                                75 = --optimize=1
-                                80 = --optimize=1
-                                85 = --optimize=1
-                                90 = --optimize=1
-                                95 = --optimize=1
-                                100 = --optimize=1
-                            }
-                        }
                     }
                 }
             }
@@ -245,7 +219,7 @@ tx_imageopt {
                 10 {
                     class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
                     command {
-                        mask = {executable} {tempFile} -o7 -quiet -strip all {quality}
+                        mask = {executable} {tempFile} -quiet -strip all -o7
                         exec = optipng
                     }
                 }
