@@ -20,18 +20,22 @@ tx_imageopt {
 
             # "executors" is merged to each executor
             executors {
+                enabled = 1
                 options {
                     quality {
                         value = 85
                     }
                 }
+                /* not supported yet
                 notifications {
                     limitsExeeded {
                         active = 1
                     }
                 }
+                */
             }
 
+            /* not supported yet
             email {
                 sender {
                     email =
@@ -42,6 +46,7 @@ tx_imageopt {
                     name =
                 }
             }
+            */
         }
 
         jpegoptim {
@@ -161,7 +166,6 @@ tx_imageopt {
                     }
                     options {
                         quality {
-                            value < tx_imageopt.providers._all.executors.options.quality.value
                             options {
                                 5 = -quality 5
                                 10 = -quality 10
@@ -381,7 +385,5 @@ tx_imageopt {
             }
             typeOverride.lossless.executors.10.options.quality.value = lossless
         }
-
     }
-
 }
