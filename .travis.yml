@@ -17,14 +17,13 @@ sudo: false
 
 install:
   - sudo apt-get update -y
-  - sudo apt-get -y install build-essential cmake libtool libwebp-dev unzip python-dev aptitude autoconf automake m4 nasm pkg-config libpng-dev libmagickcore-dev libmagickwand-dev pngnq pngcrush pngquant
+  - sudo apt-get -y install build-essential cmake git libtool libwebp-dev unzip python-dev aptitude autoconf automake m4 nasm pkg-config libpng-dev libmagickcore-dev libmagickwand-dev pngnq pngcrush pngquant
   - pip install setuptools
 
   # install pngquant2
   - cd ~
-  - wget https://github.com/kornelski/pngquant/archive/2.12.1.tar.gz
-  - tar xf 2.12.1.tar.gz
-  - cd pngquant-2.12.1
+  - git clone --recursive git@github.com:kornelski/pngquant.git
+  - cd pngquant
   - make
   - sudo make install
 
