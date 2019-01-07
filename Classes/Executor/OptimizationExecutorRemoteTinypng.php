@@ -105,21 +105,17 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
         $responseFromAPI = parent::request($data, $url, $options);
 
         $handledResponse = $this->handleResponseError($responseFromAPI);
-        $result = null;
-
         if ($handledResponse !== null) {
-            $result = [
+            return [
                 'success' => false,
                 'error' => $handledResponse
             ];
-        } else {
-            $body = substr($responseFromAPI['response'], $responseFromAPI['header_size']);
-            $result = [
-                'success' => true,
-                'response' => json_decode($body, true),
-            ];
         }
 
-        return $result;
+        $body = substr($responseFromAPI['response'], $responseFromAPI['header_size']);
+        return [
+            'success' => true,
+            'response' => json_decode($body, true),
+        ];
     }
 }

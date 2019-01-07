@@ -137,36 +137,34 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
         $responseFromAPI = parent::request($data, $url, $options);
 
         $handledResponse = $this->handleResponseError($responseFromAPI);
-        $result = null;
-
         if ($handledResponse !== null) {
-            $result = [
+            return [
                 'success' => false,
                 'error' => $handledResponse
             ];
+        }
+
+        $response = json_decode($responseFromAPI['response'], true, 512);
+
+        if ($response === null) {
+            $result = [
+                'success' => false,
+                'error' => 'Unable to decode JSON',
+            ];
+        } elseif (!isset($response['success']) || $response['success'] === false) {
+            $message = isset($response['message'])
+                ? $response['message']
+                : 'Undefined error';
+
+            $result = [
+                'success' => false,
+                'error' => 'API error: ' . $message,
+            ];
         } else {
-            $response = json_decode($responseFromAPI['response'], true, 512);
-
-            if ($response === null) {
-                $result = [
-                    'success' => false,
-                    'error' => 'Unable to decode JSON',
-                ];
-            } elseif (!isset($response['success']) || $response['success'] === false) {
-                $message = isset($response['message'])
-                    ? $response['message']
-                    : 'Undefined error';
-
-                $result = [
-                    'success' => false,
-                    'error' => 'API error: ' . $message,
-                ];
-            } else {
-                $result = [
-                    'success' => true,
-                    'response' => $response,
-                ];
-            }
+            $result = [
+                'success' => true,
+                'response' => $response,
+            ];
         }
 
         return $result;
