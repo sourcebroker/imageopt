@@ -86,7 +86,7 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
 
         if ($result['success']) {
             if (isset($result['response'])) {
-                $saved = (bool) file_put_contents($inputImageAbsolutePath, $result['response']);;
+                $saved = (bool) file_put_contents($inputImageAbsolutePath, $result['response']);
 
                 if ($saved) {
                     $executorResult->setExecutedSuccessfully(true);
