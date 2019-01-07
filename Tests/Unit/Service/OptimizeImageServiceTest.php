@@ -163,7 +163,7 @@ class OptimizeImageServiceTest extends UnitTestCase
 
             $plainConfig[] = $value;
             $nestedConfig = ArrayUtility::plainToNested($plainConfig);
-            $rawConfig = ArrayUtility::mergeRecursiveDistinct($rawConfig, $nestedConfig);
+            $rawConfig = ArrayUtility::updateRecursiveDistinct($rawConfig, $nestedConfig);
         }
 
         $configurator->setConfig($rawConfig);
