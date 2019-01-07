@@ -245,34 +245,8 @@ tx_imageopt {
                 10 {
                     class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
                     command {
-                        mask = {executable} {tempFile} -quiet -strip all {quality}
+                        mask = {executable} {tempFile} -o7 -quiet -strip all {quality}
                         exec = optipng
-                    }
-                    options {
-                        quality {
-                            options {
-                                5 = -o7
-                                10 = -o7
-                                15 = -o7
-                                20 = -o6
-                                25 = -o6
-                                30 = -o6
-                                35 = -o5
-                                40 = -o5
-                                45 = -o5
-                                50 = -o4
-                                55 = -o4
-                                60 = -o4
-                                65 = -o3
-                                70 = -o3
-                                75 = -o3
-                                80 = -o2
-                                85 = -o2
-                                90 = -o2
-                                95 = -o1
-                                100 = -o0
-                            }
-                        }
                     }
                 }
             }
