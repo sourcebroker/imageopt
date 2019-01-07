@@ -36,9 +36,9 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
      * @param Configurator $configurator
      * @return bool
      */
-    protected function initialize(Configurator $configurator): bool
+    protected function initConfiguration(Configurator $configurator): bool
     {
-        $result = parent::initialize($configurator);
+        $result = parent::initConfiguration($configurator);
 
         if ($result) {
             if (!isset($this->auth['key'])) {
@@ -59,8 +59,7 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
      */
     protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): bool
     {
-        $command = 'URL: ' . $this->url['upload'];
-        $executorResult->setCommand($command);
+        $executorResult->setCommand('URL: ' . $this->url['upload']);
 
         $result = self::request(file_get_contents($inputImageAbsolutePath), $this->url['upload']);
 
@@ -71,12 +70,13 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
 
                 if ($download) {
                     $executorResult->setCommandStatus('Done');
-                    return true;
                 } else {
+                    $result['success'] = false;
                     $executorResult->setErrorMessage('Unable to download image');
                     $executorResult->setCommandStatus('Failed');
                 }
             } else {
+                $result['success'] = false;
                 $executorResult->setErrorMessage('Download URL not defined');
                 $executorResult->setCommandStatus('Failed');
             }
@@ -85,7 +85,7 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
             $executorResult->setCommandStatus('Failed');
         }
 
-        return false;
+        return $result['success'];
     }
 
     /**
@@ -108,17 +108,21 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
         $responseFromAPI = parent::request($data, $url, $options);
 
         $handledResponse = $this->handleResponseError($responseFromAPI);
+        $result = null;
+
         if ($handledResponse !== null) {
-            return [
+            $result = [
                 'success' => false,
                 'error' => $handledResponse
             ];
+        } else {
+            $body = substr($responseFromAPI['response'], $responseFromAPI['header_size']);
+            $result = [
+                'success' => true,
+                'response' => json_decode($body, true),
+            ];
         }
 
-        $body = substr($responseFromAPI['response'], $responseFromAPI['header_size']);
-        return [
-            'success' => true,
-            'response' => json_decode($body, true),
-        ];
+        return $result;
     }
 }

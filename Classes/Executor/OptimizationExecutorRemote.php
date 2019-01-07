@@ -76,7 +76,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
         $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
         $executorResult->setExecutedSuccessfully(false);
 
-        $inited = $this->initialize($configurator);
+        $inited = $this->initConfiguration($configurator);
         if ($inited) {
             $executorResult->setSizeBefore(filesize($inputImageAbsolutePath));
 
@@ -98,7 +98,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param Configurator $configurator
      * @return bool
      */
-    protected function initialize(Configurator $configurator): bool
+    protected function initConfiguration(Configurator $configurator): bool
     {
         $timeout = $configurator->getOption('timeout');
         if ($timeout !== null) {

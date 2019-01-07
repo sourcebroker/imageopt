@@ -49,7 +49,7 @@ class OptimizeImageServiceTest extends UnitTestCase
      */
     public function allProvidersSuccessful($image)
     {
-        echo "\n<fg=yellow>TEST allProvidersSuccessful</>";
+        echo "\n\e[93mTEST allProvidersSuccessful\e[97m";
 
         /** @var \SourceBroker\Imageopt\Service\OptimizeImageService $optimizeImageService */
         $optimizeImageService = $this->getMockBuilder(OptimizeImageService::class)
@@ -82,7 +82,7 @@ class OptimizeImageServiceTest extends UnitTestCase
      */
     public function imageIsOptimized($image)
     {
-        echo "\n<fg=yellow>TEST imageIsOptimized</>";
+        echo "\n\e[93mTEST imageIsOptimized\e[97m";
 
         /** @var \SourceBroker\Imageopt\Service\OptimizeImageService $optimizeImageService */
         $optimizeImageService = $this->getMockBuilder(OptimizeImageService::class)
