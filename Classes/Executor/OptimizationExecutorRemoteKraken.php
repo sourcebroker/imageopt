@@ -63,9 +63,9 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
      * Upload file to kraken.io and save it if optimization will be success
      *
      * @param string $inputImageAbsolutePath Absolute path/file with original image
-     * @return bool
+     * @param ExecutorResult $executorResult
      */
-    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): bool
+    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult)
     {
         $options = $this->apiOptions;
         $options['wait'] = true; // wait for processed file (forced option)
@@ -95,24 +95,20 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
                 $download = $this->getFileFromRemoteServer($inputImageAbsolutePath, $result['response']['kraked_url']);
 
                 if ($download) {
+                    $executorResult->setExecutedSuccessfully(true);
                     $executorResult->setCommandStatus('Done');
                 } else {
-                    $result['success'] = false;
                     $executorResult->setErrorMessage('Unable to download image');
                     $executorResult->setCommandStatus('Failed');
                 }
             } else {
-                $result['success'] = false;
                 $executorResult->setErrorMessage('Download URL not defined');
                 $executorResult->setCommandStatus('Failed');
             }
         } else {
-            $result['success'] = false;
             $executorResult->setErrorMessage($result['error']);
             $executorResult->setCommandStatus('Failed');
         }
-
-        return $result['success'];
     }
 
     /**

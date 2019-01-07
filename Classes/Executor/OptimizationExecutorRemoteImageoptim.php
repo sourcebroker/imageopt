@@ -58,9 +58,9 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
      * Upload file to imageoptim.com and save it if optimization will be success
      *
      * @param string $inputImageAbsolutePath Absolute path/file with original image
-     * @param bool Optimization result
+     * @param ExecutorResult $executorResult
      */
-    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): bool
+    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult)
     {
         $file = curl_file_create($inputImageAbsolutePath);
 
@@ -89,25 +89,21 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
                 $saved = (bool) file_put_contents($inputImageAbsolutePath, $result['response']);;
 
                 if ($saved) {
+                    $executorResult->setExecutedSuccessfully(true);
                     $executorResult->setCommandStatus('Done');
                 } else {
-                    $result['success'] = false;
                     $executorResult->setErrorMessage('Unable to save image');
                     $executorResult->setCommandStatus('Failed');
                 }
             } else {
-                $result['success'] = false;
                 $message = $result['error'] ?? 'Undefined error';
                 $executorResult->setErrorMessage($message);
                 $executorResult->setCommandStatus('Failed');
             }
         } else {
-            $result['success'] = false;
             $executorResult->setErrorMessage($result['error']);
             $executorResult->setCommandStatus('Failed');
         }
-
-        return $result['success'];
     }
 
     /**
