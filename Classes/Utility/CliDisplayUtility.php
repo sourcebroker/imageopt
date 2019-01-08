@@ -2,7 +2,9 @@
 
 namespace SourceBroker\Imageopt\Utility;
 
+use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
 use SourceBroker\Imageopt\Domain\Model\OptimizationResult;
+use SourceBroker\Imageopt\Domain\Model\ProviderResult;
 
 class CliDisplayUtility
 {
@@ -59,6 +61,7 @@ class CliDisplayUtility
             $provider = ($i + 1) . ') ' . $provider;
         }
 
+        $statsInfo = '';
         if ($optimizationResult->getProvidersResults()->count() !== 0) {
             $statsInfo = "Provider stats\t| " . $optimizationResult->getExecutedSuccessfullyNum() . ' out of ' . $optimizationResult->getProvidersResults()->count() . ' providers finished successfully:' . "\n";
         }
