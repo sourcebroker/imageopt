@@ -49,7 +49,7 @@ class OptimizeImageServiceTest extends UnitTestCase
      */
     public function allProvidersSuccessful($image)
     {
-        fwrite(STDOUT, "\n" . 'TEST allProvidersSuccessful' . "\n");
+        fwrite(STDOUT, "\n" . 'TEST if all providers was executed succesfully.' . "\n");
 
         /** @var \SourceBroker\Imageopt\Service\OptimizeImageService $optimizeImageService */
         $optimizeImageService = $this->getMockBuilder(OptimizeImageService::class)
@@ -81,7 +81,7 @@ class OptimizeImageServiceTest extends UnitTestCase
      */
     public function imageIsOptimized($image)
     {
-        fwrite(STDOUT, "\n" . 'TEST imageIsOptimized' . "\n");
+        fwrite(STDOUT, "\n" . 'TEST if all providers was executed succesfully.' . "\n");
 
         /** @var \SourceBroker\Imageopt\Service\OptimizeImageService $optimizeImageService */
         $optimizeImageService = $this->getMockBuilder(OptimizeImageService::class)
@@ -137,7 +137,7 @@ class OptimizeImageServiceTest extends UnitTestCase
 
         $rawConfig = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Service\TypoScriptService::class)
             ->convertTypoScriptArrayToPlainArray($typoscriptParser->setup)['tx_imageopt'];
-
+        $rawConfig['providersDefault']['enabled'] = 1;
         if (file_exists(__DIR__ . '/../../../.env')) {
             $dotenv = new Dotenv();
             $dotenv->load(__DIR__ . '/../../../.env');

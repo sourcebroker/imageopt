@@ -83,14 +83,15 @@ class OptimizeImageService
             if (!empty($imageOpimalizationsProviders)) {
                 $providerExecuted = $providerExecutedSuccessfully = 0;
                 foreach ($imageOpimalizationsProviders as $providerKey => $imageOpimalizationsProviderConfig) {
-                    if ($imageOpimalizationsProviderConfig['enabled']) {
+                    $imageOpimalizationsProviderConfig['providerKey'] = $providerKey;
+                    $providerConfigurator = GeneralUtility::makeInstance(Configurator::class, $imageOpimalizationsProviderConfig);
+                    if (!empty($providerConfigurator->getOption('enabled'))) {
                         $providerExecuted++;
                         $temporaryProviderOptimizedImageAbsolutePath = $this->temporaryFile->createTemporaryCopy($workingImagePath);
-                        $imageOpimalizationsProviderConfig['providerKey'] = $providerKey;
                         $optimizationProvider = GeneralUtility::makeInstance(OptimizationProvider::class);
                         $providerResult = $optimizationProvider->optimize(
                             $temporaryProviderOptimizedImageAbsolutePath,
-                            GeneralUtility::makeInstance(Configurator::class, $imageOpimalizationsProviderConfig)
+                            $providerConfigurator
                         );
                         $optimizationResult->addProvidersResult($providerResult);
                         if ($providerResult->isExecutedSuccessfully()) {

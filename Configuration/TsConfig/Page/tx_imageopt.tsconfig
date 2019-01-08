@@ -12,42 +12,37 @@ tx_imageopt {
         }
     }
 
-    providers {
-
-        # "_all" is merged to all providers
-        _all {
-            enabled = 0
-
-            # "executors" is merged to each executor
-            executors {
-                options {
-                    quality {
-                        value = 85
-                    }
-                }
-                /* not supported yet
-                notifications {
-                    limitsExeeded {
-                        active = 1
-                    }
-                }
-                */
+    executorsDefault {
+        options {
+            quality {
+                value = 85
             }
-
-            /* not supported yet
-            email {
-                sender {
-                    email =
-                    name =
-                }
-                reciver {
-                    email =
-                    name =
-                }
-            }
-            */
         }
+        /* not supported yet
+        notifications {
+            limitsExeeded {
+                active = 1
+            }
+        }
+        */
+    }
 
+    providersDefault {
+        /* not supported yet
+        email {
+            sender {
+                email =
+                name =
+            }
+            reciver {
+                email =
+                name =
+            }
+        }
+        */
+    }
+
+    providers {
         jpegoptim {
             type = lossy
             fileType = jpeg
@@ -116,7 +111,7 @@ tx_imageopt {
             }
         }
 
-        jpegtran-mozjpeg {
+        jpegtranMozjpeg {
             type = lossless
             fileType = jpeg
             executors {
@@ -152,7 +147,7 @@ tx_imageopt {
             }
         }
 
-        mozjpeg-quality {
+        mozjpegQuality {
             enabled = 0
             type = lossy
             fileType = jpeg
@@ -284,7 +279,7 @@ tx_imageopt {
             }
         }
 
-        pngquant-pngcrush {
+        pngquantPngcrush {
             type = lossy
             fileType = png
             executors {
@@ -306,9 +301,6 @@ tx_imageopt {
                         auth {
                             key =
                             pass =
-                        }
-                        options {
-                            quality < tx_imageopt.providers._all.executors.options.quality.value
                         }
                     }
                 }
