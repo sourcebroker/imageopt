@@ -42,11 +42,11 @@ Features
 - If you enable more than one image type optimization provider then all of them will be executed and the best optimized
   image is choosen as result. All other results are stored in database so you can build results statistics later.
 
-- Own providers can be registered with page TSconfig or
+- Own providers can be registered with page TSconfig.
 
-- Providers can have more than one executors and executors can be chained. So for example you create provider that
-  consist of two chained executors: first executor will optimize jpg and the second executor will make the jpg image
-  progressive.
+- Providers can have more than one executor and executors can be chained. So for example you create provider that
+  consist of two chained executors: first executor will optimize png (loosy) and the second executor will optimize
+  image with loosless technicques. (its real case for pngquant + pngcrush)
 
 - Its safe as the original images, for example in folder ``fileadmin/``, ``uploads/`` are not optmized!
   Only already resized images are optmized, so for FAL that would be files form ``_processed_/`` folders and for
@@ -55,7 +55,9 @@ Features
   or ``/uploads/``.
 
 - Support for following linux binaries.
-  For png: optipng, pngcrush, pngquant. For gif: gifsicle. For jpeg: jpegoptim, jpegrescan, jpegtran.
+  For png: mozjpeg, optipng, pngcrush, pngquant. For gif: gifsicle. For jpeg: jpegoptim, jpegrescan, jpegtran.
+
+- Support for following remote optimisation providers: imageoptim.com, kraken.io, tinypng.com.
 
 
 Installation
@@ -67,7 +69,106 @@ Installation
 
     composer require sourcebroker/imageopt
 
-2) Open main Template record and add "imageopt" in tab "Includes" -> field "Include static (from extensions)"
+
+
+Configuration
+-------------
+
+1) Open main Template record and add "imageopt" in tab "Includes" -> field "Include static (from extensions)"
+
+2) Enable provides you need.
+
+   a) If you accept lossy optimisations then good start is:
+
+      For local binaries:
+      - for jpeg: mozjpeg
+      - for gif: gifsicle
+      - for png: pngquant (with pngcrush)
+
+      For remote providers:
+      - for jpeg: kraken.io, tinypng.com, imageoptim.com
+      - for gif: kraken.io, imageoptim.com
+      - for png: kraken.io, tinypng.com, imageoptim.com
+
+      Now the question is if you want more providers to optimize image and choose the best optimisation of you trust
+      one provider and want to have results from this one provider always.
+
+      If you want only one privider and you accept paying for example for kraken.io then the config for you is:
+
+      ::
+
+        tx_imageopt {
+          providers {
+            kraken {
+                enabled = 1
+                executors.10.api.auth.key = your_kraken_key
+                executors.10.api.auth.pass = your_kraken_pass
+            }
+          }
+        }
+
+      If you want that more provides will optimize image and the best optimisation will be used as result then
+      you can enable more than one provider like in following example:
+
+      ::
+
+        tx_imageopt {
+          providers {
+            // remote
+            kraken {
+                enabled = 1
+                executors.10.api.auth.key = your_kraken_key
+                executors.10.api.auth.pass = your_kraken_pass
+            }
+            tinypng {
+                enabled = 1
+                executors.10.api.auth.key = your_tinypng_key
+            }
+            imageptim {
+                enabled = 1
+                executors.10.api.auth.key = your_imageptim_key
+            }
+
+            // binaries
+            gifsicle.enabled = 1
+            mozjpeg.enabled = 1
+            pngquant-pngcrush.enabled = 1
+            }
+          }
+        }
+
+   b) If you accept only lossless optimisations then good start is:
+
+      - jpeg: jpegtran, jpegtran-mozjpeg (jpegrescan is wrap around jpegtran-mozjpeg)
+      - gif: gifsicle
+      - png: pngcrush, optipng
+
+      So the Page TSConfig you should add that will enable providers is:
+
+      ::
+
+        tx_imageopt {
+          optimize >
+          optimize {
+              10 {
+                  fileRegexp = .*
+                  providerType = lossless
+              }
+          }
+          providers {
+            // remote
+            kraken.enabled = 1
+            tinypng.enabled = 1
+            imageptim.enabled = 1
+
+            // binaries
+            gifsicle.enabled = 1
+            jpegtran.enabled = 1
+            jpegtran-mozjpeg.enabled = 1
+            optipng.enabled = 1
+            pngcrush.enabled = 1
+          }
+        }
 
 Usage
 -----
