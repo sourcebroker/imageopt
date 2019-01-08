@@ -81,12 +81,14 @@ class OptimizeImageService
             $temporaryBestOptimizedImageAbsolutePath = $this->temporaryFile->createTemporaryCopy($workingImagePath);
             $imageOpimalizationsProviders = $this->findProvidersForFile($originalImagePath);
             if (!empty($imageOpimalizationsProviders)) {
-                $providerExecuted = $providerExecutedSuccessfully = 0;
+                $providerExecutedCounter = $providerExecutedSuccessfullyCounter = $providerEnabledCounter = 0;
                 foreach ($imageOpimalizationsProviders as $providerKey => $imageOpimalizationsProviderConfig) {
                     $imageOpimalizationsProviderConfig['providerKey'] = $providerKey;
-                    $providerConfigurator = GeneralUtility::makeInstance(Configurator::class, $imageOpimalizationsProviderConfig);
+                    $providerConfigurator = GeneralUtility::makeInstance(Configurator::class,
+                        $imageOpimalizationsProviderConfig);
                     if (!empty($providerConfigurator->getOption('enabled'))) {
-                        $providerExecuted++;
+                        $providerEnabledCounter++;
+                        $providerExecutedCounter++;
                         $temporaryProviderOptimizedImageAbsolutePath = $this->temporaryFile->createTemporaryCopy($workingImagePath);
                         $optimizationProvider = GeneralUtility::makeInstance(OptimizationProvider::class);
                         $providerResult = $optimizationProvider->optimize(
@@ -95,7 +97,7 @@ class OptimizeImageService
                         );
                         $optimizationResult->addProvidersResult($providerResult);
                         if ($providerResult->isExecutedSuccessfully()) {
-                            $providerExecutedSuccessfully++;
+                            $providerExecutedSuccessfullyCounter++;
                             clearstatcache(true, $temporaryProviderOptimizedImageAbsolutePath);
                             clearstatcache(true, $temporaryBestOptimizedImageAbsolutePath);
                             $filesizeAfterProviderOptimization = filesize($temporaryProviderOptimizedImageAbsolutePath);
@@ -107,7 +109,9 @@ class OptimizeImageService
                         }
                     }
                 }
-                if ($providerExecutedSuccessfully === 0) {
+                if ($providerEnabledCounter) {
+                    $optimizationResult->setInfo('No providers enabled (or defined).');
+                } elseif ($providerExecutedSuccessfullyCounter === 0) {
                     $optimizationResult->setInfo('No winner. All providers were unsuccessfull.');
                 } else {
                     $optimizationResult->setExecutedSuccessfully(true);

@@ -59,11 +59,15 @@ class CliDisplayUtility
             $provider = ($i + 1) . ') ' . $provider;
         }
 
+        if ($optimizationResult->getProvidersResults()->count() !== 0) {
+            $statsInfo = "Provider stats\t| " . $optimizationResult->getExecutedSuccessfullyNum() . ' out of ' . $optimizationResult->getProvidersResults()->count() . ' providers finished successfully:' . "\n";
+        }
+
         return
             '---------------------------------' . "\n" .
             "File\t\t| " . $optimizationResult->getFileRelativePath() . "\n" .
             "Info\t\t| " . implode("\n\t\t| ", explode("\n", wordwrap($optimizationResult->getInfo(), 70))) . "\n" .
-            "Provider stats\t| " . $optimizationResult->getExecutedSuccessfullyNum() . ' out of ' . $optimizationResult->getProvidersResults()->count() . ' providers finished successfully:' . "\n" .
+            $statsInfo .
             "\t\t| " . implode("\n\t\t| ", $providers) . "\n";
     }
 }
