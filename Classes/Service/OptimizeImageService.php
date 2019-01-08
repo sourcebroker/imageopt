@@ -109,7 +109,7 @@ class OptimizeImageService
                         }
                     }
                 }
-                if ($providerEnabledCounter) {
+                if ($providerEnabledCounter === 0) {
                     $optimizationResult->setInfo('No providers enabled (or defined).');
                 } elseif ($providerExecutedSuccessfullyCounter === 0) {
                     $optimizationResult->setInfo('No winner. All providers were unsuccessfull.');
