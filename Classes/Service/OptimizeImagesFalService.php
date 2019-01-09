@@ -38,7 +38,6 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
  */
 class OptimizeImagesFalService
 {
-
     /**
      * @var ProcessedFileRepository
      */
@@ -96,7 +95,6 @@ class OptimizeImagesFalService
                 $optimizationResult = $this->optimizeImageService->optimize($tmpForOptimizing, $sourceFile);
                 $optimizationResult->setFileRelativePath(substr($sourceFile, strlen(PATH_site)));
                 $this->objectManager->get(OptimizationResultRepository::class)->add($optimizationResult);
-                $this->objectManager->get(PersistenceManager::class)->persistAll();
                 if ($optimizationResult->isExecutedSuccessfully()) {
                     if ($optimizationResult->getSizeBefore() > $optimizationResult->getSizeAfter()) {
                         $processedFal->updateWithLocalFile($tmpForOptimizing);

@@ -24,11 +24,11 @@
 
 namespace SourceBroker\Imageopt\Configuration;
 
+use SourceBroker\Imageopt\Database\Database;
 use SourceBroker\Imageopt\Utility\ArrayUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 /**
  * Configuration Class
@@ -188,22 +188,17 @@ class Configurator
     public function getConfigForPage($rootPageForTsConfig = null)
     {
         if ($rootPageForTsConfig === null) {
-            $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-            $queryBuilder = $connectionPool->getQueryBuilderForTable('pages');
-            $rootPageForTsConfigRow = $queryBuilder
-                ->select('uid')
-                ->from('pages')
-                ->where(
-                    $queryBuilder->expr()->eq('pid', 0),
-                    $queryBuilder->expr()->eq('deleted', 0)
-                )->execute()->fetch();
+            $rootPageForTsConfigRow = GeneralUtility::makeInstance($GLOBALS['TYPO3_CONF_VARS']['EXT']['EXTCONF']['imageopt']['database'])->getRootPages();
             if ($rootPageForTsConfigRow !== null) {
                 $rootPageForTsConfig = $rootPageForTsConfigRow['uid'];
             } else {
                 throw new \Exception('Can not detect the root page to generate page TSconfig.', 1501700792654);
             }
         }
-        $serviceConfig = GeneralUtility::makeInstance(TypoScriptService::class)
+        $serviceConfig = GeneralUtility::makeInstance(
+            VersionNumberUtility::convertVersionNumberToInteger(TYPO3_version) < 8007000 ?
+                \TYPO3\CMS\Extbase\Service\TypoScriptService::class :
+                \TYPO3\CMS\Core\TypoScript\TypoScriptService::class)
             ->convertTypoScriptArrayToPlainArray(BackendUtility::getPagesTSconfig($rootPageForTsConfig));
         if (isset($serviceConfig['tx_imageopt'])) {
             return $serviceConfig['tx_imageopt'];

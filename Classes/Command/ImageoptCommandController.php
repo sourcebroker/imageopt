@@ -38,12 +38,11 @@ class ImageoptCommandController extends CommandController
      */
     public function optimizeFalProcessedImagesCommand($numberOfImagesToProcess = 20, $rootPageForTsConfig = null)
     {
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $configurator = GeneralUtility::makeInstance(Configurator::class);
         $configurator->setConfigByPage($rootPageForTsConfig);
         $configurator->init();
 
-        $optimizeImagesFalService = $objectManager->get(
+        $optimizeImagesFalService = GeneralUtility::makeInstance(ObjectManager::class)->get(
             OptimizeImagesFalService::class,
             $configurator->getConfig()
         );
@@ -67,11 +66,10 @@ class ImageoptCommandController extends CommandController
      */
     public function optimizeFolderImagesCommand($numberOfImagesToProcess = 20, $rootPageForTsConfig = null)
     {
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $configurator = GeneralUtility::makeInstance(Configurator::class);
         $configurator->setConfigByPage($rootPageForTsConfig);
         $configurator->init();
-        $optimizeImagesFolderService = $objectManager->get(
+        $optimizeImagesFolderService = GeneralUtility::makeInstance(ObjectManager::class)->get(
             OptimizeImagesFolderService::class,
             $configurator->getConfig()
         );
@@ -96,11 +94,10 @@ class ImageoptCommandController extends CommandController
      */
     public function resetOptimizationFlagForFalCommand($rootPageForTsConfig = null)
     {
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $configurator = GeneralUtility::makeInstance(Configurator::class);
         $configurator->setConfigByPage($rootPageForTsConfig);
         $configurator->init();
-        $optimizeImagesFalService = $objectManager->get(
+        $optimizeImagesFalService = GeneralUtility::makeInstance(ObjectManager::class)->get(
             OptimizeImagesFalService::class,
             $configurator->getConfig()
         );
@@ -116,11 +113,10 @@ class ImageoptCommandController extends CommandController
      */
     public function resetOptimizationFlagForFoldersCommand($rootPageForTsConfig = null)
     {
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $configurator = GeneralUtility::makeInstance(Configurator::class);
         $configurator->setConfigByPage($rootPageForTsConfig);
         $configurator->init();
-        $optimizeImagesFolderService = $objectManager->get(
+        $optimizeImagesFolderService = GeneralUtility::makeInstance(ObjectManager::class)->get(
             OptimizeImagesFolderService::class,
             $configurator->getConfig()
         );
