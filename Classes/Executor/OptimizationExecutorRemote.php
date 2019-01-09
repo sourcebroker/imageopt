@@ -90,7 +90,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param Configurator $configurator
      * @return bool
      */
-    protected function initConfiguration($configurator)
+    protected function initConfiguration(Configurator $configurator)
     {
         $timeout = $configurator->getOption('timeout');
         if ($timeout !== null) {
