@@ -29,7 +29,7 @@ class Database76 extends Database
     /**
      * @inheritdoc
      */
-    public function getRootPages(): array
+    public function getRootPages()
     {
         return $this->getDatabaseConnection()->exec_SELECTgetSingleRow(
             'uid',
@@ -40,7 +40,7 @@ class Database76 extends Database
     /**
      * @inheritdoc
      */
-    public function resetOptimizationFlag(): array
+    public function resetOptimizationFlag()
     {
         $this->getDatabaseConnection()->exec_UPDATEquery(
             'sys_file_processedfile',
@@ -52,7 +52,7 @@ class Database76 extends Database
     /**
      * @inheritdoc
      */
-    public function findNotOptimizedRaw(int $limit = 50): array
+    public function findNotOptimizedRaw($limit = 50)
     {
         return $this->getDatabaseConnection()->exec_SELECTgetRows(
             '*',

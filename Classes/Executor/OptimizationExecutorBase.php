@@ -41,7 +41,7 @@ class OptimizationExecutorBase implements OptimizationExecutorInterface
      * @param Configurator $configurator Executor configurator
      * @return ExecutorResult Executor Result
      */
-    public function optimize(string $inputImageAbsolutePath, Configurator $configurator): ExecutorResult
+    public function optimize($inputImageAbsolutePath, Configurator $configurator)
     {
         $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
         $executorResult->setExecutedSuccessfully(false);
@@ -52,7 +52,7 @@ class OptimizationExecutorBase implements OptimizationExecutorInterface
      * @param Configurator $configurator
      * @return string
      */
-    public function getExecutorQuality(Configurator $configurator): string
+    public function getExecutorQuality(Configurator $configurator)
     {
         $executorQuality = '';
         if (!empty($configurator->getOption('options.quality.options')) && !empty($configurator->getOption('options.quality.value'))) {

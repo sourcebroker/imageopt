@@ -32,7 +32,7 @@ class Database87 extends Database
     /**
      * @inheritdoc
      */
-    public function getRootPages(): array
+    public function getRootPages()
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('pages');
         return $queryBuilder
@@ -47,7 +47,7 @@ class Database87 extends Database
     /**
      * @inheritdoc
      */
-    public function resetOptimizationFlag(): array
+    public function resetOptimizationFlag()
     {
         return GeneralUtility::makeInstance(ConnectionPool::class)
             ->getConnectionForTable('sys_file_processedfile')
@@ -61,7 +61,7 @@ class Database87 extends Database
     /**
      * @inheritdoc
      */
-    public function findNotOptimizedRaw(int $limit = 50): array
+    public function findNotOptimizedRaw($limit = 50)
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable('sys_file_processedfile');

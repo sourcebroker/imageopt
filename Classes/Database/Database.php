@@ -31,7 +31,7 @@ abstract class Database
      *
      * @return array
      */
-    public function getRootPages(): array
+    public function getRootPages()
     {
         return [];
     }
@@ -39,7 +39,7 @@ abstract class Database
     /**
      * Reset optimization flag for all images
      */
-    public function resetOptimizationFlag(): array
+    public function resetOptimizationFlag()
     {
         return [];
     }
@@ -50,7 +50,7 @@ abstract class Database
      * @param int $limit Number of not optimized images to return
      * @return array
      */
-    public function findNotOptimizedRaw(int $limit = 50): array
+    public function findNotOptimizedRaw($limit = 50)
     {
         return [];
     }

@@ -36,7 +36,7 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
      * @param Configurator $configurator
      * @return bool
      */
-    protected function initConfiguration(Configurator $configurator): bool
+    protected function initConfiguration(Configurator $configurator)
     {
         $result = parent::initConfiguration($configurator);
         if ($result) {
@@ -55,7 +55,7 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
      * @param string $inputImageAbsolutePath Absolute path/file with original image
      * @param ExecutorResult $executorResult
      */
-    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult)
+    protected function process($inputImageAbsolutePath, ExecutorResult $executorResult)
     {
         $executorResult->setCommand('URL: ' . $this->url['upload']);
         $result = self::request(file_get_contents($inputImageAbsolutePath), $this->url['upload']);
@@ -89,7 +89,7 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
      * @param array $params Additional parameters
      * @return array Result of optimization includes the response from the tinypng.com
      */
-    protected function request($data, string $url, array $params = []): array
+    protected function request($data, $url, array $params = [])
     {
         $options = array_merge([
             'curl' => [

@@ -70,7 +70,7 @@ class OptimizeImageService
      * @return OptimizationResult Optimization result
      * @throws \Exception
      */
-    public function optimize(string $workingImagePath, string $originalImagePath)
+    public function optimize($workingImagePath, $originalImagePath)
     {
         $optimizationResult = GeneralUtility::makeInstance(OptimizationResult::class);
         $optimizationResult->setFileRelativePath(substr($workingImagePath, strlen(PATH_site)));

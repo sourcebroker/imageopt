@@ -36,7 +36,7 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
      * @param Configurator $configurator
      * @return bool
      */
-    protected function initConfiguration(Configurator $configurator): bool
+    protected function initConfiguration(Configurator $configurator)
     {
         if (!parent::initConfiguration($configurator)) {
             return false;
@@ -56,7 +56,7 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
      * @param string $inputImageAbsolutePath Absolute path/file with original image
      * @param ExecutorResult $executorResult
      */
-    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult)
+    protected function process($inputImageAbsolutePath, ExecutorResult $executorResult)
     {
         $optionsString = [];
         foreach ($this->apiOptions as $name => $value) {
@@ -101,7 +101,7 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
      * @param array $params Additional parameters
      * @return array
      */
-    protected function request($data, string $url, array $params = []): array
+    protected function request($data, $url, array $params = [])
     {
         $responseFromAPI = parent::request($data, $url, [
             'curl' => [],

@@ -42,7 +42,7 @@ class OptimizationExecutorShell extends OptimizationExecutorBase
      * @param Configurator $configurator Executor configurator
      * @return ExecutorResult Executor Result
      */
-    public function optimize(string $inputImageAbsolutePath, Configurator $configurator): ExecutorResult
+    public function optimize($inputImageAbsolutePath, Configurator $configurator)
     {
         $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
         $executorResult->setExecutedSuccessfully(false);

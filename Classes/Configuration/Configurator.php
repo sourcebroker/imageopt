@@ -24,7 +24,6 @@
 
 namespace SourceBroker\Imageopt\Configuration;
 
-use SourceBroker\Imageopt\Database\Database;
 use SourceBroker\Imageopt\Utility\ArrayUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -88,7 +87,7 @@ class Configurator
      * @param string|null $providerType
      * @return array
      */
-    public function getProviders(string $providerType = null)
+    public function getProviders($providerType = null)
     {
         return !empty($this->providers[$providerType]) ? $this->providers[$providerType] : [];
     }

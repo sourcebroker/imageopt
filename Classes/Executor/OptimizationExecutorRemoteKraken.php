@@ -37,7 +37,7 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
      * @param Configurator $configurator
      * @return bool
      */
-    protected function initConfiguration(Configurator $configurator): bool
+    protected function initConfiguration(Configurator $configurator)
     {
         $result = parent::initConfiguration($configurator);
         if ($result) {
@@ -62,7 +62,7 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
      * @param string $inputImageAbsolutePath Absolute path/file with original image
      * @param ExecutorResult $executorResult
      */
-    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult)
+    protected function process($inputImageAbsolutePath, ExecutorResult $executorResult)
     {
         $options = $this->apiOptions;
         $options['wait'] = true; // wait for processed file (forced option)
@@ -109,7 +109,7 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
      * @param array $params Additional parameters
      * @return array Result of optimization includes the response from the kraken.io
      */
-    protected function request($data, string $url, array $params = []): array
+    protected function request($data, $url, array $params = [])
     {
         $options = [
             'curl' => [

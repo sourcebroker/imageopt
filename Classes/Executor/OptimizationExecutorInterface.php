@@ -25,7 +25,6 @@
 namespace SourceBroker\Imageopt\Executor;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
-use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
 
 interface OptimizationExecutorInterface
 {
@@ -34,5 +33,5 @@ interface OptimizationExecutorInterface
      * @param Configurator $configurator
      * @return \SourceBroker\Imageopt\Domain\Model\ExecutorResult
      */
-    public function optimize(string $image, Configurator $configurator): ExecutorResult;
+    public function optimize($image, Configurator $configurator);
 }

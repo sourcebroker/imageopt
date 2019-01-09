@@ -70,7 +70,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param Configurator $configurator
      * @return ExecutorResult Optimization result
      */
-    public function optimize(string $inputImageAbsolutePath, Configurator $configurator): ExecutorResult
+    public function optimize($inputImageAbsolutePath, Configurator $configurator)
     {
         $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
         $executorResult->setExecutedSuccessfully(false);
@@ -90,7 +90,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param Configurator $configurator
      * @return bool
      */
-    protected function initConfiguration(Configurator $configurator): bool
+    protected function initConfiguration($configurator)
     {
         $timeout = $configurator->getOption('timeout');
         if ($timeout !== null) {
@@ -135,7 +135,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param string $inputImageAbsolutePath Absolute path/file with original image
      * @param ExecutorResult $executorResult
      */
-    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult)
+    protected function process($inputImageAbsolutePath, $executorResult)
     {
     }
 
@@ -147,7 +147,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param array $options Additional options
      * @return array
      */
-    protected function request($data, string $url, array $options = []): array
+    protected function request($data, $url, array $options = [])
     {
         $curl = curl_init();
 
@@ -246,7 +246,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param string $url Url of the image to download
      * @return bool Returns true if the image exists and will be saved
      */
-    protected function getFileFromRemoteServer(string $inputImageAbsolutePath, string $url): bool
+    protected function getFileFromRemoteServer($inputImageAbsolutePath, $url)
     {
         $headers = get_headers($url);
 
