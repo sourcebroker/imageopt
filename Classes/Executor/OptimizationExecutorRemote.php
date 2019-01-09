@@ -135,7 +135,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
      * @param string $inputImageAbsolutePath Absolute path/file with original image
      * @param ExecutorResult $executorResult
      */
-    protected function process($inputImageAbsolutePath, $executorResult)
+    protected function process($inputImageAbsolutePath, ExecutorResult $executorResult)
     {
     }
 
