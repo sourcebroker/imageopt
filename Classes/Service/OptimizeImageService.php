@@ -150,32 +150,26 @@ class OptimizeImageService
     protected function findProvidersForFile($imagePath)
     {
         $fileType = strtolower(explode('/', image_type_to_mime_type(getimagesize($imagePath)[2]))[1]);
-
         $suitableProviders = [];
-
-        $optimizeEntries = $this->configurator->getOption('optimize');
+        $optimizeEntries = (array)$this->configurator->getOption('optimize');
         while ($optimizeEntry = array_shift($optimizeEntries)) {
             $pattern = '@' . $optimizeEntry['fileRegexp'] . '@i';
             if (!preg_match($pattern, $imagePath)) {
                 continue;
             }
-
             $providers = $this->configurator->getProviders($optimizeEntry['providerType']);
             if (!empty($providers)) {
                 foreach ($providers as $name => $provider) {
                     $fileTypes = explode(',', $provider['fileType']);
-
                     if (in_array($fileType, $fileTypes)) {
                         $suitableProviders[$name] = $provider;
                     }
                 }
             }
-
             if (!empty($suitableProviders)) {
                 break;
             }
         }
-
         return $suitableProviders;
     }
 }

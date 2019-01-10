@@ -24,25 +24,19 @@
 
 namespace SourceBroker\Imageopt\Database;
 
-abstract class Database
+interface Database
 {
     /**
      * Get root pages
      *
      * @return array
      */
-    public function getRootPages()
-    {
-        return [];
-    }
+    public function getRootPages();
 
     /**
      * Reset optimization flag for all images
      */
-    public function resetOptimizationFlag()
-    {
-        return [];
-    }
+    public function resetOptimizationFlag();
 
     /**
      * Get all not optimized images with $limit
@@ -50,8 +44,5 @@ abstract class Database
      * @param int $limit Number of not optimized images to return
      * @return array
      */
-    public function findNotOptimizedRaw($limit = 50)
-    {
-        return [];
-    }
+    public function findNotOptimizedRaw($limit = 50);
 }

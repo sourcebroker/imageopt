@@ -24,7 +24,7 @@
 
 namespace SourceBroker\Imageopt\Database;
 
-class Database76 extends Database
+class Database76 implements Database
 {
     /**
      * @inheritdoc

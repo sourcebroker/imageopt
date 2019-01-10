@@ -27,7 +27,7 @@ namespace SourceBroker\Imageopt\Database;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class Database87 extends Database
+class Database87 implements Database
 {
     /**
      * @inheritdoc
