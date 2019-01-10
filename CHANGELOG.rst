@@ -2,13 +2,19 @@
 Changelog
 ---------
 
-Remote Executors
-~~~~~~~~~~~~~~~~
+master
+~~~~~~
 
-1) [FEATURE] Add configuration merging from default.providers (and executors).
-2) [FEATURE] Make executors enabled by default.
-3) [FEATURE] Add remote executors base implementation.
-4) [TASK] Add /var folder to gitignore and "typo3/cms-scheduler": "^8.7 || ^9.5" to composer suggetsed.
+1) [FEATURE] Support for executorsDefault and providersDefault.
+2) [TASK][BREAKING] Remove executor.enabled option.
+3) [FEATURE] Add remote executors implementation (kraken / imageoptim / tinypng).
+4) [FEATURE][BREAKING] Disable all providers by default.
+5) [TASK] Add support for TYPO3 7.6 and PHP 5.6.
+6) [FEATURE] Add .env files for unit test passwords for remote executors.
+7) [FEATURE] Add type for providers and config override by type.
+8) [FEATURE] Add new way to decide what images should be optimized: mix of provider type and regexp on
+    filepath and filename.
+9) [FEATURE] Add support for mozjpeg.
 
 4.0.0
 ~~~~~

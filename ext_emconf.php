@@ -10,7 +10,7 @@
 
 $EM_CONF[$_EXTKEY] = [
     'title' => 'Optimize images created/resized by TYPO3',
-    'description' => 'Optimize images created/resized by TYPO3 so they take less space. Cron based. Support for linux native commands.',
+    'description' => 'Optimize images created/resized by TYPO3 so they take less space. Safe as it does not optimize original images.',
     'category' => 'be',
     'version' => '5.0.0',
     'state' => 'stable',

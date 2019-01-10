@@ -4,7 +4,7 @@
     "GPL-2.0+"
   ],
   "type": "typo3-cms-extension",
-  "description": "Optimize images created/resized by TYPO3 so they take less space. Cron based. Support for linux native commands.",
+  "description": "Optimize images created/resized by TYPO3 so they take less space. Safe as it does not optimize original images.",
   "require": {
     "typo3/cms-core": "^7.6 || ^8.7 || ^9.5"
   },
