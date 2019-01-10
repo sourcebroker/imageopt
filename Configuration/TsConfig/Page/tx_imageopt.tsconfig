@@ -147,8 +147,19 @@ tx_imageopt {
             }
         }
 
+        mozjpegSsim < .mozjpeg
+        mozjpegSsim.executors.10.command.mask = {executable} -tune-ssim -optimize -outfile {tempFile}_tmp {tempFile}
+
+        mozjpegMsssim < .mozjpeg
+        mozjpegMsssim.executors.10.command.mask = {executable} -tune-ms-ssim -optimize -outfile {tempFile}_tmp {tempFile}
+
+        mozjpegPsnr < .mozjpeg
+        mozjpegPsnr.executors.10.command.mask = {executable} -tune-psnr -optimize -outfile {tempFile}_tmp {tempFile}
+
+        mozjpegHvspsnr < .mozjpeg
+        mozjpegHvspsnr.executors.10.command.mask = {executable} -tune-hvs-psnr -optimize -outfile {tempFile}_tmp {tempFile}
+
         mozjpegQuality {
-            enabled = 0
             type = lossy
             fileType = jpeg
             executors {
