@@ -38,7 +38,6 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
  */
 class OptimizeImagesFalService
 {
-
     /**
      * @var ProcessedFileRepository
      */
@@ -69,8 +68,10 @@ class OptimizeImagesFalService
         if ($config === null) {
             throw new \Exception('Configuration not set for OptimizeImagesFalService class');
         }
+
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->falProcessedFileRepository = $this->objectManager->get(ProcessedFileRepository::class);
+
         $this->optimizeImageService = $this->objectManager->get(OptimizeImageService::class, $config);
     }
 
@@ -91,10 +92,9 @@ class OptimizeImagesFalService
         if (file_exists($sourceFile)) {
             if (is_readable($sourceFile)) {
                 $tmpForOptimizing = $this->objectManager->get(TemporaryFileUtility::class)->createTemporaryCopy($sourceFile);
-                $optimizationResult = $this->optimizeImageService->optimize($tmpForOptimizing);
+                $optimizationResult = $this->optimizeImageService->optimize($tmpForOptimizing, $sourceFile);
                 $optimizationResult->setFileRelativePath(substr($sourceFile, strlen(PATH_site)));
                 $this->objectManager->get(OptimizationResultRepository::class)->add($optimizationResult);
-                $this->objectManager->get(PersistenceManager::class)->persistAll();
                 if ($optimizationResult->isExecutedSuccessfully()) {
                     if ($optimizationResult->getSizeBefore() > $optimizationResult->getSizeAfter()) {
                         $processedFal->updateWithLocalFile($tmpForOptimizing);

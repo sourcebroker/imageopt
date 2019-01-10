@@ -25,6 +25,7 @@
 namespace SourceBroker\Imageopt\Provider;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
 use SourceBroker\Imageopt\Domain\Model\ProviderResult;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -60,27 +61,23 @@ class OptimizationProvider
         $providerResult = GeneralUtility::makeInstance(ProviderResult::class);
         $providerResult->setSizeBefore(filesize($image));
         foreach ((array)$providerConfigurator->getOption('executors') as $executorKey => $executor) {
-            if ($executor['enabled']) {
-                $executorsDone++;
-                if (isset($executor['class']) && class_exists($executor['class'])) {
-                    /** @var  \SourceBroker\Imageopt\Executor\OptimizationExecutorShell $imageOptimizationProvider */
-                    $imageOptimizationProvider = GeneralUtility::makeInstance($executor['class']);
-                    $executorResult = $imageOptimizationProvider->optimize(
-                        $image,
-                        GeneralUtility::makeInstance(
-                            Configurator::class,
-                            $executor)
-                    );
-                    $providerResult->addExecutorsResult($executorResult);
-                    if ($executorResult->isExecutedSuccessfully()) {
-                        $executorsSuccessful++;
-                    } else {
-                        $providerResult->setExecutedSuccessfully(false);
-                        break;
-                    }
+            $executorsDone++;
+            if (isset($executor['class']) && class_exists($executor['class'])) {
+                $imageOptimizationProvider = GeneralUtility::makeInstance($executor['class']);
+                /** @var $executorResult ExecutorResult */
+                $executorResult = $imageOptimizationProvider->optimize(
+                    $image,
+                    GeneralUtility::makeInstance(Configurator::class, $executor)
+                );
+                $providerResult->addExecutorsResult($executorResult);
+                if ($executorResult->isExecutedSuccessfully()) {
+                    $executorsSuccessful++;
                 } else {
-                    throw new \Exception('No class found: ' . $executor['class'], 1500994839981);
+                    $providerResult->setExecutedSuccessfully(false);
+                    break;
                 }
+            } else {
+                throw new \Exception('No class found: ' . $executor['class'], 1500994839981);
             }
         }
 

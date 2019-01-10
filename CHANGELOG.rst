@@ -2,11 +2,13 @@
 Changelog
 ---------
 
-master
-~~~~~~
+Remote Executors
+~~~~~~~~~~~~~~~~
 
-1) [TASK][BREAKING] Disable all providers by default.
-2) [TASK] Add mozjpeg providers (cjpeg, jpegtran).
+1) [FEATURE] Add configuration merging from default.providers (and executors).
+2) [FEATURE] Make executors enabled by default.
+3) [FEATURE] Add remote executors base implementation.
+4) [TASK] Add /var folder to gitignore and "typo3/cms-scheduler": "^8.7 || ^9.5" to composer suggetsed.
 
 4.0.0
 ~~~~~

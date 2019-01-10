@@ -32,7 +32,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * Class OptimizationExecutorShell
  */
-class OptimizationExecutorShell implements OptimizationExecutorInterface
+class OptimizationExecutorShell extends OptimizationExecutorBase
 {
     /**
      * Optimize image using shell executable
@@ -44,17 +44,6 @@ class OptimizationExecutorShell implements OptimizationExecutorInterface
      */
     public function optimize($inputImageAbsolutePath, Configurator $configurator)
     {
-        $executorQuality = '';
-        if (!empty($configurator->getOption('options.quality.options')) && !empty($configurator->getOption('options.quality.value'))) {
-            $closestQualityKey = null;
-            $quality = (int)$configurator->getOption('options.quality.value');
-            foreach (array_keys((array)$configurator->getOption('options.quality.options')) as $optionKey) {
-                if ($closestQualityKey == null || abs((int)$quality - $closestQualityKey) > abs($optionKey - (int)$quality)) {
-                    $closestQualityKey = $optionKey;
-                }
-                $executorQuality = $configurator->getOption('options.quality.options')[$closestQualityKey];
-            }
-        }
         $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
         $executorResult->setExecutedSuccessfully(false);
         if (!empty($configurator->getOption('command.exec'))) {
@@ -69,7 +58,11 @@ class OptimizationExecutorShell implements OptimizationExecutorInterface
                     $executorResult->setSizeBefore(filesize($inputImageAbsolutePath));
                     $shellCommand = str_replace(
                         ['{executable}', '{tempFile}', '{quality}'],
-                        [$execDetected, escapeshellarg($inputImageAbsolutePath), $executorQuality],
+                        [
+                            $execDetected,
+                            escapeshellarg($inputImageAbsolutePath),
+                            $this->getExecutorQuality($configurator)
+                        ],
                         $configurator->getOption('command.mask')
                     );
                     $successfulStatuses = [0];
@@ -84,7 +77,6 @@ class OptimizationExecutorShell implements OptimizationExecutorInterface
                     $executorResult->setCommand($shellCommand);
                     $executorResult->setCommandStatus($commandStatus);
                     $executorResult->setCommandOutput($output);
-
                     $executorResult->setExecutedSuccessfully(
                         in_array($commandStatus, $successfulStatuses) ? true : false
                     );
@@ -97,7 +89,6 @@ class OptimizationExecutorShell implements OptimizationExecutorInterface
         } else {
             $executorResult->setErrorMessage('Variable "command" can not be found in executor configuration.');
         }
-
         return $executorResult;
     }
 }

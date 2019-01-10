@@ -26,6 +26,7 @@ class ConfiguratorTest extends UnitTestCase
             ->setMethods(null)
             ->getMock();
         $configurator->setConfig($this->staticTsConfig());
+
         $this->assertEquals($expected, $configurator->getOption($given));
     }
 

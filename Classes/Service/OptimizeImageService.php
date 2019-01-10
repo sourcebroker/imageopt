@@ -57,42 +57,47 @@ class OptimizeImageService
             throw new \Exception('Configuration not set for OptimizeImageService class');
         }
         $this->configurator = GeneralUtility::makeInstance(Configurator::class, $config);
+        $this->configurator->init();
+
         $this->temporaryFile = GeneralUtility::makeInstance(TemporaryFileUtility::class);
     }
 
     /**
      * Optimize image using chained Image Optimization Provider
      *
-     * @param string $inputImageAbsolutePath
+     * @param string $workingImagePath
+     * @param string $originalImagePath
      * @return OptimizationResult Optimization result
      * @throws \Exception
      */
-    public function optimize($inputImageAbsolutePath)
+    public function optimize($workingImagePath, $originalImagePath)
     {
         $optimizationResult = GeneralUtility::makeInstance(OptimizationResult::class);
-        $optimizationResult->setFileRelativePath(substr($inputImageAbsolutePath, strlen(PATH_site)));
+        $optimizationResult->setFileRelativePath(substr($workingImagePath, strlen(PATH_site)));
         $optimizationResult->setExecutedSuccessfully(false);
-        clearstatcache(true, $inputImageAbsolutePath);
-        if (file_exists($inputImageAbsolutePath) && filesize($inputImageAbsolutePath)) {
-            $optimizationResult->setSizeBefore(filesize($inputImageAbsolutePath));
-            $fileType = strtolower(explode('/', image_type_to_mime_type(getimagesize($inputImageAbsolutePath)[2]))[1]);
-            $temporaryBestOptimizedImageAbsolutePath = $this->temporaryFile->createTemporaryCopy($inputImageAbsolutePath);
-            $imageOpimalizationsProviders = $this->configurator->getOption('providers.' . $fileType);
+        clearstatcache(true, $workingImagePath);
+        if (file_exists($workingImagePath) && filesize($workingImagePath)) {
+            $optimizationResult->setSizeBefore(filesize($workingImagePath));
+            $temporaryBestOptimizedImageAbsolutePath = $this->temporaryFile->createTemporaryCopy($workingImagePath);
+            $imageOpimalizationsProviders = $this->findProvidersForFile($originalImagePath);
             if (!empty($imageOpimalizationsProviders)) {
-                $providerExecuted = $providerExecutedSuccessfully = 0;
+                $providerExecutedCounter = $providerExecutedSuccessfullyCounter = $providerEnabledCounter = 0;
                 foreach ($imageOpimalizationsProviders as $providerKey => $imageOpimalizationsProviderConfig) {
-                    if ($imageOpimalizationsProviderConfig['enabled']) {
-                        $providerExecuted++;
-                        $temporaryProviderOptimizedImageAbsolutePath = $this->temporaryFile->createTemporaryCopy($inputImageAbsolutePath);
-                        $imageOpimalizationsProviderConfig['providerKey'] = $providerKey;
+                    $imageOpimalizationsProviderConfig['providerKey'] = $providerKey;
+                    $providerConfigurator = GeneralUtility::makeInstance(Configurator::class,
+                        $imageOpimalizationsProviderConfig);
+                    if (!empty($providerConfigurator->getOption('enabled'))) {
+                        $providerEnabledCounter++;
+                        $providerExecutedCounter++;
+                        $temporaryProviderOptimizedImageAbsolutePath = $this->temporaryFile->createTemporaryCopy($workingImagePath);
                         $optimizationProvider = GeneralUtility::makeInstance(OptimizationProvider::class);
                         $providerResult = $optimizationProvider->optimize(
                             $temporaryProviderOptimizedImageAbsolutePath,
-                            GeneralUtility::makeInstance(Configurator::class, $imageOpimalizationsProviderConfig)
+                            $providerConfigurator
                         );
                         $optimizationResult->addProvidersResult($providerResult);
                         if ($providerResult->isExecutedSuccessfully()) {
-                            $providerExecutedSuccessfully++;
+                            $providerExecutedSuccessfullyCounter++;
                             clearstatcache(true, $temporaryProviderOptimizedImageAbsolutePath);
                             clearstatcache(true, $temporaryBestOptimizedImageAbsolutePath);
                             $filesizeAfterProviderOptimization = filesize($temporaryProviderOptimizedImageAbsolutePath);
@@ -104,7 +109,9 @@ class OptimizeImageService
                         }
                     }
                 }
-                if ($providerExecutedSuccessfully === 0) {
+                if ($providerEnabledCounter === 0) {
+                    $optimizationResult->setInfo('No providers enabled (or defined).');
+                } elseif ($providerExecutedSuccessfullyCounter === 0) {
                     $optimizationResult->setInfo('No winner. All providers were unsuccessfull.');
                 } else {
                     $optimizationResult->setExecutedSuccessfully(true);
@@ -122,15 +129,53 @@ class OptimizeImageService
                         $optimizationResult->setInfo('Winner is ' . $optimizationResult->getProviderWinnerName() .
                             ' with optimized image smaller by: ' . $optimizationResult->getOptimizationPercentage() . '%');
                         rename($temporaryBestOptimizedImageAbsolutePath,
-                            $inputImageAbsolutePath);
+                            $workingImagePath);
                     }
                 }
             } else {
-                $optimizationResult->setInfo('There is no providers for file with extension: "' . $fileType . '"');
+                $optimizationResult->setInfo('No suitable provider with proper optimization mode found for given file');
             }
         } else {
-            $optimizationResult->setInfo('Can not read file to optimize. File: "' . $inputImageAbsolutePath . '"');
+            $optimizationResult->setInfo('Can not read file to optimize. File: "' . $workingImagePath . '"');
         }
         return $optimizationResult;
+    }
+
+    /**
+     * Finds all providers available for given type of file
+     *
+     * @param string $imagePath
+     * @return array
+     */
+    protected function findProvidersForFile($imagePath)
+    {
+        $fileType = strtolower(explode('/', image_type_to_mime_type(getimagesize($imagePath)[2]))[1]);
+
+        $suitableProviders = [];
+
+        $optimizeEntries = $this->configurator->getOption('optimize');
+        while ($optimizeEntry = array_shift($optimizeEntries)) {
+            $pattern = '@' . $optimizeEntry['fileRegexp'] . '@i';
+            if (!preg_match($pattern, $imagePath)) {
+                continue;
+            }
+
+            $providers = $this->configurator->getProviders($optimizeEntry['providerType']);
+            if (!empty($providers)) {
+                foreach ($providers as $name => $provider) {
+                    $fileTypes = explode(',', $provider['fileType']);
+
+                    if (in_array($fileType, $fileTypes)) {
+                        $suitableProviders[$name] = $provider;
+                    }
+                }
+            }
+
+            if (!empty($suitableProviders)) {
+                break;
+            }
+        }
+
+        return $suitableProviders;
     }
 }

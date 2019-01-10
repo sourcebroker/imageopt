@@ -3,24 +3,17 @@
 defined('TYPO3_MODE') || die('Access denied.');
 
 if (TYPO3_MODE !== 'FE') {
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers'][]
+        = \SourceBroker\Imageopt\Command\ImageoptCommandController::class;
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
         '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:imageopt/Configuration/TsConfig/Page/tx_imageopt.tsconfig">'
     );
 }
 
-// For TYPO3 9.0+ use the scheduler task "Execute console commands"
-if (\TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger(TYPO3_version) <= 9000000) {
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\SourceBroker\Imageopt\Task\OptimizeFalProcessedImagesTask::class] = [
-        'extension' => 'imageopt',
-        'title' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:task.OptimizeFalProcessedImagesTask.title',
-        'description' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:task.OptimizeFalProcessedImagesTask.description',
-    ];
-
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\SourceBroker\Imageopt\Task\OptimizeFolderImagesTask::class] = [
-        'extension' => 'imageopt',
-        'title' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:task.OptimizeFolderImagesTask.title',
-        'description' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:task.OptimizeFolderImagesTask.description',
-    ];
+if (\TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger(TYPO3_version) < 8007000) {
+    $GLOBALS['TYPO3_CONF_VARS']['EXT']['EXTCONF']['imageopt']['database'] = \SourceBroker\Imageopt\Database\Database76::class;
+} else {
+    $GLOBALS['TYPO3_CONF_VARS']['EXT']['EXTCONF']['imageopt']['database'] = \SourceBroker\Imageopt\Database\Database87::class;
 }
 
 // Few xclasses to make TYPO3 to create copy of images even if not needed.
