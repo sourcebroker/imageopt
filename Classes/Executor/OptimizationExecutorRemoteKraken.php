@@ -79,7 +79,7 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
             'file' => curl_file_create($inputImageAbsolutePath),
             'data' => json_encode($options),
         ];
-        $result = self::request($post, $this->url['upload'], ['type' => 'upload']);
+        $result = $this->request($post, $this->url['upload'], ['type' => 'upload']);
         $executorResult->setCommand('URL: ' . $this->url['upload'] . " \n" . 'POST: ' . $post['data']);
         if ($result['success']) {
             if (isset($result['response']['kraked_url'])) {

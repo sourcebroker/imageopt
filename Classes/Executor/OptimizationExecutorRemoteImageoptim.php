@@ -72,7 +72,7 @@ class OptimizationExecutorRemoteImageoptim extends OptimizationExecutorRemote
             implode(',', $optionsString)
         ]);
         $executorResult->setCommand('URL: ' . $url . " \n");
-        $result = self::request(['file' => curl_file_create($inputImageAbsolutePath)], $url);
+        $result = $this->request(['file' => curl_file_create($inputImageAbsolutePath)], $url);
         if ($result['success']) {
             if (isset($result['response'])) {
                 if ((bool)file_put_contents($inputImageAbsolutePath, $result['response'])) {

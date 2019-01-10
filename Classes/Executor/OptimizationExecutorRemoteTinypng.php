@@ -58,7 +58,7 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
     protected function process($inputImageAbsolutePath, ExecutorResult $executorResult)
     {
         $executorResult->setCommand('URL: ' . $this->url['upload']);
-        $result = self::request(file_get_contents($inputImageAbsolutePath), $this->url['upload']);
+        $result = $this->request(file_get_contents($inputImageAbsolutePath), $this->url['upload']);
         if ($result['success']) {
             if (isset($result['response']['output']['url'])) {
                 $download = $this->getFileFromRemoteServer($inputImageAbsolutePath,
