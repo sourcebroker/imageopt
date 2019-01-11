@@ -15,14 +15,14 @@ tx_imageopt {
     executorsDefault {
         options {
             quality {
-                value = 85
+                value = 75
             }
         }
         /* not supported yet
         notifications {
-            limitsExeeded {
-                active = 1
-            }
+        limitsExeeded {
+        active = 1
+        }
         }
         */
     }
@@ -30,14 +30,14 @@ tx_imageopt {
     providersDefault {
         /* not supported yet
         email {
-            sender {
-                email =
-                name =
-            }
-            reciver {
-                email =
-                name =
-            }
+        sender {
+        email =
+        name =
+        }
+        reciver {
+        email =
+        name =
+        }
         }
         */
     }
@@ -132,41 +132,7 @@ tx_imageopt {
                 10 {
                     class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
                     command {
-                        mask = {executable} -optimize -outfile {tempFile}_tmp {tempFile}
-                        exec = mozjpeg-cjpeg
-                    }
-                }
-                # cjpeg can not ouput to the same file so we need to use {tempFile}_tmp and then cp to {tempFile}
-                20 {
-                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                    command {
-                        mask = {executable} -f {tempFile}_tmp {tempFile}
-                        exec = cp
-                    }
-                }
-            }
-        }
-
-        mozjpegSsim < .mozjpeg
-        mozjpegSsim.executors.10.command.mask = {executable} -tune-ssim -optimize -outfile {tempFile}_tmp {tempFile}
-
-        mozjpegMsssim < .mozjpeg
-        mozjpegMsssim.executors.10.command.mask = {executable} -tune-ms-ssim -optimize -outfile {tempFile}_tmp {tempFile}
-
-        mozjpegPsnr < .mozjpeg
-        mozjpegPsnr.executors.10.command.mask = {executable} -tune-psnr -optimize -outfile {tempFile}_tmp {tempFile}
-
-        mozjpegHvspsnr < .mozjpeg
-        mozjpegHvspsnr.executors.10.command.mask = {executable} -tune-hvs-psnr -optimize -outfile {tempFile}_tmp {tempFile}
-
-        mozjpegQuality {
-            type = lossy
-            fileType = jpeg
-            executors {
-                10 {
-                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                    command {
-                        mask = {executable} {quality} -optimize -outfile {tempFile}_tmp {tempFile}
+                        mask = {executable} -tune-hvs-psnr {quality} -optimize -outfile {tempFile}_tmp {tempFile}
                         exec = mozjpeg-cjpeg
                     }
                     options {
@@ -196,8 +162,8 @@ tx_imageopt {
                         }
                     }
                 }
+                # cjpeg can not ouput to the same file so we need to use {tempFile}_tmp and then cp to {tempFile}
                 20 {
-                    enabled = 1
                     class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
                     command {
                         mask = {executable} -f {tempFile}_tmp {tempFile}
