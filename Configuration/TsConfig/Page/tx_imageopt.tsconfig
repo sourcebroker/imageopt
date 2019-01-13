@@ -3,21 +3,24 @@ tx_imageopt {
 
     optimize {
         10 {
-            fileRegexp = .*
-            providerType = lossy
+            fileRegexp = \.(jpg|jpeg|png)$
+            providerType = webp
+            outputFilename = {dirname}/{filename}.{extension}.webp
         }
         20 {
             fileRegexp = .*
-            providerType = lossless
+            providerType = loosyGood
+            outputFilename = {dirname}/{filename}-q.{extension}
+        }
+
+        30 {
+            fileRegexp = .*
+            providerType = loosyLow
+            outputFilename = {dirname}/{filename}.{extension}
         }
     }
 
     executorsDefault {
-        options {
-            quality {
-                value = 75
-            }
-        }
         /* not supported yet
         notifications {
         limitsExeeded {
@@ -43,9 +46,25 @@ tx_imageopt {
     }
 
     providers {
+        webp {
+            type = webp
+            fileType = jpeg,png
+            executors {
+                10 {
+                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
+                    command {
+                        mask = {executable} {tempFile} webp:{tempFile}
+                        exec = convert
+                    }
+                }
+            }
+        }
+
         jpegoptim {
-            type = lossy
+            type = loosyGood,loosyLow
             fileType = jpeg
+            typeOverride.loosyLow.executors.10.options.quality.value = loosyLow
+            typeOverride.loosyGood.executors.10.options.quality.value = loosyGood
             executors {
                 10 {
                     class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
@@ -56,26 +75,8 @@ tx_imageopt {
                     options {
                         quality {
                             options {
-                                5 = --max=5
-                                10 = --max=10
-                                15 = --max=15
-                                20 = --max=20
-                                25 = --max=25
-                                30 = --max=30
-                                35 = --max=35
-                                40 = --max=40
-                                45 = --max=45
-                                50 = --max=50
-                                55 = --max=55
-                                60 = --max=60
-                                65 = --max=65
-                                70 = --max=70
-                                75 = --max=75
-                                80 = --max=80
-                                85 = --max=85
-                                90 = --max=90
-                                95 = --max=95
-                                100 = --max=100
+                                loosyLow = --max=1
+                                loosyGood = --max=85
                             }
                         }
                     }
@@ -126,7 +127,9 @@ tx_imageopt {
         }
 
         mozjpeg {
-            type = lossy
+            type = loosyLow,loosyGood
+            typeOverride.loosyLow.executors.10.options.quality.value = loosyLow
+            typeOverride.loosyGood.executors.10.options.quality.value = loosyGood
             fileType = jpeg
             executors {
                 10 {
@@ -138,26 +141,8 @@ tx_imageopt {
                     options {
                         quality {
                             options {
-                                5 = -quality 5
-                                10 = -quality 10
-                                15 = -quality 15
-                                20 = -quality 20
-                                25 = -quality 25
-                                30 = -quality 30
-                                35 = -quality 35
-                                40 = -quality 40
-                                45 = -quality 45
-                                50 = -quality 50
-                                55 = -quality 55
-                                60 = -quality 60
-                                65 = -quality 65
-                                70 = -quality 70
-                                75 = -quality 75
-                                80 = -quality 80
-                                85 = -quality 85
-                                90 = -quality 90
-                                95 = -quality 95
-                                100 = -quality 100
+                                loosyLow = -quality 6
+                                loosyGood = -quality 85
                             }
                         }
                     }
@@ -216,7 +201,9 @@ tx_imageopt {
         }
 
         pngquant {
-            type = lossy
+            type = loosyLow,loosyGood
+            typeOverride.loosyLow.executors.10.options.quality.value = loosyLow
+            typeOverride.loosyGood.executors.10.options.quality.value = loosyGood
             fileType = png
             executors {
                 10 {
@@ -229,26 +216,8 @@ tx_imageopt {
                     options {
                         quality {
                             options {
-                                5 = --speed 11
-                                10 = --speed 10
-                                15 = --speed 10
-                                20 = --speed 9
-                                25 = --speed 9
-                                30 = --speed 8
-                                35 = --speed 8
-                                40 = --speed 7
-                                45 = --speed 7
-                                50 = --speed 6
-                                55 = --speed 6
-                                60 = --speed 5
-                                65 = --speed 5
-                                70 = --speed 4
-                                75 = --speed 3
-                                80 = --speed 3
-                                85 = --speed 2
-                                90 = --speed 2
-                                95 = --speed 1
-                                100 = --speed 1
+                                loosyLow = --speed 11 --quality 1
+                                loosyGood = --speed 1
                             }
                         }
                     }
@@ -257,7 +226,7 @@ tx_imageopt {
         }
 
         pngquantPngcrush {
-            type = lossy
+            type = loosyLow,loosyGood
             fileType = png
             executors {
                 10 < tx_imageopt.providers.pngquant.executors.10
@@ -266,7 +235,10 @@ tx_imageopt {
         }
 
         kraken {
-            type = lossy,lossless
+            type = loosyLow,loosyGood,lossless
+            // do not set for "number" quality becase kraken inteligent optimisation - its enough to make "lossy = true"
+            typeOverride.lossyGood.executors.10.api.options.lossy = true
+            typeOverride.loosyLow.executors.10.api.options.quality = 6
             fileType = jpeg,png,gif
             executors {
                 10 {
@@ -282,11 +254,11 @@ tx_imageopt {
                     }
                 }
             }
-            typeOverride.lossy.executors.10.api.options.lossy = true
         }
 
         tinypng {
-            type = lossy
+            // tinypng has no way to force quality of loosles so it can not be provider for "loosyLow" quality
+            type = loosyGood
             fileType = jpeg,png
             executors {
                 10 {
@@ -305,7 +277,10 @@ tx_imageopt {
         }
 
         imageoptim {
-            type = lossy,lossless
+            type = loosyLow,loosyGood,lossless
+            typeOverride.lossless.executors.10.options.quality.value = lossless
+            typeOverride.loosyLow.executors.10.options.quality.value = loosyLow
+            typeOverride.loosyGood.executors.10.options.quality.value = loosyGood
             fileType = jpeg,png,gif
             executors {
                 10 {
@@ -325,33 +300,14 @@ tx_imageopt {
                     options {
                         quality {
                             options {
-                                5 = low
-                                10 = low
-                                15 = low
-                                20 = low
-                                25 = low
-                                30 = low
-                                35 = low
-                                40 = low
-                                45 = low
-                                50 = medium
-                                55 = medium
-                                60 = medium
-                                65 = medium
-                                70 = medium
-                                75 = medium
-                                80 = high
-                                85 = high
-                                90 = high
-                                95 = high
-                                100 = high
+                                loosyLow = loosyLow
+                                loosyGood = high
                                 lossless = lossless
                             }
                         }
                     }
                 }
             }
-            typeOverride.lossless.executors.10.options.quality.value = lossless
         }
     }
 }
