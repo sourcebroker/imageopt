@@ -57,18 +57,10 @@ class OptimizationExecutorBase implements OptimizationExecutorInterface
         $executorQuality = '';
         if (!empty($configurator->getOption('options.quality.options')) && !empty($configurator->getOption('options.quality.value'))) {
             $closestQualityKey = null;
-            $quality = (int)$configurator->getOption('options.quality.value');
+            $quality = $configurator->getOption('options.quality.value');
             $options = $configurator->getOption('options.quality.options');
-
             if (isset($options[$quality])) {
                 $executorQuality = $options[$quality];
-            } else {
-                foreach (array_keys($options) as $optionKey) {
-                    if ($closestQualityKey == null || abs((int)$quality - $closestQualityKey) > abs($optionKey - (int)$quality)) {
-                        $closestQualityKey = $optionKey;
-                    }
-                }
-                $executorQuality = $options[$closestQualityKey];
             }
         }
         return $executorQuality;

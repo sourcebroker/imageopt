@@ -15,6 +15,7 @@ master
 8) [FEATURE] Add new way to decide what images should be optimized: mix of provider type and regexp on
     filepath and filename.
 9) [FEATURE] Add support for mozjpeg.
+10) [TASK][BREAKING] Remove int key based quality as its hard to compare qualities.
 
 4.0.0
 ~~~~~
