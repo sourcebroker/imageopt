@@ -112,7 +112,6 @@ class OptimizeImagesFalService
                 'database table. Seems like it was processed in past but the processed file does not exist now. ' .
                 'The record has been deleted from "sys_file_processedfile" table.';
             $processedFal->delete();
-            $this->objectManager->get(PersistenceManager::class)->persistAll();
         }
         if ($fileDoesNotExistOrNotReadable) {
             $optimizationResult = GeneralUtility::makeInstance(OptimizationResult::class);
@@ -121,7 +120,7 @@ class OptimizeImagesFalService
             $optimizationResult->setInfo($optimizationResultInfo);
             $this->objectManager->get(OptimizationResultRepository::class)->add($optimizationResult);
         }
-
+        $this->objectManager->get(PersistenceManager::class)->persistAll();
         return $optimizationResult;
     }
 

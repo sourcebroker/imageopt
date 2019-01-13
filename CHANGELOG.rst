@@ -16,6 +16,7 @@ master
     filepath and filename.
 9) [FEATURE] Add support for mozjpeg.
 10) [TASK][BREAKING] Remove int key based quality as its hard to compare qualities.
+11) [BUGFIX] Fix results not being persisted.
 
 4.0.0
 ~~~~~
