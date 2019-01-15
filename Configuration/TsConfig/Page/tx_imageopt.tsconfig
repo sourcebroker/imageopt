@@ -10,14 +10,13 @@ tx_imageopt {
         20 {
             fileRegexp = .*
             providerType = loosyGood
-            outputFilename = {dirname}/{filename}-q.{extension}
-        }
-
-        30 {
-            fileRegexp = .*
-            providerType = loosyLow
             outputFilename = {dirname}/{filename}.{extension}
         }
+#       30 {
+#           fileRegexp = .*
+#           providerType = loosyLow
+#           outputFilename = {dirname}/{filename}.{extension}
+#       }
     }
 
     executorsDefault {
