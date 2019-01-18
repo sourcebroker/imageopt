@@ -6,6 +6,7 @@ tx_imageopt {
             chain {
                 10.providerType = webp
             }
+
             fileRegexp = \.(jpg|jpeg|png)$
             outputFilename = {dirname}/{filename}.{extension}.webp
         }
