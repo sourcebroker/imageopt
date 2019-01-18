@@ -3,20 +3,31 @@ tx_imageopt {
 
     optimize {
         10 {
+            chain {
+                10.providerType = webp
+            }
             fileRegexp = \.(jpg|jpeg|png)$
-            providerType = webp
             outputFilename = {dirname}/{filename}.{extension}.webp
         }
+
         20 {
+            chain {
+                10.providerType = loosyGood
+                20.providerType = loossless
+            }
             fileRegexp = .*
-            providerType = loosyGood
+            outputFilename = {dirname}/{filename}-hg.{extension}
+        }
+
+        30 {
+            chain {
+                10.providerType = loosyLow
+                20.providerType = loossless
+            }
+
+            fileRegexp = .*
             outputFilename = {dirname}/{filename}.{extension}
         }
-#       30 {
-#           fileRegexp = .*
-#           providerType = loosyLow
-#           outputFilename = {dirname}/{filename}.{extension}
-#       }
     }
 
     executorsDefault {
