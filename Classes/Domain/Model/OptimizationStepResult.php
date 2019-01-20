@@ -13,71 +13,36 @@ namespace SourceBroker\Imageopt\Domain\Model;
  *
  ***/
 
-/**
- * ImageOptimization
- */
-class OptimizationResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
+class OptimizationStepResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
-    /**
-     * fileRelativePath
-     *
-     * @var string
-     */
-    protected $fileRelativePath = '';
 
     /**
-     * sizeBefore
-     *
      * @var string
      */
     protected $sizeBefore = '';
 
     /**
-     * sizeAfter
-     *
      * @var string
      */
     protected $sizeAfter = '';
 
     /**
-     * optimizationBytes
-     *
-     * @var string
-     */
-    protected $optimizationBytes = '';
-
-    /**
-     * optimizationPercentage
-     *
-     * @var string
-     */
-    protected $optimizationPercentage = '';
-
-    /**
-     * providerWinnerName
-     *
      * @var string
      */
     protected $providerWinnerName = '';
 
     /**
-     * executedSuccessfully
-     *
      * @var bool
      */
     protected $executedSuccessfully = false;
 
     /**
-     * providersResults
-     *
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\SourceBroker\Imageopt\Domain\Model\ProviderResult>
      * @cascade remove
      */
     protected $providersResults = null;
 
     /**
-     * info
-     *
      * @var string
      */
     protected $info = '';
@@ -108,22 +73,12 @@ class OptimizationResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * Adds a ProviderResult
      *
      * @param \SourceBroker\Imageopt\Domain\Model\ProviderResult $providersResult
-     * @return void
+     * @return static
      */
     public function addProvidersResult(\SourceBroker\Imageopt\Domain\Model\ProviderResult $providersResult)
     {
         $this->providersResults->attach($providersResult);
-    }
-
-    /**
-     * Removes a ProviderResult
-     *
-     * @param \SourceBroker\Imageopt\Domain\Model\ProviderResult $providersResultToRemove The ProviderResult to be removed
-     * @return void
-     */
-    public function removeProvidersResult(\SourceBroker\Imageopt\Domain\Model\ProviderResult $providersResultToRemove)
-    {
-        $this->providersResults->detach($providersResultToRemove);
+        return $this;
     }
 
     /**
@@ -134,38 +89,6 @@ class OptimizationResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     public function getProvidersResults()
     {
         return $this->providersResults;
-    }
-
-    /**
-     * Sets the providersResults
-     *
-     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\SourceBroker\Imageopt\Domain\Model\ProviderResult> $providersResults
-     * @return void
-     */
-    public function setProvidersResults(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $providersResults)
-    {
-        $this->providersResults = $providersResults;
-    }
-
-    /**
-     * Returns the fileRelativePath
-     *
-     * @return string $fileRelativePath
-     */
-    public function getFileRelativePath()
-    {
-        return $this->fileRelativePath;
-    }
-
-    /**
-     * Sets the fileRelativePath
-     *
-     * @param string $fileRelativePath
-     * @return void
-     */
-    public function setFileRelativePath($fileRelativePath)
-    {
-        $this->fileRelativePath = $fileRelativePath;
     }
 
     /**
@@ -182,11 +105,12 @@ class OptimizationResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * Sets the sizeBefore
      *
      * @param string $sizeBefore
-     * @return void
+     * @return static
      */
     public function setSizeBefore($sizeBefore)
     {
         $this->sizeBefore = $sizeBefore;
+        return $this;
     }
 
     /**
@@ -203,11 +127,12 @@ class OptimizationResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * Sets the sizeAfter
      *
      * @param string $sizeAfter
-     * @return void
+     * @return static
      */
     public function setSizeAfter($sizeAfter)
     {
         $this->sizeAfter = $sizeAfter;
+        return $this;
     }
 
     /**
@@ -217,18 +142,7 @@ class OptimizationResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function getOptimizationBytes()
     {
-        return $this->optimizationBytes;
-    }
-
-    /**
-     * Sets the optimizationBytes
-     *
-     * @param string $optimizationBytes
-     * @return void
-     */
-    public function setOptimizationBytes($optimizationBytes)
-    {
-        $this->optimizationBytes = $optimizationBytes;
+        return $this->sizeBefore - $this->sizeBefore;
     }
 
     /**
@@ -238,18 +152,7 @@ class OptimizationResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
     public function getOptimizationPercentage()
     {
-        return $this->optimizationPercentage;
-    }
-
-    /**
-     * Sets the optimizationPercentage
-     *
-     * @param string $optimizationPercentage
-     * @return void
-     */
-    public function setOptimizationPercentage($optimizationPercentage)
-    {
-        $this->optimizationPercentage = $optimizationPercentage;
+        return ($this->sizeBefore - $this->sizeBefore) / $this->sizeBefore * 100;
     }
 
     /**
@@ -266,32 +169,24 @@ class OptimizationResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * Sets the providerWinnerName
      *
      * @param string $providerWinnerName
-     * @return void
+     * @return static
      */
     public function setProviderWinnerName($providerWinnerName)
     {
         $this->providerWinnerName = $providerWinnerName;
-    }
-
-    /**
-     * Returns the executedSuccessfully
-     *
-     * @return bool $executedSuccessfully
-     */
-    public function getExecutedSuccessfully()
-    {
-        return $this->executedSuccessfully;
+        return $this;
     }
 
     /**
      * Sets the executedSuccessfully
      *
      * @param bool $executedSuccessfully
-     * @return void
+     * @return static
      */
     public function setExecutedSuccessfully($executedSuccessfully)
     {
         $this->executedSuccessfully = $executedSuccessfully;
+        return $this;
     }
 
     /**
@@ -334,10 +229,11 @@ class OptimizationResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * Sets the info
      *
      * @param string $info
-     * @return void
+     * @return static
      */
     public function setInfo($info)
     {
         $this->info = $info;
+        return $this;
     }
 }

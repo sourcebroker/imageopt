@@ -16,6 +16,6 @@ namespace SourceBroker\Imageopt\Domain\Repository;
 /**
  * The repository for ImageOptimizations
  */
-class OptimizationResultRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+class OptimizationStepResultRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 {
 }

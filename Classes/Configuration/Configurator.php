@@ -84,12 +84,20 @@ class Configurator
     /**
      * Returns providers with given type
      *
-     * @param string|null $providerType
+     * @param string $providerType
+     * @param string $fileType
      * @return array
      */
-    public function getProviders($providerType = null)
+    public function getProviders($providerType, $fileType)
     {
-        return !empty($this->providers[$providerType]) ? $this->providers[$providerType] : [];
+        $providers = !empty($this->providers[$providerType])
+            ? $this->providers[$providerType]
+            : [];
+
+        return array_filter($providers, function($provider, $name) use ($fileType) {
+            $providerFileTypes = explode(',', $provider['fileType']);
+            return in_array($fileType, $providerFileTypes);
+        }, ARRAY_FILTER_USE_BOTH);
     }
 
     /**
