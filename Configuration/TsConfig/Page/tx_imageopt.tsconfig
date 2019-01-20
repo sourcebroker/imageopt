@@ -41,6 +41,7 @@ tx_imageopt {
     }
 
     providersDefault {
+        enabled = 1
         /* not supported yet
         email {
         sender {

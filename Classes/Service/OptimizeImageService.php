@@ -85,41 +85,49 @@ class OptimizeImageService
             throw new \Exception('Can not read file to optimize. File: "' . $originalImagePath . '"');
         }
 
+        // create original image copy - it may vary (provider may overwrite original image)
+        $sourceImagePath = $this->temporaryFile->createTemporaryCopy($originalImagePath);
+
         $optimizationOptionResults = [];
         foreach ((array)$this->configurator->getOption('optimize') as $optimizeOptionName => $optimizeOption) {
-            if (!preg_match($optimizeOption['fileRegexp'], $originalImagePath))
+            $regexp = '@'. $optimizeOption['fileRegexp'] .'@';
+            if (!preg_match($regexp, $originalImagePath))
                 continue;
 
-            $optimizationOptionResults[$optimizeOptionName] = $this->optimizeSingleOption($optimizeOption, $originalImagePath);
+            $optimizationOptionResults[$optimizeOptionName] = $this->optimizeSingleOption($optimizeOption, $sourceImagePath, $originalImagePath);
         }
 
         return $optimizationOptionResults;
     }
 
     /**
-     * @param $optimizeOption
-     * @param $originalImagePath
+     * @param array $optimizeOption
+     * @param string $sourceImagePath
+     * @param string $originalImagePath
      * @return OptimizationOptionResult
      * @throws \Exception
      */
-    protected function optimizeSingleOption($optimizeOption, $originalImagePath)
+    protected function optimizeSingleOption($optimizeOption, $sourceImagePath, $originalImagePath)
     {
         $optimizationOptionResult = $this->objectManager->get(OptimizationOptionResult::class)
             ->setFileRelativePath(substr($originalImagePath, strlen(PATH_site)))
             ->setSizeBefore(filesize($originalImagePath))
             ->setExecutedSuccessfully(false);
 
-        $chainImagePath = $this->temporaryFile->createTemporaryCopy($originalImagePath);
+        $chainImagePath = $this->temporaryFile->createTemporaryCopy($sourceImagePath);
         $providerExecutedCounter = $providerExecutedSuccessfullyCounter = $providerEnabledCounter = 0;
 
         // execute all providers in chain
-        foreach ($optimizeOption['chain'] as $chainLink) {
+        foreach ($optimizeOption['chain'] as $chainLinkName => $chainLink) {
             $providers = $this->findProvidersForFile($originalImagePath, $chainLink['providerType']);
             if (empty($providers)) {
+                // skip this chain link - no providers for this type of image
                 continue;
             }
 
+            clearstatcache(true, $chainImagePath);
             $optimizationStepResult = $this->objectManager->get(OptimizationStepResult::class)
+                ->setName($chainLinkName)
                 ->setExecutedSuccessfully(false)
                 ->setSizeBefore(filesize($chainImagePath));
 
@@ -129,6 +137,7 @@ class OptimizeImageService
             foreach ($providers as $providerKey => $providerConfig) {
                 $providerConfig['providerKey'] = $providerKey;
                 $providerConfigurator = $this->objectManager->get(Configurator::class, $providerConfig);
+
                 if (!empty($providerConfigurator->getOption('enabled'))) {
                     $providerEnabledCounter++;
                     $providerExecutedCounter++;
@@ -143,9 +152,7 @@ class OptimizeImageService
                         clearstatcache(true, $tmpWorkingImagePath);
                         clearstatcache(true, $tmpBestImagePath);
 
-                        $tmpWorkingImagePath = filesize($tmpWorkingImagePath);
-                        $tmpBestImageFilesize = filesize($tmpBestImagePath);
-                        if ($tmpWorkingImagePath < $tmpBestImageFilesize) {
+                        if (filesize($tmpWorkingImagePath) < filesize($tmpBestImagePath)) {
                             // overwrite current (in chain link) best image
                             $tmpBestImagePath = $tmpWorkingImagePath;
                             $optimizationStepResult->setProviderWinnerName($providerKey);
@@ -180,9 +187,9 @@ class OptimizeImageService
             $optimizationOptionResult->addOptimizationStepResult($optimizationStepResult);
         }
 
-        clearstatcache(true, $originalImagePath);
+        clearstatcache(true, $chainImagePath);
         $optimizationOptionResult
-            ->setSizeAfter(filesize($originalImagePath))
+            ->setSizeAfter(filesize($chainImagePath))
             ->setExecutedSuccessfully(true);
 
         // save under defined output path

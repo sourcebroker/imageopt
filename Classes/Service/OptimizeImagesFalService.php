@@ -134,7 +134,7 @@ class OptimizeImagesFalService
                 ->setInfo($optimizationResultInfo);
 
             $this->objectManager->get(OptimizationOptionResultRepository::class)
-                ->add($optimizationResult);
+                ->add($optimizationOptionResult);
 
             $optimizationOptionResults[] = $optimizationOptionResult;
         }

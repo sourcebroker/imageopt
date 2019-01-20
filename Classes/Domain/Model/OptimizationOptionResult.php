@@ -34,6 +34,16 @@ class OptimizationOptionResult extends AbstractEntity
     protected $sizeAfter = '';
 
     /**
+     * @var int
+     */
+    protected $optimizationBytes;
+
+    /**
+     * @var float
+     */
+    protected $optimizationPercent;
+
+    /**
      * @var bool
      */
     protected $executedSuccessfully = false;
@@ -126,7 +136,10 @@ class OptimizationOptionResult extends AbstractEntity
      */
     public function getOptimizationBytes()
     {
-        return $this->sizeBefore - $this->sizeBefore;
+        if ($this->optimizationBytes === null) {
+            $this->optimizationBytes = (int)$this->sizeBefore - (int)$this->sizeAfter;
+        }
+        return $this->optimizationBytes;
     }
 
     /**
@@ -136,7 +149,10 @@ class OptimizationOptionResult extends AbstractEntity
      */
     public function getOptimizationPercentage()
     {
-        return ($this->sizeBefore - $this->sizeBefore) / $this->sizeBefore * 100;
+        if ($this->optimizationPercent === null) {
+            $this->optimizationPercent = ((int)$this->sizeBefore - (int)$this->sizeAfter) / (float)$this->sizeBefore * 100;
+        }
+        return $this->optimizationPercent;
     }
 
     /**
