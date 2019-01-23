@@ -49,8 +49,10 @@ class ImageoptCommandController extends CommandController
         $filesToProcess = $optimizeImagesFalService->getFalProcessedFilesToOptimize($numberOfImagesToProcess);
         if (!empty($filesToProcess)) {
             foreach ($filesToProcess as $fileToProcess) {
-                $optimizationResult = $optimizeImagesFalService->optimizeFalProcessedFile($fileToProcess);
-                $this->outputLine(CliDisplayUtility::displayOptimizationResult($optimizationResult));
+                $optimizationResults = $optimizeImagesFalService->optimizeFalProcessedFile($fileToProcess);
+                foreach($optimizationResults as $optimizationResult) {
+                    $this->outputLine(CliDisplayUtility::displayOptimizationOptionResult($optimizationResult));
+                }
             }
         } else {
             $this->outputLine('No images found that can be optimized.');
@@ -76,8 +78,10 @@ class ImageoptCommandController extends CommandController
         $filesToProcess = $optimizeImagesFolderService->getFilesToOptimize($numberOfImagesToProcess);
         if (!empty($filesToProcess)) {
             foreach ($filesToProcess as $fileToProcess) {
-                $optimizationResult = $optimizeImagesFolderService->optimizeFolderFile($fileToProcess);
-                $this->outputLine(CliDisplayUtility::displayOptimizationResult($optimizationResult));
+                $optimizationResults = $optimizeImagesFolderService->optimizeFolderFile($fileToProcess);
+                foreach($optimizationResults as $optimizationResult) {
+                    $this->outputLine(CliDisplayUtility::displayOptimizationOptionResult($optimizationResult));
+                }
             }
         } else {
             $this->outputLine('No images found that can be optimized.');

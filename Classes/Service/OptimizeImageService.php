@@ -111,6 +111,7 @@ class OptimizeImageService
     {
         $optimizationOptionResult = $this->objectManager->get(OptimizationOptionResult::class)
             ->setFileRelativePath(substr($originalImagePath, strlen(PATH_site)))
+            ->setOptimizationMode($optimizeOption['name'])
             ->setSizeBefore(filesize($originalImagePath))
             ->setExecutedSuccessfully(false);
 

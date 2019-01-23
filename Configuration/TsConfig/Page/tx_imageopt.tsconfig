@@ -95,20 +95,6 @@ tx_imageopt {
             }
         }
 
-        jpegrescan {
-            type = lossless
-            fileType = jpeg
-            executors {
-                10 {
-                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                    command {
-                        mask = {executable} -s {tempFile} {tempFile}
-                        exec = jpegrescan
-                    }
-                }
-            }
-        }
-
         jpegtran {
             type = lossless
             fileType = jpeg

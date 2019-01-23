@@ -53,7 +53,6 @@ class OptimizationStepResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEnt
 
     /**
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\SourceBroker\Imageopt\Domain\Model\ProviderResult>
-     * @cascade remove
      */
     protected $providersResults = null;
 
@@ -188,6 +187,10 @@ class OptimizationStepResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEnt
      */
     public function getOptimizationPercentage()
     {
+        if (!$this->sizeBefore) {
+            return 0;
+        }
+
         if ($this->optimizationPercent === null) {
             $this->optimizationPercent = ((int)$this->sizeBefore - (int)$this->sizeAfter) / (float)$this->sizeBefore * 100;
         }

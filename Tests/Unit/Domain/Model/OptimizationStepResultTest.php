@@ -7,47 +7,22 @@ use Nimut\TestingFramework\TestCase\UnitTestCase;
 /**
  * Test case.
  */
-class OptimizationResultTest extends UnitTestCase
+class OptimizationStepResultTest extends UnitTestCase
 {
     /**
-     * @var \SourceBroker\Imageopt\Domain\Model\OptimizationResult
+     * @var \SourceBroker\Imageopt\Domain\Model\OptimizationStepResult
      */
     protected $subject = null;
 
     protected function setUp()
     {
         parent::setUp();
-        $this->subject = new \SourceBroker\Imageopt\Domain\Model\OptimizationResult();
+        $this->subject = new \SourceBroker\Imageopt\Domain\Model\OptimizationStepResult();
     }
 
     protected function tearDown()
     {
         parent::tearDown();
-    }
-
-    /**
-     * @test
-     */
-    public function getFileRelativePathReturnsInitialValueForString()
-    {
-        self::assertSame(
-            '',
-            $this->subject->getFileRelativePath()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function setFileRelativePathForStringSetsFileRelativePath()
-    {
-        $this->subject->setFileRelativePath('Conceived at T3CON10');
-
-        self::assertAttributeEquals(
-            'Conceived at T3CON10',
-            'fileRelativePath',
-            $this->subject
-        );
     }
 
     /**
@@ -103,10 +78,10 @@ class OptimizationResultTest extends UnitTestCase
     /**
      * @test
      */
-    public function getOptimizationBytesReturnsInitialValueForString()
+    public function getOptimizationBytesReturnsInitialValue()
     {
         self::assertSame(
-            '',
+            0,
             $this->subject->getOptimizationBytes()
         );
     }
@@ -114,39 +89,11 @@ class OptimizationResultTest extends UnitTestCase
     /**
      * @test
      */
-    public function setOptimizationBytesForStringSetsOptimizationBytes()
-    {
-        $this->subject->setOptimizationBytes('Conceived at T3CON10');
-
-        self::assertAttributeEquals(
-            'Conceived at T3CON10',
-            'optimizationBytes',
-            $this->subject
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function getOptimizationPercentageReturnsInitialValueForString()
+    public function getOptimizationPercentageReturnsInitialValue()
     {
         self::assertSame(
-            '',
+            0,
             $this->subject->getOptimizationPercentage()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function setOptimizationPercentageForStringSetsOptimizationPercentage()
-    {
-        $this->subject->setOptimizationPercentage('Conceived at T3CON10');
-
-        self::assertAttributeEquals(
-            'Conceived at T3CON10',
-            'optimizationPercentage',
-            $this->subject
         );
     }
 
@@ -178,11 +125,11 @@ class OptimizationResultTest extends UnitTestCase
     /**
      * @test
      */
-    public function getExecutedSuccessfullyReturnsInitialValueForBool()
+    public function isExecutedSuccessfullyReturnsInitialValueForBool()
     {
         self::assertSame(
             false,
-            $this->subject->getExecutedSuccessfully()
+            $this->subject->isExecutedSuccessfully()
         );
     }
 
@@ -215,23 +162,6 @@ class OptimizationResultTest extends UnitTestCase
     /**
      * @test
      */
-    public function setProvidersResultsForObjectStorageContainingProviderResultSetsProvidersResults()
-    {
-        $providersResult = new \SourceBroker\Imageopt\Domain\Model\ProviderResult();
-        $objectStorageHoldingExactlyOneProvidersResults = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
-        $objectStorageHoldingExactlyOneProvidersResults->attach($providersResult);
-        $this->subject->setProvidersResults($objectStorageHoldingExactlyOneProvidersResults);
-
-        self::assertAttributeEquals(
-            $objectStorageHoldingExactlyOneProvidersResults,
-            'providersResults',
-            $this->subject
-        );
-    }
-
-    /**
-     * @test
-     */
     public function addProvidersResultToObjectStorageHoldingProvidersResults()
     {
         $providersResult = new \SourceBroker\Imageopt\Domain\Model\ProviderResult();
@@ -244,22 +174,5 @@ class OptimizationResultTest extends UnitTestCase
         $this->inject($this->subject, 'providersResults', $providersResultsObjectStorageMock);
 
         $this->subject->addProvidersResult($providersResult);
-    }
-
-    /**
-     * @test
-     */
-    public function removeProvidersResultFromObjectStorageHoldingProvidersResults()
-    {
-        $providersResult = new \SourceBroker\Imageopt\Domain\Model\ProviderResult();
-        $providersResultsObjectStorageMock = $this->getMockBuilder(\TYPO3\CMS\Extbase\Persistence\ObjectStorage::class)
-            ->setMethods(['detach'])
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $providersResultsObjectStorageMock->expects(self::once())->method('detach')->with(self::equalTo($providersResult));
-        $this->inject($this->subject, 'providersResults', $providersResultsObjectStorageMock);
-
-        $this->subject->removeProvidersResult($providersResult);
     }
 }

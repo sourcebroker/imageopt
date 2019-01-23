@@ -26,6 +26,11 @@ class OptimizationOptionResult extends AbstractEntity
     /**
      * @var string
      */
+    protected $optimizationMode = '';
+
+    /**
+     * @var string
+     */
     protected $sizeBefore = '';
 
     /**
@@ -64,8 +69,6 @@ class OptimizationOptionResult extends AbstractEntity
     }
 
     /**
-     * Returns the fileRelativePath
-     *
      * @return string $fileRelativePath
      */
     public function getFileRelativePath()
@@ -74,14 +77,30 @@ class OptimizationOptionResult extends AbstractEntity
     }
 
     /**
-     * Sets the fileRelativePath
-     *
      * @param string $fileRelativePath
      * @return static
      */
     public function setFileRelativePath($fileRelativePath)
     {
         $this->fileRelativePath = $fileRelativePath;
+        return $this;
+    }
+
+    /**
+     * @return string $fileRelativePath
+     */
+    public function getOptimizationMode()
+    {
+        return $this->optimizationMode;
+    }
+
+    /**
+     * @param string $optimizationMode
+     * @return static
+     */
+    public function setOptimizationMode($optimizationMode)
+    {
+        $this->optimizationMode = $optimizationMode;
         return $this;
     }
 
@@ -149,6 +168,10 @@ class OptimizationOptionResult extends AbstractEntity
      */
     public function getOptimizationPercentage()
     {
+        if (!$this->sizeBefore) {
+            return 0;
+        }
+
         if ($this->optimizationPercent === null) {
             $this->optimizationPercent = ((int)$this->sizeBefore - (int)$this->sizeAfter) / (float)$this->sizeBefore * 100;
         }
@@ -193,6 +216,22 @@ class OptimizationOptionResult extends AbstractEntity
     public function getOptimizationStepResults()
     {
         return $this->optimizationStepResults;
+    }
+
+    /**
+     * Returns number of successfully runned executors
+     *
+     * @return int
+     */
+    public function getExecutedSuccessfullyNum()
+    {
+        $num = 0;
+        foreach ($this->optimizationStepResults as $result) {
+            if ($result->isExecutedSuccessfully()) {
+                ++$num;
+            }
+        }
+        return $num;
     }
 
     /**

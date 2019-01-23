@@ -115,6 +115,17 @@ class Configurator
             throw new \Exception('Providers are not defined.');
         }
 
+
+        if (empty($this->config['optimize']) || !is_array($this->config['optimize'])) {
+            throw new \Exception('Optimize modes are not defined.');
+        }
+
+        foreach ($this->config['optimize'] as $name => &$optimizeMode) {
+            if (empty($optimizeMode['name'])) {
+                $optimizeMode['name'] = $name;
+            }
+        }
+
         foreach ($this->config['providers'] as $providerKey => $providerValues) {
             if (!empty($this->config['providersDefault']) && is_array($this->config['providersDefault'])) {
                 $this->config['providers'][$providerKey] = ArrayUtility::arrayMergeAsFallback($providerValues,
