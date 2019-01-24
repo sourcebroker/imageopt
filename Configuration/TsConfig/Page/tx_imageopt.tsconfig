@@ -64,7 +64,7 @@ tx_imageopt {
                 10 {
                     class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
                     command {
-                        mask = {executable} {tempFile} webp:{tempFile}
+                        mask = {executable} -quality 85 {tempFile} webp:{tempFile}
                         exec = convert
                     }
                 }
