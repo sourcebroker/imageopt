@@ -71,7 +71,7 @@ class CliDisplayUtility
 
             $statsInfo = '';
             if (!empty($providers)) {
-                $statsInfo = "Step " . ($stepKey + 1) . "\t| "
+                $statsInfo = 'Step ' . ($stepKey + 1) . "\t| "
                     . $stepResult->getExecutedSuccessfullyNum() . ' out of ' . $stepResult->getProvidersResults()->count()
                     . ' providers finished successfully:' . "\n";
             }
