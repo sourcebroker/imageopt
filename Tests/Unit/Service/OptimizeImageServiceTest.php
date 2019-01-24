@@ -62,7 +62,7 @@ class OptimizeImageServiceTest extends UnitTestCase
         $imageForTesting = $temporaryFileUtility->createTemporaryCopy($orignalImagePath);
         if (is_readable($imageForTesting)) {
             /** @var OptimizationOptionResult[] $optimizationResults */
-            $optimizationResults = $optimizeImageService->optimize($imageForTesting, $orignalImagePath);
+            $optimizationResults = $optimizeImageService->optimize($imageForTesting);
 
             foreach ($optimizationResults as $optimizationResult) {
                 fwrite(STDOUT, CliDisplayUtility::displayOptimizationOptionResult($optimizationResult));
@@ -106,13 +106,17 @@ class OptimizeImageServiceTest extends UnitTestCase
         if (is_readable($imageForTesting)) {
             $originalFileSize = filesize($imageForTesting);
             /** @var OptimizationOptionResult[] $optimizationResults */
-            $optimizationResults = $optimizeImageService->optimize($imageForTesting, $orignalImagePath);
+            $optimizationResults = $optimizeImageService->optimize($imageForTesting);
 
             foreach ($optimizationResults as $optimizationResult) {
                 fwrite(STDOUT, CliDisplayUtility::displayOptimizationOptionResult($optimizationResult));
             }
 
-            $this->assertGreaterThan($optimizationResult->getSizeAfter(), $originalFileSize);
+            $defaultOptimizationResult = isset($optimizationResults['default'])
+                ? $optimizationResults['default']
+                : reset($optimizationResults);
+
+            $this->assertGreaterThan($defaultOptimizationResult->getSizeAfter(), $originalFileSize);
         } else {
             throw new Exception('Image for testing is not existing:' . $imageForTesting);
         }

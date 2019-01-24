@@ -126,15 +126,18 @@ class Configurator
         }
 
         foreach ($this->config['providers'] as $providerKey => $providerValues) {
-            if (!empty($this->config['providersDefault']) && is_array($this->config['providersDefault'])) {
-                $this->config['providers'][$providerKey] = ArrayUtility::arrayMergeAsFallback($providerValues,
-                    $this->config['providersDefault']);
+            if ($this->isConfigBranchValid('providersDefault')) {
+                $this->config['providers'][$providerKey] = ArrayUtility::arrayMergeAsFallback(
+                    $providerValues,
+                    $this->config['providersDefault']
+                );
             }
-            foreach ((array)$providerValues['executors'] as $executorKey => &$executorValues) {
-                if (!empty($this->config['executorsDefault']) && is_array($this->config['executorsDefault'])) {
+            foreach ($providerValues['executors'] as $executorKey => $executorValues) {
+                if ($this->isConfigBranchValid('executorsDefault')) {
                     $this->config['providers'][$providerKey]['executors'][$executorKey] = ArrayUtility::arrayMergeAsFallback(
                         $executorValues,
-                        $this->config['executorsDefault']);
+                        $this->config['executorsDefault']
+                    );
                 }
             }
         }
