@@ -66,7 +66,7 @@ class OptimizeImageService
         }
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
 
-        $this->configurator = $this->objectManager->get(Configurator::class, $config);
+        $this->configurator = GeneralUtility::makeInstance(Configurator::class, $config);
         $this->configurator->init();
 
         $this->temporaryFile = $this->objectManager->get(TemporaryFileUtility::class);
