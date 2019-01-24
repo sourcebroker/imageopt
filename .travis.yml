@@ -42,6 +42,19 @@ install:
   - sudo ln -s /usr/local/bin/cjpeg /usr/bin/mozjpeg-cjpeg
   - sudo ln -s /usr/local/bin/jpegtran /usr/bin/mozjpeg-jpegtran
 
+  # install convert (webp)
+  - sudo apt-get -y install libjpeg62-dev
+  - sudo apt-get -y remove imagemagick-6-common
+  - sudo apt-get -y build-dep imagemagick
+  - cd ~
+  - wget https://www.imagemagick.org/download/ImageMagick.tar.gz
+  - tar xf ImageMagick.tar.gz
+  - cd ImageMagick-7*
+  - ./configure
+  - make
+  - sudo make install
+  - sudo ldconfig /usr/local/lib
+
   - cd $PROJECT_DIR
 
 addons:
