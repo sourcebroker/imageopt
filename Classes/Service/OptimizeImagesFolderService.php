@@ -92,23 +92,29 @@ class OptimizeImagesFolderService
 
     /**
      * @param $absoluteFilePath
-     * @return OptimizationResult
+     * @return OptimizationOptionResult
      */
     public function optimizeFolderFile($absoluteFilePath)
     {
-        $optimizationResult = $this->optimizeImageService->optimize($absoluteFilePath, $absoluteFilePath);
-        if ($optimizationResult->isExecutedSuccessfully()) {
+        $optimizationOptionResults = $this->optimizeImageService->optimize($absoluteFilePath);
+
+        $defaultOptimizationResult = isset($optimizationOptionResults['default'])
+            ? $optimizationOptionResults['default']
+            : reset($optimizationOptionResults);
+
+        if ($defaultOptimizationResult->isExecutedSuccessfully()) {
             // Temporary resized images are created by default with permission 644.
             // We set the "execute" bit of permission for optimized images (to have 744).
             // This way we know what files are still there to be optimized or already optimized.
             // If you have better idea how to do it then create issue on github.
             exec('chmod u+x ' . escapeshellarg($absoluteFilePath), $out, $status);
             if ($status !== 0) {
-                $optimizationResult->setInfo('Error executing chmod u+x. Error code: '
+                $defaultOptimizationResult->setInfo('Error executing chmod u+x. Error code: '
                     . $status . ' Error message: ' . $out);
             }
         }
-        return $optimizationResult;
+
+        return $optimizationOptionResults;
     }
 
     /**

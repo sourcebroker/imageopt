@@ -20,7 +20,7 @@ class CliDisplayUtility
     {
         $stepProvidersInfo = [];
 
-        /** @var OptimizationStepResult $stepResults [] */
+        /** @var OptimizationStepResult[] $stepResults */
         $stepResults = $result->getOptimizationStepResults()->toArray();
 
         foreach ($stepResults as $stepKey => $stepResult) {

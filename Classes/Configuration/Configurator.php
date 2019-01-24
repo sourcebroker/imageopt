@@ -111,11 +111,11 @@ class Configurator
             throw new \Exception('Configuration not set for ImageOpt ext');
         }
 
-        if (empty($this->config['providers']) || !is_array($this->config['providers'])) {
+        if (!$this->isConfigBranchValid('providers')) {
             throw new \Exception('Providers are not defined.');
         }
 
-        if (empty($this->config['optimize']) || !is_array($this->config['optimize'])) {
+        if (!$this->isConfigBranchValid('optimize')) {
             throw new \Exception('Optimize modes are not defined.');
         }
 
@@ -224,5 +224,14 @@ class Configurator
             throw new \Exception('There is no TSconfig for tx_imageopt in the root page id=' . $rootPageForTsConfig,
                 1501692752398);
         }
+    }
+
+    /**
+     * @param string $branch
+     * @return bool
+     */
+    protected function isConfigBranchValid($branch)
+    {
+        return !empty($this->config[$branch]) && is_array($this->config[$branch]);
     }
 }

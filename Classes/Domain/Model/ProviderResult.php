@@ -12,11 +12,7 @@ namespace SourceBroker\Imageopt\Domain\Model;
  *  (c) 2017
  *
  ***/
-
-/**
- * ProviderResult
- */
-class ProviderResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
+class ProviderResult extends AbstractBaseResult
 {
     /**
      * Provider name
@@ -24,37 +20,6 @@ class ProviderResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @var string
      */
     protected $name = '';
-
-    /**
-     * File size before optimization
-     *
-     * @var string
-     */
-    protected $sizeBefore = '';
-
-    /**
-     * File size after optimization
-     *
-     * @var string
-     */
-    protected $sizeAfter = '';
-
-    /**
-     * @var int
-     */
-    protected $optimizationBytes;
-
-    /**
-     * @var float
-     */
-    protected $optimizationPercent;
-
-    /**
-     * Boolean if all executors was succesfully finished
-     *
-     * @var bool
-     */
-    protected $executedSuccessfully = false;
 
     /**
      * Boolean if provider is winner
@@ -137,78 +102,6 @@ class ProviderResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 
     /**
-     * Returns the sizeBefore
-     *
-     * @return string sizeBefore
-     */
-    public function getSizeBefore()
-    {
-        return $this->sizeBefore;
-    }
-
-    /**
-     * Sets the sizeBefore
-     *
-     * @param string $sizeBefore
-     * @return void
-     */
-    public function setSizeBefore($sizeBefore)
-    {
-        $this->sizeBefore = $sizeBefore;
-    }
-
-    /**
-     * Returns the sizeAfter
-     *
-     * @return string $sizeAfter
-     */
-    public function getSizeAfter()
-    {
-        return $this->sizeAfter;
-    }
-
-    /**
-     * Sets the sizeAfter
-     *
-     * @param string $sizeAfter
-     * @return void
-     */
-    public function setSizeAfter($sizeAfter)
-    {
-        $this->sizeAfter = $sizeAfter;
-    }
-
-    /**
-     * Returns the optimizationBytes
-     *
-     * @return string $optimizationBytes
-     */
-    public function getOptimizationBytes()
-    {
-        if ($this->optimizationBytes === null) {
-            $this->optimizationBytes = (int)$this->sizeBefore - (int)$this->sizeAfter;
-        }
-        return $this->optimizationBytes;
-    }
-
-    /**
-     * Returns the optimizationPercentage
-     *
-     * @return string $optimizationPercentage
-     */
-    public function getOptimizationPercentage()
-    {
-        if (!$this->sizeBefore) {
-            return 0;
-        }
-
-        if ($this->optimizationPercent === null) {
-            $this->optimizationPercent = ((int)$this->sizeBefore - (int)$this->sizeAfter) / (float)$this->sizeBefore * 100;
-        }
-        return $this->optimizationPercent;
-    }
-
-    /**
      * Returns the winner
      *
      * @return bool $winner
@@ -258,36 +151,5 @@ class ProviderResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     public function setName($name)
     {
         $this->name = $name;
-    }
-
-    /**
-     * Returns the executedSuccessfully
-     *
-     * @return bool executedSuccessfully
-     */
-    public function getExecutedSuccessfully()
-    {
-        return $this->executedSuccessfully;
-    }
-
-    /**
-     * Sets the executedSuccessfully
-     *
-     * @param bool $executedSuccessfully
-     * @return void
-     */
-    public function setExecutedSuccessfully($executedSuccessfully)
-    {
-        $this->executedSuccessfully = $executedSuccessfully;
-    }
-
-    /**
-     * Returns the boolean state of executedSuccessfully
-     *
-     * @return bool
-     */
-    public function isExecutedSuccessfully()
-    {
-        return $this->executedSuccessfully;
     }
 }
