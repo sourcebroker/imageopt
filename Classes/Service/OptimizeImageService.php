@@ -30,7 +30,6 @@ use SourceBroker\Imageopt\Domain\Model\OptimizationStepResult;
 use SourceBroker\Imageopt\Provider\OptimizationProvider;
 use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Optimize single image using multiple Image Optmization Provider.
@@ -38,12 +37,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  */
 class OptimizeImageService
 {
-
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
-
     /**
      * @var object|Configurator
      */
@@ -64,12 +57,11 @@ class OptimizeImageService
         if ($config === null) {
             throw new \Exception('Configuration not set for OptimizeImageService class');
         }
-        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
 
         $this->configurator = GeneralUtility::makeInstance(Configurator::class, $config);
         $this->configurator->init();
 
-        $this->temporaryFile = $this->objectManager->get(TemporaryFileUtility::class);
+        $this->temporaryFile = GeneralUtility::makeInstance(TemporaryFileUtility::class);
     }
 
     /**
@@ -114,7 +106,7 @@ class OptimizeImageService
      */
     protected function optimizeSingleOption($optimizeOption, $sourceImagePath, $originalImagePath)
     {
-        $optimizationOptionResult = $this->objectManager->get(OptimizationOptionResult::class)
+        $optimizationOptionResult = GeneralUtility::makeInstance(OptimizationOptionResult::class)
             ->setFileRelativePath(substr($originalImagePath, strlen(PATH_site)))
             ->setOptimizationMode($optimizeOption['name'])
             ->setSizeBefore(filesize($sourceImagePath))
@@ -165,7 +157,7 @@ class OptimizeImageService
     protected function optimizeWithBestProvider($chainImagePath, $providers)
     {
         clearstatcache(true, $chainImagePath);
-        $optimizationStepResult = $this->objectManager->get(OptimizationStepResult::class)
+        $optimizationStepResult = GeneralUtility::makeInstance(OptimizationStepResult::class)
             ->setExecutedSuccessfully(false)
             ->setSizeBefore(filesize($chainImagePath));
 
@@ -178,7 +170,7 @@ class OptimizeImageService
 
         foreach ($providers as $providerKey => $providerConfig) {
             $providerConfig['providerKey'] = $providerKey;
-            $providerConfigurator = $this->objectManager->get(Configurator::class, $providerConfig);
+            $providerConfigurator = GeneralUtility::makeInstance(Configurator::class, $providerConfig);
 
             if (empty($providerConfigurator->getOption('enabled'))) {
                 continue;
@@ -188,7 +180,7 @@ class OptimizeImageService
             $providerExecutedCounter++;
 
             $tmpWorkingImagePath = $this->temporaryFile->createTemporaryCopy($chainImagePath);
-            $optimizationProvider = $this->objectManager->get(OptimizationProvider::class);
+            $optimizationProvider = GeneralUtility::makeInstance(OptimizationProvider::class);
 
             $providerResult = $optimizationProvider->optimize($tmpWorkingImagePath, $providerConfigurator);
 
