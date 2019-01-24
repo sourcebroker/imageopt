@@ -104,7 +104,7 @@ class OptimizeImagesFalService
                     ? $optimizationOptionResults['default']
                     : reset($optimizationOptionResults);
 
-                foreach($optimizationOptionResults as $optimizationOptionResult) {
+                foreach ($optimizationOptionResults as $optimizationOptionResult) {
                     $this->optimizationOptionResultRepository->add($optimizationOptionResult);
                 }
 

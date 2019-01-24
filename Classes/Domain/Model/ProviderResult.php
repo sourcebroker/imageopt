@@ -40,6 +40,16 @@ class ProviderResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $sizeAfter = '';
 
     /**
+     * @var int
+     */
+    protected $optimizationBytes;
+
+    /**
+     * @var float
+     */
+    protected $optimizationPercent;
+
+    /**
      * Boolean if all executors was succesfully finished
      *
      * @var bool
@@ -166,6 +176,36 @@ class ProviderResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     public function setSizeAfter($sizeAfter)
     {
         $this->sizeAfter = $sizeAfter;
+    }
+
+    /**
+     * Returns the optimizationBytes
+     *
+     * @return string $optimizationBytes
+     */
+    public function getOptimizationBytes()
+    {
+        if ($this->optimizationBytes === null) {
+            $this->optimizationBytes = (int)$this->sizeBefore - (int)$this->sizeAfter;
+        }
+        return $this->optimizationBytes;
+    }
+
+    /**
+     * Returns the optimizationPercentage
+     *
+     * @return string $optimizationPercentage
+     */
+    public function getOptimizationPercentage()
+    {
+        if (!$this->sizeBefore) {
+            return 0;
+        }
+
+        if ($this->optimizationPercent === null) {
+            $this->optimizationPercent = ((int)$this->sizeBefore - (int)$this->sizeAfter) / (float)$this->sizeBefore * 100;
+        }
+        return $this->optimizationPercent;
     }
 
     /**

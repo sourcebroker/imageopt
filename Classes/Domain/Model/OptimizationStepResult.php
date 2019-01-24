@@ -12,7 +12,6 @@ namespace SourceBroker\Imageopt\Domain\Model;
  *  (c) 2017
  *
  ***/
-
 class OptimizationStepResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
 

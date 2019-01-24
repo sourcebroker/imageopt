@@ -50,7 +50,7 @@ class ImageoptCommandController extends CommandController
         if (!empty($filesToProcess)) {
             foreach ($filesToProcess as $fileToProcess) {
                 $optimizationResults = $optimizeImagesFalService->optimizeFalProcessedFile($fileToProcess);
-                foreach($optimizationResults as $optimizationResult) {
+                foreach ($optimizationResults as $optimizationResult) {
                     $this->outputLine(CliDisplayUtility::displayOptimizationOptionResult($optimizationResult));
                 }
             }
@@ -79,7 +79,7 @@ class ImageoptCommandController extends CommandController
         if (!empty($filesToProcess)) {
             foreach ($filesToProcess as $fileToProcess) {
                 $optimizationResults = $optimizeImagesFolderService->optimizeFolderFile($fileToProcess);
-                foreach($optimizationResults as $optimizationResult) {
+                foreach ($optimizationResults as $optimizationResult) {
                     $this->outputLine(CliDisplayUtility::displayOptimizationOptionResult($optimizationResult));
                 }
             }

@@ -94,10 +94,10 @@ class Configurator
             ? $this->providers[$providerType]
             : [];
 
-        return array_filter($providers, function($provider, $name) use ($fileType) {
+        return array_filter($providers, function ($provider) use ($fileType) {
             $providerFileTypes = explode(',', $provider['fileType']);
             return in_array($fileType, $providerFileTypes);
-        }, ARRAY_FILTER_USE_BOTH);
+        });
     }
 
     /**
@@ -206,7 +206,8 @@ class Configurator
     public function getConfigForPage($rootPageForTsConfig = null)
     {
         if ($rootPageForTsConfig === null) {
-            $rootPageForTsConfigRow = GeneralUtility::makeInstance($GLOBALS['TYPO3_CONF_VARS']['EXT']['EXTCONF']['imageopt']['database'])->getRootPages();
+            $rootPageForTsConfigRow = GeneralUtility::makeInstance($GLOBALS['TYPO3_CONF_VARS']['EXT']['EXTCONF']['imageopt']['database'])
+                ->getRootPages();
             if ($rootPageForTsConfigRow !== null) {
                 $rootPageForTsConfig = $rootPageForTsConfigRow['uid'];
             } else {

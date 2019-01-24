@@ -13,29 +13,26 @@ class CliDisplayUtility
     /**
      * Displays optimization result in CLI window
      *
-     * @param OptimizationOptionResult $optimizationResult
+     * @param OptimizationOptionResult $result
      * @return string
      */
-    public static function displayOptimizationOptionResult(OptimizationOptionResult $optimizationResult)
+    public static function displayOptimizationOptionResult(OptimizationOptionResult $result)
     {
         $stepProvidersInfo = [];
 
-        /** @var OptimizationStepResult $stepResults[] */
-        $stepResults = $optimizationResult->getOptimizationStepResults()->toArray();
+        /** @var OptimizationStepResult $stepResults [] */
+        $stepResults = $result->getOptimizationStepResults()->toArray();
 
         foreach ($stepResults as $stepKey => $stepResult) {
             $providers = [];
             $providersScore = [];
 
+            /** @var ProviderResult[] $providerResults */
             $providerResults = $stepResult->getProvidersResults();
             foreach ($providerResults as $providerResult) {
                 if ($providerResult->isExecutedSuccessfully()) {
-                    $percentage = round((
-                            $providerResult->getSizeBefore() - $providerResult->getSizeAfter()) * 100
-                        / $providerResult->getSizeBefore(), 2);
-
-                    $providers[] = $providerResult->getName() . ': ' . $percentage . '%';
-                    $providersScore[] = ($providerResult->getSizeBefore() - $providerResult->getSizeAfter()) / $providerResult->getSizeBefore();
+                    $providers[] = $providerResult->getName() . ': ' . round($providerResult->getOptimizationPercentage(), 2) . '%';
+                    $providersScore[] = $providerResult->getOptimizationPercentage();
                 } else {
                     /** @var ExecutorResult $executorResult */
                     $error = [];
@@ -52,11 +49,16 @@ class CliDisplayUtility
                     }
 
                     $providers[] = $providerResult->getName() . ' - failed: ' . $errors;
-                    $providersScore[] = -99999;
+                    $providersScore[] = null;
                 }
             }
 
             uksort($providers, function ($a, $b) use ($providersScore) {
+                if ($a === null) {
+                    return 1;
+                } elseif ($b === null) {
+                    return -1;
+                }
                 return $providersScore[$a] > $providersScore[$b] ? -1 : 1;
             });
 
@@ -77,11 +79,20 @@ class CliDisplayUtility
                 "\t| " . implode("\n\t| ", $providers);
         }
 
-        return
-            '---------------------------------' . "\n" .
-            "File\t| " . $optimizationResult->getFileRelativePath() ."\n" .
-            "Mode\t| " . $optimizationResult->getOptimizationMode() .
-            implode("\n\n\t| ", explode("\n", wordwrap($optimizationResult->getInfo(), 70))) . "\n\n" .
+        $output = '---------------------------------' . "\n" .
+            "File\t| " . $result->getFileRelativePath() . "\n" .
+            "Mode\t| " . $result->getOptimizationMode() . "\n" .
+            "Result\t| ";
+
+        if ($result->isExecutedSuccessfully()) {
+            $output .= 'OK ' . round($result->getOptimizationPercentage(), 2) . '%';
+        } else {
+            $output .= 'Failed';
+        }
+
+        $output .= implode("\n\n\t| ", explode("\n", wordwrap($result->getInfo(), 70))) . "\n\n" .
             implode("\n\n", $stepProvidersInfo) . "\n\n";
+
+        return $output;
     }
 }

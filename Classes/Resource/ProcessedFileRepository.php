@@ -28,7 +28,8 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
      */
     public function resetOptimizationFlag()
     {
-        GeneralUtility::makeInstance($GLOBALS['TYPO3_CONF_VARS']['EXT']['EXTCONF']['imageopt']['database'])->resetOptimizationFlag();
+        GeneralUtility::makeInstance($GLOBALS['TYPO3_CONF_VARS']['EXT']['EXTCONF']['imageopt']['database'])
+            ->resetOptimizationFlag();
     }
 
     /**
@@ -39,6 +40,7 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
      */
     public function findNotOptimizedRaw($limit = 50)
     {
-        return GeneralUtility::makeInstance($GLOBALS['TYPO3_CONF_VARS']['EXT']['EXTCONF']['imageopt']['database'])->findNotOptimizedRaw($limit);
+        return GeneralUtility::makeInstance($GLOBALS['TYPO3_CONF_VARS']['EXT']['EXTCONF']['imageopt']['database'])
+            ->findNotOptimizedRaw($limit);
     }
 }
