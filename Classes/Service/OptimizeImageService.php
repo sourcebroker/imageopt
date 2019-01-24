@@ -211,7 +211,6 @@ class OptimizeImageService
         } elseif ($providerExecutedSuccessfullyCounter === 0) {
             $optimizationStepResult->setInfo('No winner. All providers were unsuccessfull.');
         } else {
-
             if ($optimizationStepResult->getOptimizationBytes() === 0) {
                 $optimizationStepResult->setInfo('No winner. Non of the optimized images was smaller than original.');
 

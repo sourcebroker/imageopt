@@ -115,7 +115,6 @@ class Configurator
             throw new \Exception('Providers are not defined.');
         }
 
-
         if (empty($this->config['optimize']) || !is_array($this->config['optimize'])) {
             throw new \Exception('Optimize modes are not defined.');
         }

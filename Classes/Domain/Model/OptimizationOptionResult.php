@@ -255,5 +255,4 @@ class OptimizationOptionResult extends AbstractEntity
         $this->info = $info;
         return $this;
     }
-
 }

@@ -111,7 +111,6 @@ class OptimizationOptionResultTest extends UnitTestCase
         );
     }
 
-
     /**
      * @test
      */
@@ -147,5 +146,4 @@ class OptimizationOptionResultTest extends UnitTestCase
             $this->subject
         );
     }
-
 }

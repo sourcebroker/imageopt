@@ -64,7 +64,7 @@ class OptimizeImageServiceTest extends UnitTestCase
             /** @var OptimizationOptionResult[] $optimizationResults */
             $optimizationResults = $optimizeImageService->optimize($imageForTesting, $orignalImagePath);
 
-            foreach($optimizationResults as $optimizationResult) {
+            foreach ($optimizationResults as $optimizationResult) {
                 fwrite(STDOUT, CliDisplayUtility::displayOptimizationOptionResult($optimizationResult));
             }
 
@@ -108,7 +108,7 @@ class OptimizeImageServiceTest extends UnitTestCase
             /** @var OptimizationOptionResult[] $optimizationResults */
             $optimizationResults = $optimizeImageService->optimize($imageForTesting, $orignalImagePath);
 
-            foreach($optimizationResults as $optimizationResult) {
+            foreach ($optimizationResults as $optimizationResult) {
                 fwrite(STDOUT, CliDisplayUtility::displayOptimizationOptionResult($optimizationResult));
             }
 

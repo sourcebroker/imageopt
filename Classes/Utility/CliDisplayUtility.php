@@ -31,7 +31,8 @@ class CliDisplayUtility
             $providerResults = $stepResult->getProvidersResults();
             foreach ($providerResults as $providerResult) {
                 if ($providerResult->isExecutedSuccessfully()) {
-                    $providers[] = $providerResult->getName() . ': ' . round($providerResult->getOptimizationPercentage(), 2) . '%';
+                    $providers[] = $providerResult->getName() . ': ' . round($providerResult->getOptimizationPercentage(),
+                            2) . '%';
                     $providersScore[] = $providerResult->getOptimizationPercentage();
                 } else {
                     /** @var ExecutorResult $executorResult */
@@ -70,7 +71,7 @@ class CliDisplayUtility
 
             $statsInfo = '';
             if (!empty($providers)) {
-                $statsInfo = "Step ". ($stepKey + 1) ."\t| "
+                $statsInfo = "Step " . ($stepKey + 1) . "\t| "
                     . $stepResult->getExecutedSuccessfullyNum() . ' out of ' . $stepResult->getProvidersResults()->count()
                     . ' providers finished successfully:' . "\n";
             }
