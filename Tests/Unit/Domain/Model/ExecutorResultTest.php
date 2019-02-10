@@ -153,11 +153,11 @@ class ExecutorResultTest extends UnitTestCase
     /**
      * @test
      */
-    public function getExecutedSuccessfullyReturnsInitialValueForBool()
+    public function isExecutedSuccessfullyReturnsInitialValueForBool()
     {
         self::assertSame(
             false,
-            $this->subject->getExecutedSuccessfully()
+            $this->subject->isExecutedSuccessfully()
         );
     }
 

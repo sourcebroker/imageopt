@@ -48,31 +48,55 @@
 			<trans-unit id="tx_imageopt_domain_model_executorresult.error_message">
 				<source>Error Message</source>
 			</trans-unit>
-			<trans-unit id="tx_imageopt_domain_model_optimizationresult">
-				<source>Optimization Result</source>
+			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult">
+				<source>Optimization Option Result</source>
 			</trans-unit>
-			<trans-unit id="tx_imageopt_domain_model_optimizationresult.file_relative_path">
+			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult.file_relative_path">
 				<source>File Relative Path</source>
 			</trans-unit>
-			<trans-unit id="tx_imageopt_domain_model_optimizationresult.size_before">
+			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult.size_before">
 				<source>Size Before</source>
 			</trans-unit>
-			<trans-unit id="tx_imageopt_domain_model_optimizationresult.size_after">
+			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult.size_after">
 				<source>Size After</source>
 			</trans-unit>
-			<trans-unit id="tx_imageopt_domain_model_optimizationresult.optimization_bytes">
+			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult.optimization_bytes">
 				<source>Optimization Bytes</source>
 			</trans-unit>
-			<trans-unit id="tx_imageopt_domain_model_optimizationresult.optimization_percentage">
+			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult.optimization_percentage">
 				<source>Optimization Percentage</source>
 			</trans-unit>
-			<trans-unit id="tx_imageopt_domain_model_optimizationresult.provider_winner_name">
+			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult.provider_winner_name">
 				<source>Provider Winner Name</source>
 			</trans-unit>
-			<trans-unit id="tx_imageopt_domain_model_optimizationresult.executed_successfully">
+			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult.executed_successfully">
 				<source>Executed Successfully</source>
 			</trans-unit>
-			<trans-unit id="tx_imageopt_domain_model_optimizationresult.providers_results">
+			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult.optimization_step_results">
+				<source>Optimization Step Results</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationstepresult">
+				<source>Optimization Step Result</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationstepresult.size_before">
+				<source>Size Before</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationstepresult.size_after">
+				<source>Size After</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationstepresult.optimization_bytes">
+				<source>Optimization Bytes</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationstepresult.optimization_percentage">
+				<source>Optimization Percentage</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationstepresult.provider_winner_name">
+				<source>Provider Winner Name</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationstepresult.executed_successfully">
+				<source>Executed Successfully</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationstepresult.providers_results">
 				<source>Providers Results</source>
 			</trans-unit>
 		</body>

@@ -2,7 +2,17 @@ tx_imageopt {
     directories = typo3temp/pics*jpg|gif|png,typo3temp/GB*jpg|gif|png,typo3temp/assets/images*jpg|gif|png,
 
     optimize {
-        10 {
+        default {
+            chain {
+                10.providerType = lossyLow
+                20.providerType = lossless
+            }
+
+            fileRegexp = .*
+            outputFilename = {dirname}/{filename}.{extension}
+        }
+
+        webp {
             chain {
                 10.providerType = webp
             }
@@ -10,23 +20,13 @@ tx_imageopt {
             outputFilename = {dirname}/{filename}.{extension}.webp
         }
 
-        20 {
+        highQuality {
             chain {
-                10.providerType = loosyGood
-                20.providerType = loossless
+                10.providerType = lossyGood
+                20.providerType = lossless
             }
             fileRegexp = .*
             outputFilename = {dirname}/{filename}-hg.{extension}
-        }
-
-        30 {
-            chain {
-                10.providerType = loosyLow
-                20.providerType = loossless
-            }
-
-            fileRegexp = .*
-            outputFilename = {dirname}/{filename}.{extension}
         }
     }
 
@@ -41,6 +41,7 @@ tx_imageopt {
     }
 
     providersDefault {
+        enabled = 1
         /* not supported yet
         email {
         sender {
@@ -63,7 +64,7 @@ tx_imageopt {
                 10 {
                     class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
                     command {
-                        mask = {executable} {tempFile} webp:{tempFile}
+                        mask = {executable} -quality 85 {tempFile} webp:{tempFile}
                         exec = convert
                     }
                 }
@@ -71,10 +72,10 @@ tx_imageopt {
         }
 
         jpegoptim {
-            type = loosyGood,loosyLow
+            type = lossyGood,lossyLow
             fileType = jpeg
-            typeOverride.loosyLow.executors.10.options.quality.value = loosyLow
-            typeOverride.loosyGood.executors.10.options.quality.value = loosyGood
+            typeOverride.lossyLow.executors.10.options.quality.value = lossyLow
+            typeOverride.lossyGood.executors.10.options.quality.value = lossyGood
             executors {
                 10 {
                     class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
@@ -85,24 +86,10 @@ tx_imageopt {
                     options {
                         quality {
                             options {
-                                loosyLow = --max=1
-                                loosyGood = --max=85
+                                lossyLow = --max=1
+                                lossyGood = --max=85
                             }
                         }
-                    }
-                }
-            }
-        }
-
-        jpegrescan {
-            type = lossless
-            fileType = jpeg
-            executors {
-                10 {
-                    class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
-                    command {
-                        mask = {executable} -s {tempFile} {tempFile}
-                        exec = jpegrescan
                     }
                 }
             }
@@ -137,9 +124,9 @@ tx_imageopt {
         }
 
         mozjpeg {
-            type = loosyLow,loosyGood
-            typeOverride.loosyLow.executors.10.options.quality.value = loosyLow
-            typeOverride.loosyGood.executors.10.options.quality.value = loosyGood
+            type = lossyLow,lossyGood
+            typeOverride.lossyLow.executors.10.options.quality.value = lossyLow
+            typeOverride.lossyGood.executors.10.options.quality.value = lossyGood
             fileType = jpeg
             executors {
                 10 {
@@ -151,8 +138,8 @@ tx_imageopt {
                     options {
                         quality {
                             options {
-                                loosyLow = -quality 6
-                                loosyGood = -quality 85
+                                lossyLow = -quality 6
+                                lossyGood = -quality 85
                             }
                         }
                     }
@@ -211,9 +198,9 @@ tx_imageopt {
         }
 
         pngquant {
-            type = loosyLow,loosyGood
-            typeOverride.loosyLow.executors.10.options.quality.value = loosyLow
-            typeOverride.loosyGood.executors.10.options.quality.value = loosyGood
+            type = lossyLow,lossyGood
+            typeOverride.lossyLow.executors.10.options.quality.value = lossyLow
+            typeOverride.lossyGood.executors.10.options.quality.value = lossyGood
             fileType = png
             executors {
                 10 {
@@ -226,8 +213,8 @@ tx_imageopt {
                     options {
                         quality {
                             options {
-                                loosyLow = --speed 11 --quality 1
-                                loosyGood = --speed 1
+                                lossyLow = --speed 11 --quality 1
+                                lossyGood = --speed 1
                             }
                         }
                     }
@@ -236,7 +223,7 @@ tx_imageopt {
         }
 
         pngquantPngcrush {
-            type = loosyLow,loosyGood
+            type = lossyLow,lossyGood
             fileType = png
             executors {
                 10 < tx_imageopt.providers.pngquant.executors.10
@@ -245,10 +232,10 @@ tx_imageopt {
         }
 
         kraken {
-            type = loosyLow,loosyGood,lossless
+            type = lossyLow,lossyGood,lossless
             // do not set for "number" quality becase kraken inteligent optimisation - its enough to make "lossy = true"
             typeOverride.lossyGood.executors.10.api.options.lossy = true
-            typeOverride.loosyLow.executors.10.api.options.quality = 6
+            typeOverride.lossyLow.executors.10.api.options.quality = 6
             fileType = jpeg,png,gif
             executors {
                 10 {
@@ -267,8 +254,8 @@ tx_imageopt {
         }
 
         tinypng {
-            // tinypng has no way to force quality of loosles so it can not be provider for "loosyLow" quality
-            type = loosyGood
+            // tinypng has no way to force quality of loosles so it can not be provider for "lossyLow" quality
+            type = lossyGood
             fileType = jpeg,png
             executors {
                 10 {
@@ -287,10 +274,10 @@ tx_imageopt {
         }
 
         imageoptim {
-            type = loosyLow,loosyGood,lossless
+            type = lossyLow,lossyGood,lossless
             typeOverride.lossless.executors.10.options.quality.value = lossless
-            typeOverride.loosyLow.executors.10.options.quality.value = loosyLow
-            typeOverride.loosyGood.executors.10.options.quality.value = loosyGood
+            typeOverride.lossyLow.executors.10.options.quality.value = lossyLow
+            typeOverride.lossyGood.executors.10.options.quality.value = lossyGood
             fileType = jpeg,png,gif
             executors {
                 10 {
@@ -310,8 +297,8 @@ tx_imageopt {
                     options {
                         quality {
                             options {
-                                loosyLow = loosyLow
-                                loosyGood = high
+                                lossyLow = low
+                                lossyGood = high
                                 lossless = lossless
                             }
                         }

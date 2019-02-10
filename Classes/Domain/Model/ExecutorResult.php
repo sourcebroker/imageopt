@@ -16,22 +16,8 @@ namespace SourceBroker\Imageopt\Domain\Model;
 /**
  * ExecutorResult
  */
-class ExecutorResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
+class ExecutorResult extends AbstractBaseResult
 {
-    /**
-     * File size before optimization
-     *
-     * @var string
-     */
-    protected $sizeBefore = '';
-
-    /**
-     * File size after optimization
-     *
-     * @var string
-     */
-    protected $sizeAfter = '';
-
     /**
      * command
      *
@@ -54,60 +40,11 @@ class ExecutorResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $commandStatus = '';
 
     /**
-     * executedSuccessfully
-     *
-     * @var bool
-     */
-    protected $executedSuccessfully = false;
-
-    /**
      * errorMessage
      *
      * @var string
      */
     protected $errorMessage = '';
-
-    /**
-     * Returns the sizeBefore
-     *
-     * @return string sizeBefore
-     */
-    public function getSizeBefore()
-    {
-        return $this->sizeBefore;
-    }
-
-    /**
-     * Sets the sizeBefore
-     *
-     * @param string $sizeBefore
-     * @return void
-     */
-    public function setSizeBefore($sizeBefore)
-    {
-        $this->sizeBefore = $sizeBefore;
-    }
-
-    /**
-     * Returns the sizeAfter
-     *
-     * @return string $sizeAfter
-     */
-    public function getSizeAfter()
-    {
-        return $this->sizeAfter;
-    }
-
-    /**
-     * Sets the sizeAfter
-     *
-     * @param string $sizeAfter
-     * @return void
-     */
-    public function setSizeAfter($sizeAfter)
-    {
-        $this->sizeAfter = $sizeAfter;
-    }
 
     /**
      * Returns the command
@@ -191,36 +128,5 @@ class ExecutorResult extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     public function setErrorMessage($errorMessage)
     {
         $this->errorMessage = $errorMessage;
-    }
-
-    /**
-     * Returns the executedSuccessfully
-     *
-     * @return bool $executedSuccessfully
-     */
-    public function getExecutedSuccessfully()
-    {
-        return $this->executedSuccessfully;
-    }
-
-    /**
-     * Sets the executedSuccessfully
-     *
-     * @param bool $executedSuccessfully
-     * @return void
-     */
-    public function setExecutedSuccessfully($executedSuccessfully)
-    {
-        $this->executedSuccessfully = $executedSuccessfully;
-    }
-
-    /**
-     * Returns the boolean state of executedSuccessfully
-     *
-     * @return bool
-     */
-    public function isExecutedSuccessfully()
-    {
-        return $this->executedSuccessfully;
     }
 }

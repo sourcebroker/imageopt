@@ -25,7 +25,8 @@
 namespace SourceBroker\Imageopt\Service;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
-use SourceBroker\Imageopt\Domain\Model\OptimizationResult;
+use SourceBroker\Imageopt\Domain\Model\OptimizationOptionResult;
+use SourceBroker\Imageopt\Domain\Model\OptimizationStepResult;
 use SourceBroker\Imageopt\Provider\OptimizationProvider;
 use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -42,7 +43,7 @@ class OptimizeImageService
     public $configurator;
 
     /**
-     * @var object|TemporaryFileUtility
+     * @var TemporaryFileUtility
      */
     private $temporaryFile;
 
@@ -56,6 +57,7 @@ class OptimizeImageService
         if ($config === null) {
             throw new \Exception('Configuration not set for OptimizeImageService class');
         }
+
         $this->configurator = GeneralUtility::makeInstance(Configurator::class, $config);
         $this->configurator->init();
 
@@ -65,132 +67,177 @@ class OptimizeImageService
     /**
      * Optimize image using chained Image Optimization Provider
      *
-     * @param string $workingImagePath
      * @param string $originalImagePath
-     * @return OptimizationResult Optimization result
+     * @return OptimizationOptionResult[]
      * @throws \Exception
      */
-    public function optimize($workingImagePath, $originalImagePath)
+    public function optimize($originalImagePath)
     {
-        $optimizationResult = null;
-        foreach ((array)$this->configurator->getOption('optimize') as $optimisationChain) {
-            $optimizationResult = GeneralUtility::makeInstance(OptimizationResult::class);
-            $optimizationResult->setFileRelativePath(substr($workingImagePath, strlen(PATH_site)));
-            $optimizationResult->setExecutedSuccessfully(false);
-            clearstatcache(true, $workingImagePath);
-            if (file_exists($workingImagePath) && filesize($workingImagePath)) {
-                $optimizationResult->setSizeBefore(filesize($workingImagePath));
-                $temporaryBestOptimizedImage = $this->temporaryFile->createTemporaryCopy($workingImagePath);
-                $imageOpimalizationsProviders = $this->findProvidersForFile($originalImagePath, $optimisationChain);
-                if (!empty($imageOpimalizationsProviders)) {
-                    $providerExecutedCounter = $providerExecutedSuccessfullyCounter = $providerEnabledCounter = 0;
-                    foreach ($imageOpimalizationsProviders as $providerKey => $imageOpimalizationsProviderConfig) {
-                        $imageOpimalizationsProviderConfig['providerKey'] = $providerKey;
-                        $providerConfigurator = GeneralUtility::makeInstance(Configurator::class,
-                            $imageOpimalizationsProviderConfig);
-                        if (!empty($providerConfigurator->getOption('enabled'))) {
-                            $providerEnabledCounter++;
-                            $providerExecutedCounter++;
-                            $temporaryImageToOptimize = $this->temporaryFile->createTemporaryCopy($workingImagePath);
-                            $optimizationProvider = GeneralUtility::makeInstance(OptimizationProvider::class);
-                            $providerResult = $optimizationProvider->optimize(
-                                $temporaryImageToOptimize,
-                                $providerConfigurator
-                            );
-                            $optimizationResult->addProvidersResult($providerResult);
-                            if ($providerResult->isExecutedSuccessfully()) {
-                                $providerExecutedSuccessfullyCounter++;
-                                clearstatcache(true, $temporaryImageToOptimize);
-                                clearstatcache(true, $temporaryBestOptimizedImage);
-                                $filesizeAfterProviderOptimization = filesize($temporaryImageToOptimize);
-                                if (filesize($temporaryBestOptimizedImage) > $filesizeAfterProviderOptimization || 1 == 1) {
-                                    rename($temporaryImageToOptimize,
-                                        $temporaryBestOptimizedImage);
-                                    $optimizationResult->setProviderWinnerName($providerKey);
-                                }
-                            }
-                        }
-                    }
-                    if ($providerEnabledCounter === 0) {
-                        $optimizationResult->setInfo('No providers enabled (or defined).');
-                    } elseif ($providerExecutedSuccessfullyCounter === 0) {
-                        $optimizationResult->setInfo('No winner. All providers were unsuccessfull.');
-                    } else {
-                        $optimizationResult->setExecutedSuccessfully(true);
-                        clearstatcache(true, $temporaryBestOptimizedImage);
-                        $optimizationResult->setSizeAfter(filesize($temporaryBestOptimizedImage));
-                        $optimizationResult->setOptimizationBytes(
-                            $optimizationResult->getSizeBefore() - $optimizationResult->getSizeAfter()
-                        );
-                        $optimizationResult->setOptimizationPercentage(round(
-                                $optimizationResult->getOptimizationBytes() / $optimizationResult->getSizeBefore() * 100,
-                                2)
-                        );
-                        if ($optimizationResult->getOptimizationBytes() === 0) {
-                            $optimizationResult->setInfo('No winner. Non of the optimized images was smaller than original.');
-                        } else {
-                            $optimizationResult->setInfo('Winner is ' . $optimizationResult->getProviderWinnerName() .
-                                ' with optimized image smaller by: ' . $optimizationResult->getOptimizationPercentage() . '%');
+        if (!file_exists($originalImagePath) || !filesize($originalImagePath)) {
+            throw new \Exception('Can not read file to optimize. File: "' . $originalImagePath . '"');
+        }
 
-                            if (!empty($optimisationChain['outputFilename'])
-                            && $optimisationChain['outputFilename'] != '{dirname}/{filename}.{extension}') {
-                                $pathInfo = pathinfo($originalImagePath);
-                                copy($temporaryBestOptimizedImage, str_replace(
-                                    [
-                                        '{dirname}',
-                                        '{basename}',
-                                        '{extension}',
-                                        '{filename}'
-                                    ],
-                                    [
-                                        $pathInfo['dirname'],
-                                        $pathInfo['basename'],
-                                        $pathInfo['extension'],
-                                        $pathInfo['filename']
-                                    ],
-                                    $optimisationChain['outputFilename']
-                                ));
-                            } else {
-                                rename($temporaryBestOptimizedImage, $workingImagePath);
-                            }
-                        }
-                    }
-                } else {
-                    $optimizationResult->setInfo('No suitable provider with proper optimization mode found for file ext: "'
-                        . strtolower(explode('/', image_type_to_mime_type(getimagesize($originalImagePath)[2]))[1]) .
-                        '" and providerType: "' . $optimisationChain['providerType'] . '"');
+        // create original image copy - it may vary (provider may overwrite original image)
+        $sourceImagePath = $this->temporaryFile->createTemporaryCopy($originalImagePath);
+
+        $optimizationOptionResults = [];
+        foreach ((array)$this->configurator->getOption('optimize') as $optimizeOptionName => $optimizeOption) {
+            $regexp = '@' . $optimizeOption['fileRegexp'] . '@';
+            if (!preg_match($regexp, $originalImagePath)) {
+                continue;
+            }
+
+            $optimizationOptionResults[$optimizeOptionName] = $this->optimizeSingleOption(
+                $optimizeOption,
+                $sourceImagePath,
+                $originalImagePath
+            );
+        }
+
+        return $optimizationOptionResults;
+    }
+
+    /**
+     * @param array $optimizeOption
+     * @param string $sourceImagePath Path to original image COPY (default optimization mode will overwrite original image)
+     * @param string $originalImagePath Path to original image
+     * @return OptimizationOptionResult
+     * @throws \Exception
+     */
+    protected function optimizeSingleOption($optimizeOption, $sourceImagePath, $originalImagePath)
+    {
+        $optimizationOptionResult = GeneralUtility::makeInstance(OptimizationOptionResult::class)
+            ->setFileRelativePath(substr($originalImagePath, strlen(PATH_site)))
+            ->setOptimizationMode($optimizeOption['name'])
+            ->setSizeBefore(filesize($sourceImagePath))
+            ->setExecutedSuccessfully(false);
+
+        $chainImagePath = $this->temporaryFile->createTemporaryCopy($sourceImagePath);
+
+        // execute all providers in chain
+        foreach ($optimizeOption['chain'] as $chainLinkName => $chainLink) {
+            $providers = $this->findProvidersForFile($originalImagePath, $chainLink['providerType']);
+            if (empty($providers)) {
+                // skip this chain link - no providers for this type of image
+                continue;
+            }
+
+            $optimizationStepResult = $this->optimizeWithBestProvider($chainImagePath, $providers);
+            $optimizationStepResult->setName($chainLinkName);
+
+            $optimizationOptionResult->addOptimizationStepResult($optimizationStepResult);
+        }
+
+        if ($optimizationOptionResult->getExecutedSuccessfullyNum() == $optimizationOptionResult->getOptimizationStepResults()
+                ->count()) {
+            $optimizationOptionResult->setExecutedSuccessfully(true);
+        }
+
+        clearstatcache(true, $chainImagePath);
+        $optimizationOptionResult
+            ->setSizeAfter(filesize($chainImagePath));
+
+        // save under defined output path
+        $pathInfo = pathinfo($originalImagePath);
+        copy($chainImagePath, str_replace(
+            ['{dirname}', '{basename}', '{extension}', '{filename}'],
+            [$pathInfo['dirname'], $pathInfo['basename'], $pathInfo['extension'], $pathInfo['filename']],
+            $optimizeOption['outputFilename']
+        ));
+
+        return $optimizationOptionResult;
+    }
+
+    /**
+     * @param string $chainImagePath
+     * @param array $providers
+     * @return OptimizationStepResult
+     * @throws \Exception
+     */
+    protected function optimizeWithBestProvider($chainImagePath, $providers)
+    {
+        clearstatcache(true, $chainImagePath);
+        $optimizationStepResult = GeneralUtility::makeInstance(OptimizationStepResult::class)
+            ->setExecutedSuccessfully(false)
+            ->setSizeBefore(filesize($chainImagePath));
+
+        $providerExecutedCounter = 0;
+        $providerExecutedSuccessfullyCounter = 0;
+        $providerEnabledCounter = 0;
+
+        // work on chain image copy
+        $tmpBestImagePath = $this->temporaryFile->createTemporaryCopy($chainImagePath);
+
+        foreach ($providers as $providerKey => $providerConfig) {
+            $providerConfig['providerKey'] = $providerKey;
+            $providerConfigurator = GeneralUtility::makeInstance(Configurator::class, $providerConfig);
+
+            if (empty($providerConfigurator->getOption('enabled'))) {
+                continue;
+            }
+
+            $providerEnabledCounter++;
+            $providerExecutedCounter++;
+
+            $tmpWorkingImagePath = $this->temporaryFile->createTemporaryCopy($chainImagePath);
+            $optimizationProvider = GeneralUtility::makeInstance(OptimizationProvider::class);
+
+            $providerResult = $optimizationProvider->optimize($tmpWorkingImagePath, $providerConfigurator);
+
+            if ($providerResult->isExecutedSuccessfully()) {
+                $providerExecutedSuccessfullyCounter++;
+                clearstatcache(true, $tmpWorkingImagePath);
+
+                if (filesize($tmpWorkingImagePath) < filesize($tmpBestImagePath)) {
+                    // overwrite current (in chain link) best image
+                    $tmpBestImagePath = $tmpWorkingImagePath;
+                    $optimizationStepResult->setProviderWinnerName($providerKey);
                 }
+            }
+
+            $optimizationStepResult->addProvidersResult($providerResult);
+        }
+
+        if ($providerEnabledCounter === 0) {
+            $optimizationStepResult->setInfo('No providers enabled (or defined).');
+        } elseif ($providerExecutedSuccessfullyCounter === 0) {
+            $optimizationStepResult->setInfo('No winner. All providers were unsuccessfull.');
+        } else {
+            if ($optimizationStepResult->getOptimizationBytes() === 0) {
+                $optimizationStepResult->setInfo('No winner. Non of the optimized images was smaller than original.');
+
+                $optimizationStepResult
+                    ->setExecutedSuccessfully(true)
+                    ->setSizeAfter(filesize($chainImagePath));
             } else {
-                $optimizationResult->setInfo('Can not read file to optimize. File: "' . $workingImagePath . '"');
+                $optimizationStepResult->setInfo('Winner is ' . $optimizationStepResult->getProviderWinnerName() .
+                    ' with optimized image smaller by: ' . $optimizationStepResult->getOptimizationPercentage() . '%');
+
+                clearstatcache(true, $tmpBestImagePath);
+                $optimizationStepResult
+                    ->setExecutedSuccessfully(true)
+                    ->setSizeAfter(filesize($tmpBestImagePath));
+
+                // overwrite chain image with current best image
+                copy($tmpBestImagePath, $chainImagePath);
             }
         }
-        return $optimizationResult;
+
+        clearstatcache(true, $chainImagePath);
+
+        return $optimizationStepResult;
     }
 
     /**
      * Finds all providers available for given type of file
      *
      * @param string $imagePath
-     * @param $optimisationChain
+     * @param string $providerType
      * @return array
      */
-    protected function findProvidersForFile($imagePath, $optimisationChain)
+    protected function findProvidersForFile($imagePath, $providerType)
     {
         $fileType = strtolower(explode('/', image_type_to_mime_type(getimagesize($imagePath)[2]))[1]);
-        $suitableProviders = [];
-        $pattern = '@' . $optimisationChain['fileRegexp'] . '@i';
-        if (!preg_match($pattern, $imagePath)) {
-            return [];
-        }
-        $providers = $this->configurator->getProviders($optimisationChain['providerType']);
-        if (!empty($providers)) {
-            foreach ($providers as $name => $provider) {
-                $fileTypes = explode(',', $provider['fileType']);
-                if (in_array($fileType, $fileTypes)) {
-                    $suitableProviders[$name] = $provider;
-                }
-            }
-        }
-        return $suitableProviders;
+        return $this->configurator->getProviders($providerType, $fileType);
     }
 }

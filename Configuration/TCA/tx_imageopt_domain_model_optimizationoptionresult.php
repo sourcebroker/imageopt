@@ -1,7 +1,7 @@
 <?php
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationresult',
+        'title' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationoptionresult',
         'label' => 'file_relative_path',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -12,13 +12,13 @@ return [
             'disabled' => 'hidden',
         ],
         'searchFields' => 'file_relative_path,size_before,size_after,optimization_bytes,optimization_percentage,provider_winner_name,executed_successfully,info,providers_results',
-        'iconfile' => 'EXT:imageopt/Resources/Public/Icons/tx_imageopt_domain_model_optimizationresult.gif'
+        'iconfile' => 'EXT:imageopt/Resources/Public/Icons/tx_imageopt_domain_model_optimizationoptionresult.gif'
     ],
     'interface' => [
-        'showRecordFieldList' => 'file_relative_path, size_before, size_after, optimization_bytes, optimization_percentage, provider_winner_name, executed_successfully, info, providers_results',
+        'showRecordFieldList' => 'file_relative_path, size_before, size_after, optimization_bytes, optimization_percentage, provider_winner_name, executed_successfully, info, optimization_step_results',
     ],
     'types' => [
-        '1' => ['showitem' => 'file_relative_path, --palette--;;sizes, --palette--;;optimization, provider_winner_name, info, executed_successfully, providers_results'],
+        '1' => ['showitem' => 'file_relative_path, --palette--;;sizes, --palette--;;optimization, provider_winner_name, info, executed_successfully, optimization_step_results'],
     ],
     'palettes' => [
         'sizes' => [
@@ -45,7 +45,7 @@ return [
         ],
         'file_relative_path' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationresult.file_relative_path',
+            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationoptionresult.file_relative_path',
             'config' => [
                 'type' => 'input',
                 'size' => 200,
@@ -55,7 +55,7 @@ return [
         ],
         'size_before' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationresult.size_before',
+            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationoptionresult.size_before',
             'config' => [
                 'type' => 'input',
                 'size' => 4,
@@ -65,7 +65,7 @@ return [
         ],
         'size_after' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationresult.size_after',
+            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationoptionresult.size_after',
             'config' => [
                 'type' => 'input',
                 'size' => 4,
@@ -73,29 +73,9 @@ return [
                 'readOnly' => 1
             ],
         ],
-        'optimization_bytes' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationresult.optimization_bytes',
-            'config' => [
-                'type' => 'input',
-                'size' => 4,
-                'eval' => 'trim',
-                'readOnly' => 1
-            ],
-        ],
-        'optimization_percentage' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationresult.optimization_percentage',
-            'config' => [
-                'type' => 'input',
-                'size' => 4,
-                'eval' => 'trim',
-                'readOnly' => 1
-            ],
-        ],
         'provider_winner_name' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationresult.provider_winner_name',
+            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationoptionresult.provider_winner_name',
             'config' => [
                 'type' => 'input',
                 'size' => 200,
@@ -105,7 +85,7 @@ return [
         ],
         'executed_successfully' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationresult.executed_successfully',
+            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationoptionresult.executed_successfully',
             'config' => [
                 'type' => 'check',
                 'items' => [
@@ -119,7 +99,7 @@ return [
         ],
         'info' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationresult.info',
+            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationoptionresult.info',
             'config' => [
                 'type' => 'text',
                 'cols' => 200,
@@ -128,13 +108,13 @@ return [
                 'readOnly' => 1,
             ]
         ],
-        'providers_results' => [
+        'optimization_step_results' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationresult.providers_results',
+            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationoptionresult.optimization_step_results',
             'config' => [
                 'type' => 'inline',
                 'readOnly' => 1,
-                'foreign_table' => 'tx_imageopt_domain_model_providerresult',
+                'foreign_table' => 'tx_imageopt_domain_model_optimizationstepresults',
                 'foreign_field' => 'optimizationresult',
                 'maxitems' => 9999,
                 'appearance' => [

@@ -3,9 +3,6 @@
 	<file source-language="en" datatype="plaintext" original="messages" date="2017-07-29T13:12:02Z" product-name="imageopt">
 		<header/>
 		<body>
-			<trans-unit id="file_relative_path.description">
-				<source>fileRelativePath</source>
-			</trans-unit>
 			<trans-unit id="size_before.description">
 				<source>sizeBefore</source>
 			</trans-unit>

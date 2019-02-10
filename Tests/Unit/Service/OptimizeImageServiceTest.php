@@ -5,7 +5,7 @@ namespace SourceBroker\Imageopt\Tests\Unit\Service;
 use Exception;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
 use SourceBroker\Imageopt\Configuration\Configurator;
-use SourceBroker\Imageopt\Domain\Model\OptimizationResult;
+use SourceBroker\Imageopt\Domain\Model\OptimizationOptionResult;
 use SourceBroker\Imageopt\Service\OptimizeImageService;
 use SourceBroker\Imageopt\Utility\ArrayUtility;
 use SourceBroker\Imageopt\Utility\CliDisplayUtility;
@@ -61,11 +61,22 @@ class OptimizeImageServiceTest extends UnitTestCase
         $orignalImagePath = $this->typo3WebRoot . '/typo3conf/ext/imageopt/Tests/Fixture/Unit/OptimizeImageService/' . $image;
         $imageForTesting = $temporaryFileUtility->createTemporaryCopy($orignalImagePath);
         if (is_readable($imageForTesting)) {
-            /** @var OptimizationResult $optimizationResult */
-            $optimizationResult = $optimizeImageService->optimize($imageForTesting, $orignalImagePath);
-            fwrite(STDOUT, CliDisplayUtility::displayOptimizationResult($optimizationResult));
-            $this->assertEquals($optimizationResult->getProvidersResults()->count(),
-                $optimizationResult->getExecutedSuccessfullyNum());
+            /** @var OptimizationOptionResult[] $optimizationResults */
+            $optimizationResults = $optimizeImageService->optimize($imageForTesting);
+
+            foreach ($optimizationResults as $optimizationResult) {
+                fwrite(STDOUT, CliDisplayUtility::displayOptimizationOptionResult($optimizationResult));
+            }
+
+            /** @var OptimizationOptionResult $defaultResult */
+            $defaultResult = isset($optimizationResults['default'])
+                ? $optimizationResults['default']
+                : reset($optimizationResults);
+
+            $this->assertEquals(
+                $defaultResult->getOptimizationStepResults()->count(),
+                $defaultResult->getExecutedSuccessfullyNum()
+            );
         } else {
             throw new Exception('Image for testing is not existing:' . $imageForTesting);
         }
@@ -81,7 +92,7 @@ class OptimizeImageServiceTest extends UnitTestCase
      */
     public function imageIsOptimized($image)
     {
-        fwrite(STDOUT, "\n" . 'TEST if all providers was executed succesfully.' . "\n");
+        fwrite(STDOUT, "\n" . 'TEST has been optimized.' . "\n");
 
         /** @var \SourceBroker\Imageopt\Service\OptimizeImageService $optimizeImageService */
         $optimizeImageService = $this->getMockBuilder(OptimizeImageService::class)
@@ -94,10 +105,18 @@ class OptimizeImageServiceTest extends UnitTestCase
         $imageForTesting = $temporaryFileUtility->createTemporaryCopy($orignalImagePath);
         if (is_readable($imageForTesting)) {
             $originalFileSize = filesize($imageForTesting);
-            /** @var OptimizationResult $optimizationResult */
-            $optimizationResult = $optimizeImageService->optimize($imageForTesting, $orignalImagePath);
-            fwrite(STDOUT, CliDisplayUtility::displayOptimizationResult($optimizationResult));
-            $this->assertGreaterThan($optimizationResult->getSizeAfter(), $originalFileSize);
+            /** @var OptimizationOptionResult[] $optimizationResults */
+            $optimizationResults = $optimizeImageService->optimize($imageForTesting);
+
+            foreach ($optimizationResults as $optimizationResult) {
+                fwrite(STDOUT, CliDisplayUtility::displayOptimizationOptionResult($optimizationResult));
+            }
+
+            $defaultOptimizationResult = isset($optimizationResults['default'])
+                ? $optimizationResults['default']
+                : reset($optimizationResults);
+
+            $this->assertGreaterThan($defaultOptimizationResult->getSizeAfter(), $originalFileSize);
         } else {
             throw new Exception('Image for testing is not existing:' . $imageForTesting);
         }

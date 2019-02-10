@@ -84,12 +84,20 @@ class Configurator
     /**
      * Returns providers with given type
      *
-     * @param string|null $providerType
+     * @param string $providerType
+     * @param string $fileType
      * @return array
      */
-    public function getProviders($providerType = null)
+    public function getProviders($providerType, $fileType)
     {
-        return !empty($this->providers[$providerType]) ? $this->providers[$providerType] : [];
+        $providers = !empty($this->providers[$providerType])
+            ? $this->providers[$providerType]
+            : [];
+
+        return array_filter($providers, function ($provider) use ($fileType) {
+            $providerFileTypes = explode(',', $provider['fileType']);
+            return in_array($fileType, $providerFileTypes);
+        });
     }
 
     /**
@@ -103,20 +111,33 @@ class Configurator
             throw new \Exception('Configuration not set for ImageOpt ext');
         }
 
-        if (empty($this->config['providers']) || !is_array($this->config['providers'])) {
+        if (!$this->isConfigBranchValid('providers')) {
             throw new \Exception('Providers are not defined.');
         }
 
-        foreach ($this->config['providers'] as $providerKey => $providerValues) {
-            if (!empty($this->config['providersDefault']) && is_array($this->config['providersDefault'])) {
-                $this->config['providers'][$providerKey] = ArrayUtility::arrayMergeAsFallback($providerValues,
-                    $this->config['providersDefault']);
+        if (!$this->isConfigBranchValid('optimize')) {
+            throw new \Exception('Optimize modes are not defined.');
+        }
+
+        foreach ($this->config['optimize'] as $name => &$optimizeMode) {
+            if (empty($optimizeMode['name'])) {
+                $optimizeMode['name'] = $name;
             }
-            foreach ((array)$providerValues['executors'] as $executorKey => &$executorValues) {
-                if (!empty($this->config['executorsDefault']) && is_array($this->config['executorsDefault'])) {
+        }
+
+        foreach ($this->config['providers'] as $providerKey => $providerValues) {
+            if ($this->isConfigBranchValid('providersDefault')) {
+                $this->config['providers'][$providerKey] = ArrayUtility::arrayMergeAsFallback(
+                    $providerValues,
+                    $this->config['providersDefault']
+                );
+            }
+            foreach ($providerValues['executors'] as $executorKey => $executorValues) {
+                if ($this->isConfigBranchValid('executorsDefault')) {
                     $this->config['providers'][$providerKey]['executors'][$executorKey] = ArrayUtility::arrayMergeAsFallback(
                         $executorValues,
-                        $this->config['executorsDefault']);
+                        $this->config['executorsDefault']
+                    );
                 }
             }
         }
@@ -187,7 +208,8 @@ class Configurator
     public function getConfigForPage($rootPageForTsConfig = null)
     {
         if ($rootPageForTsConfig === null) {
-            $rootPageForTsConfigRow = GeneralUtility::makeInstance($GLOBALS['TYPO3_CONF_VARS']['EXT']['EXTCONF']['imageopt']['database'])->getRootPages();
+            $rootPageForTsConfigRow = GeneralUtility::makeInstance($GLOBALS['TYPO3_CONF_VARS']['EXT']['EXTCONF']['imageopt']['database'])
+                ->getRootPages();
             if ($rootPageForTsConfigRow !== null) {
                 $rootPageForTsConfig = $rootPageForTsConfigRow['uid'];
             } else {
@@ -205,5 +227,14 @@ class Configurator
             throw new \Exception('There is no TSconfig for tx_imageopt in the root page id=' . $rootPageForTsConfig,
                 1501692752398);
         }
+    }
+
+    /**
+     * @param string $branch
+     * @return bool
+     */
+    protected function isConfigBranchValid($branch)
+    {
+        return !empty($this->config[$branch]) && is_array($this->config[$branch]);
     }
 }
