@@ -2,8 +2,6 @@
 
 namespace SourceBroker\Imageopt\Domain\Model;
 
-use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
-
 /***
  *
  * This file is part of the "imageopt" Extension for TYPO3 CMS.

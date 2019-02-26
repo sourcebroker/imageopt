@@ -4,8 +4,8 @@ namespace SourceBroker\Imageopt\Utility;
 
 use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
 use SourceBroker\Imageopt\Domain\Model\OptionResult;
-use SourceBroker\Imageopt\Domain\Model\StepResult;
 use SourceBroker\Imageopt\Domain\Model\ProviderResult;
+use SourceBroker\Imageopt\Domain\Model\StepResult;
 
 class CliDisplayUtility
 {
