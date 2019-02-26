@@ -117,7 +117,7 @@ return [
                 'default' => 0,
             ]
         ],
-        'providerresult' => [
+        'provider_result' => [
             'config' => [
                 'type' => 'passthrough',
             ],

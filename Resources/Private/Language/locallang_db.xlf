@@ -49,7 +49,7 @@
 				<source>Error Message</source>
 			</trans-unit>
 			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult">
-				<source>Optimization Option Result</source>
+				<source>Image Optimization Result</source>
 			</trans-unit>
 			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult.file_relative_path">
 				<source>File Relative Path</source>
@@ -73,13 +73,13 @@
 				<source>Executed Successfully</source>
 			</trans-unit>
 			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult.optimization_step_results">
-				<source>Optimization Step Results</source>
+				<source>Image Optimization Step Results</source>
 			</trans-unit>
 			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult.info">
 				<source>Info</source>
 			</trans-unit>
 			<trans-unit id="tx_imageopt_domain_model_optimizationstepresult">
-				<source>Optimization Step Result</source>
+				<source>Image Optimization Step Result</source>
 			</trans-unit>
 			<trans-unit id="tx_imageopt_domain_model_optimizationstepresult.name">
 				<source>Name</source>

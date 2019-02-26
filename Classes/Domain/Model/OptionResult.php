@@ -14,7 +14,7 @@ namespace SourceBroker\Imageopt\Domain\Model;
  ***/
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
-class OptimizationOptionResult extends AbstractBaseResult
+class OptionResult extends AbstractBaseResult
 {
     /**
      * @var string
@@ -32,13 +32,13 @@ class OptimizationOptionResult extends AbstractBaseResult
     protected $info = '';
 
     /**
-     * @var ObjectStorage<OptimizationStepResult>
+     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\SourceBroker\Imageopt\Domain\Model\StepResult>
      */
-    protected $optimizationStepResults;
+    protected $stepResults;
 
     public function __construct()
     {
-        $this->optimizationStepResults = new ObjectStorage();
+        $this->stepResults = new ObjectStorage();
     }
 
     /**
@@ -78,21 +78,21 @@ class OptimizationOptionResult extends AbstractBaseResult
     }
 
     /**
-     * @param OptimizationStepResult $optimizationStepResult
+     * @param \SourceBroker\Imageopt\Domain\Model\StepResult $stepResult
      * @return static
      */
-    public function addOptimizationStepResult(OptimizationStepResult $optimizationStepResult)
+    public function addStepResult(StepResult $stepResult)
     {
-        $this->optimizationStepResults->attach($optimizationStepResult);
+        $this->stepResults->attach($stepResult);
         return $this;
     }
 
     /**
-     * @return ObjectStorage<OptimizationStepResult>
+     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\SourceBroker\Imageopt\Domain\Model\StepResult>
      */
-    public function getOptimizationStepResults()
+    public function getStepResults()
     {
-        return $this->optimizationStepResults;
+        return $this->stepResults;
     }
 
     /**
@@ -103,7 +103,7 @@ class OptimizationOptionResult extends AbstractBaseResult
     public function getExecutedSuccessfullyNum()
     {
         $num = 0;
-        foreach ($this->optimizationStepResults as $result) {
+        foreach ($this->stepResults as $result) {
             if ($result->isExecutedSuccessfully()) {
                 ++$num;
             }

@@ -108,14 +108,14 @@ return [
                 'readOnly' => 1,
             ]
         ],
-        'optimization_step_results' => [
+        'step_results' => [
             'exclude' => true,
             'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationoptionresult.optimization_step_results',
             'config' => [
                 'type' => 'inline',
                 'readOnly' => 1,
-                'foreign_table' => 'tx_imageopt_domain_model_optimizationstepresults',
-                'foreign_field' => 'optimizationresult',
+                'foreign_table' => 'tx_imageopt_domain_model_stepresult',
+                'foreign_field' => 'option_result',
                 'maxitems' => 9999,
                 'appearance' => [
                     'collapseAll' => 1,
@@ -127,6 +127,5 @@ return [
             ],
 
         ],
-
     ],
 ];

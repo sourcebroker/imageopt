@@ -110,7 +110,7 @@ return [
             'config' => [
                 'type' => 'inline',
                 'foreign_table' => 'tx_imageopt_domain_model_executorresult',
-                'foreign_field' => 'providerresult',
+                'foreign_field' => 'provider_result',
                 'maxitems' => 9999,
                 'appearance' => [
                     'collapseAll' => 1,
@@ -123,8 +123,7 @@ return [
             ],
 
         ],
-
-        'optimizationresult' => [
+        'step_result' => [
             'config' => [
                 'type' => 'passthrough',
             ],

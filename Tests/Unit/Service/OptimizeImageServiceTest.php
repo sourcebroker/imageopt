@@ -5,7 +5,7 @@ namespace SourceBroker\Imageopt\Tests\Unit\Service;
 use Exception;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
 use SourceBroker\Imageopt\Configuration\Configurator;
-use SourceBroker\Imageopt\Domain\Model\OptimizationOptionResult;
+use SourceBroker\Imageopt\Domain\Model\OptionResult;
 use SourceBroker\Imageopt\Service\OptimizeImageService;
 use SourceBroker\Imageopt\Utility\ArrayUtility;
 use SourceBroker\Imageopt\Utility\CliDisplayUtility;
@@ -61,20 +61,20 @@ class OptimizeImageServiceTest extends UnitTestCase
         $orignalImagePath = $this->typo3WebRoot . '/typo3conf/ext/imageopt/Tests/Fixture/Unit/OptimizeImageService/' . $image;
         $imageForTesting = $temporaryFileUtility->createTemporaryCopy($orignalImagePath);
         if (is_readable($imageForTesting)) {
-            /** @var OptimizationOptionResult[] $optimizationResults */
+            /** @var OptionResult[] $optimizationResults */
             $optimizationResults = $optimizeImageService->optimize($imageForTesting);
 
             foreach ($optimizationResults as $optimizationResult) {
-                fwrite(STDOUT, CliDisplayUtility::displayOptimizationOptionResult($optimizationResult));
+                fwrite(STDOUT, CliDisplayUtility::displayOptionResult($optimizationResult));
             }
 
-            /** @var OptimizationOptionResult $defaultResult */
+            /** @var OptionResult $defaultResult */
             $defaultResult = isset($optimizationResults['default'])
                 ? $optimizationResults['default']
                 : reset($optimizationResults);
 
             $this->assertEquals(
-                $defaultResult->getOptimizationStepResults()->count(),
+                $defaultResult->getStepResults()->count(),
                 $defaultResult->getExecutedSuccessfullyNum()
             );
         } else {
@@ -105,11 +105,11 @@ class OptimizeImageServiceTest extends UnitTestCase
         $imageForTesting = $temporaryFileUtility->createTemporaryCopy($orignalImagePath);
         if (is_readable($imageForTesting)) {
             $originalFileSize = filesize($imageForTesting);
-            /** @var OptimizationOptionResult[] $optimizationResults */
+            /** @var OptionResult[] $optimizationResults */
             $optimizationResults = $optimizeImageService->optimize($imageForTesting);
 
             foreach ($optimizationResults as $optimizationResult) {
-                fwrite(STDOUT, CliDisplayUtility::displayOptimizationOptionResult($optimizationResult));
+                fwrite(STDOUT, CliDisplayUtility::displayOptionResult($optimizationResult));
             }
 
             $defaultOptimizationResult = isset($optimizationResults['default'])

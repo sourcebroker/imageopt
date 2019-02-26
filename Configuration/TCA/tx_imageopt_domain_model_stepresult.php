@@ -11,14 +11,15 @@ return [
         'enablecolumns' => [
             'disabled' => 'hidden',
         ],
-        'searchFields' => 'name,size_before,size_after,optimization_bytes,optimization_percentage,provider_winner_name,executed_successfully,info,optimization_step_results',
+        'hideTable' => 1,
+        'searchFields' => 'name,size_before,size_after,optimization_bytes,optimization_percentage,provider_winner_name,executed_successfully,info',
         'iconfile' => 'EXT:imageopt/Resources/Public/Icons/tx_imageopt_domain_model_optimizationstepresult.gif'
     ],
     'interface' => [
-        'showRecordFieldList' => 'name, size_before, size_after, optimization_bytes, optimization_percentage, provider_winner_name, executed_successfully, info, optimization_step_results',
+        'showRecordFieldList' => 'name, size_before, size_after, optimization_bytes, optimization_percentage, provider_winner_name, executed_successfully, info',
     ],
     'types' => [
-        '1' => ['showitem' => 'name, --palette--;;sizes, --palette--;;optimization, provider_winner_name, info, executed_successfully, optimization_step_results'],
+        '1' => ['showitem' => 'name, --palette--;;sizes, --palette--;;optimization, provider_winner_name, info, executed_successfully, providers_results'],
     ],
     'palettes' => [
         'sizes' => [
@@ -115,7 +116,7 @@ return [
                 'type' => 'inline',
                 'readOnly' => 1,
                 'foreign_table' => 'tx_imageopt_domain_model_providerresult',
-                'foreign_field' => 'optimizationresult',
+                'foreign_field' => 'step_result',
                 'maxitems' => 9999,
                 'appearance' => [
                     'collapseAll' => 1,
@@ -126,6 +127,11 @@ return [
                 ],
             ],
 
+        ],
+        'option_result' => [
+            'config' => [
+                'type' => 'passthrough',
+            ],
         ],
 
     ],

@@ -7,17 +7,17 @@ use Nimut\TestingFramework\TestCase\UnitTestCase;
 /**
  * Test case.
  */
-class OptimizationStepResultTest extends UnitTestCase
+class StepResultTest extends UnitTestCase
 {
     /**
-     * @var \SourceBroker\Imageopt\Domain\Model\OptimizationStepResult
+     * @var \SourceBroker\Imageopt\Domain\Model\StepResult
      */
     protected $subject = null;
 
     protected function setUp()
     {
         parent::setUp();
-        $this->subject = new \SourceBroker\Imageopt\Domain\Model\OptimizationStepResult();
+        $this->subject = new \SourceBroker\Imageopt\Domain\Model\StepResult();
     }
 
     protected function tearDown()

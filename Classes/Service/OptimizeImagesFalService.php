@@ -25,8 +25,8 @@
 namespace SourceBroker\Imageopt\Service;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
-use SourceBroker\Imageopt\Domain\Model\OptimizationOptionResult;
-use SourceBroker\Imageopt\Domain\Repository\OptimizationOptionResultRepository;
+use SourceBroker\Imageopt\Domain\Model\OptionResult;
+use SourceBroker\Imageopt\Domain\Repository\OptionResultRepository;
 use SourceBroker\Imageopt\Resource\ProcessedFileRepository;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -60,9 +60,9 @@ class OptimizeImagesFalService
     private $optimizeImageService;
 
     /**
-     * @var OptimizationOptionResultRepository
+     * @var OptionResultRepository
      */
-    private $optimizationOptionResultRepository;
+    private $optionResultRepository;
 
     /**
      * OptimizeImagesFalService constructor.
@@ -78,19 +78,19 @@ class OptimizeImagesFalService
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->falProcessedFileRepository = $this->objectManager->get(ProcessedFileRepository::class);
         $this->optimizeImageService = $this->objectManager->get(OptimizeImageService::class, $config);
-        $this->optimizationOptionResultRepository = $this->objectManager->get(OptimizationOptionResultRepository::class);
+        $this->optionResultRepository = $this->objectManager->get(OptionResultRepository::class);
     }
 
     /**
      * @param $notOptimizedFileRaw array $notOptimizedProcessedFileRaw,
-     * @return OptimizationOptionResult|null
+     * @return OptionResult|null
      * @throws \Exception
      */
     public function optimizeFalProcessedFile($notOptimizedFileRaw)
     {
         $fileDoesNotExistOrNotReadable = false;
         $optimizationResultInfo = '';
-        $optimizationOptionResults = [];
+        $optionResults = [];
 
         /** @var ProcessedFile $processedFal */
         $processedFal = $this->falProcessedFileRepository->findByIdentifier($notOptimizedFileRaw['uid']);
@@ -98,14 +98,14 @@ class OptimizeImagesFalService
 
         if (file_exists($sourceFile)) {
             if (is_readable($sourceFile)) {
-                $optimizationOptionResults = $this->optimizeImageService->optimize($sourceFile);
+                $optionResults = $this->optimizeImageService->optimize($sourceFile);
 
-                $defaultOptimizationResult = isset($optimizationOptionResults['default'])
-                    ? $optimizationOptionResults['default']
-                    : reset($optimizationOptionResults);
+                $defaultOptimizationResult = isset($optionResults['default'])
+                    ? $optionResults['default']
+                    : reset($optionResults);
 
-                foreach ($optimizationOptionResults as $optimizationOptionResult) {
-                    $this->optimizationOptionResultRepository->add($optimizationOptionResult);
+                foreach ($optionResults as $optionResult) {
+                    $this->optionResultRepository->add($optionResult);
                 }
 
                 if ($defaultOptimizationResult->isExecutedSuccessfully()) {
@@ -128,20 +128,20 @@ class OptimizeImagesFalService
         }
 
         if ($fileDoesNotExistOrNotReadable) {
-            $optimizationOptionResult = $this->objectManager->get(OptimizationOptionResult::class)
+            $optionResult = $this->objectManager->get(OptionResult::class)
                 ->setFileRelativePath(substr($sourceFile, strlen(PATH_site)))
                 ->setExecutedSuccessfully(false)
                 ->setInfo($optimizationResultInfo);
 
-            $this->objectManager->get(OptimizationOptionResultRepository::class)
-                ->add($optimizationOptionResult);
+            $this->objectManager->get(OptionResultRepository::class)
+                ->add($optionResult);
 
-            $optimizationOptionResults[] = $optimizationOptionResult;
+            $optionResults[] = $optionResult;
         }
 
         $this->objectManager->get(PersistenceManager::class)->persistAll();
 
-        return $optimizationOptionResults;
+        return $optionResults;
     }
 
     /**

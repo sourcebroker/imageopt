@@ -3,8 +3,8 @@
 namespace SourceBroker\Imageopt\Utility;
 
 use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
-use SourceBroker\Imageopt\Domain\Model\OptimizationOptionResult;
-use SourceBroker\Imageopt\Domain\Model\OptimizationStepResult;
+use SourceBroker\Imageopt\Domain\Model\OptionResult;
+use SourceBroker\Imageopt\Domain\Model\StepResult;
 use SourceBroker\Imageopt\Domain\Model\ProviderResult;
 
 class CliDisplayUtility
@@ -13,15 +13,15 @@ class CliDisplayUtility
     /**
      * Displays optimization result in CLI window
      *
-     * @param OptimizationOptionResult $result
+     * @param OptionResult $result
      * @return string
      */
-    public static function displayOptimizationOptionResult(OptimizationOptionResult $result)
+    public static function displayOptionResult(OptionResult $result)
     {
         $stepProvidersInfo = [];
 
-        /** @var OptimizationStepResult[] $stepResults */
-        $stepResults = $result->getOptimizationStepResults()->toArray();
+        /** @var StepResult[] $stepResults */
+        $stepResults = $result->getStepResults()->toArray();
 
         foreach ($stepResults as $stepKey => $stepResult) {
             $providers = [];

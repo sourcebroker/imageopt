@@ -25,8 +25,8 @@
 namespace SourceBroker\Imageopt\Service;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
-use SourceBroker\Imageopt\Domain\Model\OptimizationOptionResult;
-use SourceBroker\Imageopt\Domain\Model\OptimizationStepResult;
+use SourceBroker\Imageopt\Domain\Model\OptionResult;
+use SourceBroker\Imageopt\Domain\Model\StepResult;
 use SourceBroker\Imageopt\Provider\OptimizationProvider;
 use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -68,7 +68,7 @@ class OptimizeImageService
      * Optimize image using chained Image Optimization Provider
      *
      * @param string $originalImagePath
-     * @return OptimizationOptionResult[]
+     * @return OptionResult[]
      * @throws \Exception
      */
     public function optimize($originalImagePath)
@@ -80,33 +80,33 @@ class OptimizeImageService
         // create original image copy - it may vary (provider may overwrite original image)
         $sourceImagePath = $this->temporaryFile->createTemporaryCopy($originalImagePath);
 
-        $optimizationOptionResults = [];
+        $OptionResults = [];
         foreach ((array)$this->configurator->getOption('optimize') as $optimizeOptionName => $optimizeOption) {
             $regexp = '@' . $optimizeOption['fileRegexp'] . '@';
             if (!preg_match($regexp, $originalImagePath)) {
                 continue;
             }
 
-            $optimizationOptionResults[$optimizeOptionName] = $this->optimizeSingleOption(
+            $OptionResults[$optimizeOptionName] = $this->optimizeSingleOption(
                 $optimizeOption,
                 $sourceImagePath,
                 $originalImagePath
             );
         }
 
-        return $optimizationOptionResults;
+        return $OptionResults;
     }
 
     /**
      * @param array $optimizeOption
      * @param string $sourceImagePath Path to original image COPY (default optimization mode will overwrite original image)
      * @param string $originalImagePath Path to original image
-     * @return OptimizationOptionResult
+     * @return OptionResult
      * @throws \Exception
      */
     protected function optimizeSingleOption($optimizeOption, $sourceImagePath, $originalImagePath)
     {
-        $optimizationOptionResult = GeneralUtility::makeInstance(OptimizationOptionResult::class)
+        $optionResult = GeneralUtility::makeInstance(OptionResult::class)
             ->setFileRelativePath(substr($originalImagePath, strlen(PATH_site)))
             ->setOptimizationMode($optimizeOption['name'])
             ->setSizeBefore(filesize($sourceImagePath))
@@ -122,19 +122,19 @@ class OptimizeImageService
                 continue;
             }
 
-            $optimizationStepResult = $this->optimizeWithBestProvider($chainImagePath, $providers);
-            $optimizationStepResult->setName($chainLinkName);
+            $stepResult = $this->optimizeWithBestProvider($chainImagePath, $providers);
+            $stepResult->setName($chainLinkName);
 
-            $optimizationOptionResult->addOptimizationStepResult($optimizationStepResult);
+            $optionResult->addStepResult($stepResult);
         }
 
-        if ($optimizationOptionResult->getExecutedSuccessfullyNum() == $optimizationOptionResult->getOptimizationStepResults()
+        if ($optionResult->getExecutedSuccessfullyNum() == $optionResult->getStepResults()
                 ->count()) {
-            $optimizationOptionResult->setExecutedSuccessfully(true);
+            $optionResult->setExecutedSuccessfully(true);
         }
 
         clearstatcache(true, $chainImagePath);
-        $optimizationOptionResult
+        $optionResult
             ->setSizeAfter(filesize($chainImagePath));
 
         // save under defined output path
@@ -145,19 +145,19 @@ class OptimizeImageService
             $optimizeOption['outputFilename']
         ));
 
-        return $optimizationOptionResult;
+        return $optionResult;
     }
 
     /**
      * @param string $chainImagePath
      * @param array $providers
-     * @return OptimizationStepResult
+     * @return StepResult
      * @throws \Exception
      */
     protected function optimizeWithBestProvider($chainImagePath, $providers)
     {
         clearstatcache(true, $chainImagePath);
-        $optimizationStepResult = GeneralUtility::makeInstance(OptimizationStepResult::class)
+        $stepResult = GeneralUtility::makeInstance(StepResult::class)
             ->setExecutedSuccessfully(false)
             ->setSizeBefore(filesize($chainImagePath));
 
@@ -191,30 +191,30 @@ class OptimizeImageService
                 if (filesize($tmpWorkingImagePath) < filesize($tmpBestImagePath)) {
                     // overwrite current (in chain link) best image
                     $tmpBestImagePath = $tmpWorkingImagePath;
-                    $optimizationStepResult->setProviderWinnerName($providerKey);
+                    $stepResult->setProviderWinnerName($providerKey);
                 }
             }
 
-            $optimizationStepResult->addProvidersResult($providerResult);
+            $stepResult->addProvidersResult($providerResult);
         }
 
         if ($providerEnabledCounter === 0) {
-            $optimizationStepResult->setInfo('No providers enabled (or defined).');
+            $stepResult->setInfo('No providers enabled (or defined).');
         } elseif ($providerExecutedSuccessfullyCounter === 0) {
-            $optimizationStepResult->setInfo('No winner. All providers were unsuccessfull.');
+            $stepResult->setInfo('No winner. All providers were unsuccessfull.');
         } else {
-            if ($optimizationStepResult->getOptimizationBytes() === 0) {
-                $optimizationStepResult->setInfo('No winner. Non of the optimized images was smaller than original.');
+            if ($stepResult->getOptimizationBytes() === 0) {
+                $stepResult->setInfo('No winner. Non of the optimized images was smaller than original.');
 
-                $optimizationStepResult
+                $stepResult
                     ->setExecutedSuccessfully(true)
                     ->setSizeAfter(filesize($chainImagePath));
             } else {
-                $optimizationStepResult->setInfo('Winner is ' . $optimizationStepResult->getProviderWinnerName() .
-                    ' with optimized image smaller by: ' . $optimizationStepResult->getOptimizationPercentage() . '%');
+                $stepResult->setInfo('Winner is ' . $stepResult->getProviderWinnerName() .
+                    ' with optimized image smaller by: ' . $stepResult->getOptimizationPercentage() . '%');
 
                 clearstatcache(true, $tmpBestImagePath);
-                $optimizationStepResult
+                $stepResult
                     ->setExecutedSuccessfully(true)
                     ->setSizeAfter(filesize($tmpBestImagePath));
 
@@ -225,7 +225,7 @@ class OptimizeImageService
 
         clearstatcache(true, $chainImagePath);
 
-        return $optimizationStepResult;
+        return $stepResult;
     }
 
     /**

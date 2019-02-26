@@ -12,7 +12,7 @@ namespace SourceBroker\Imageopt\Domain\Model;
  *  (c) 2017
  *
  ***/
-class OptimizationStepResult extends AbstractBaseResult
+class StepResult extends AbstractBaseResult
 {
 
     /**
