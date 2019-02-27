@@ -65,7 +65,7 @@ class OptimizeImageServiceTest extends UnitTestCase
             $optimizationResults = $optimizeImageService->optimize($imageForTesting);
 
             foreach ($optimizationResults as $optimizationResult) {
-                fwrite(STDOUT, CliDisplayUtility::displayOptionResult($optimizationResult));
+                fwrite(STDOUT, CliDisplayUtility::displayOptionResult($optimizationResult, $this->pluginConfig()));
             }
 
             /** @var OptionResult $defaultResult */
@@ -109,7 +109,7 @@ class OptimizeImageServiceTest extends UnitTestCase
             $optimizationResults = $optimizeImageService->optimize($imageForTesting);
 
             foreach ($optimizationResults as $optimizationResult) {
-                fwrite(STDOUT, CliDisplayUtility::displayOptionResult($optimizationResult));
+                fwrite(STDOUT, CliDisplayUtility::displayOptionResult($optimizationResult,$this->pluginConfig()));
             }
 
             $defaultOptimizationResult = isset($optimizationResults['default'])

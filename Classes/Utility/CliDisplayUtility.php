@@ -13,15 +13,14 @@ class CliDisplayUtility
     /**
      * Displays optimization result in CLI window
      *
-     * @param OptionResult $result
+     * @param OptionResult $optionResult
      * @return string
      */
-    public static function displayOptionResult(OptionResult $result)
+    public static function displayOptionResult(OptionResult $optionResult, $config)
     {
         $stepProvidersInfo = [];
-
         /** @var StepResult[] $stepResults */
-        $stepResults = $result->getStepResults()->toArray();
+        $stepResults = $optionResult->getStepResults()->toArray();
 
         foreach ($stepResults as $stepKey => $stepResult) {
             $providers = [];
@@ -71,29 +70,39 @@ class CliDisplayUtility
 
             $statsInfo = '';
             if (!empty($providers)) {
-                $statsInfo = 'Step ' . ($stepKey + 1) . "\t| "
+                $statsInfo = 'Step ' . ($stepKey + 1) . "\t\t| "
                     . $stepResult->getExecutedSuccessfullyNum() . ' out of ' . $stepResult->getProvidersResults()->count()
                     . ' providers finished successfully:' . "\n";
             }
-
-            $stepProvidersInfo[] = $statsInfo .
-                "\t| " . implode("\n\t| ", $providers);
+            if (strlen($statsInfo)) {
+                $stepProvidersInfo[] = $statsInfo .
+                    "\t\t| " . implode("\n\t\t| ", $providers);
+            }
         }
+        $pathInfo = pathinfo($optionResult->getFileRelativePath());
+        $outputFile = str_replace(
+            ['{dirname}', '{basename}', '{extension}', '{filename}'],
+            [$pathInfo['dirname'], $pathInfo['basename'], $pathInfo['extension'], $pathInfo['filename']],
+            $config['mode'][$optionResult->getOptimizationMode()]['outputFilename']
+        );
 
-        $output = '---------------------------------' . "\n" .
-            "File\t| " . $result->getFileRelativePath() . "\n" .
-            "Mode\t| " . $result->getOptimizationMode() . "\n" .
-            "Result\t| ";
+        $output = '---------------------------------------------------------------------' . "\n" .
+            "File in\t\t| " . $optionResult->getFileRelativePath() . "\n" .
+            "File out\t| " . $outputFile . "\n" .
+            "Mode\t\t| " . $optionResult->getOptimizationMode() . "\n" .
+            "Result\t\t| ";
 
-        if ($result->isExecutedSuccessfully()) {
-            $output .= 'OK ' . round($result->getOptimizationPercentage(), 2) . '%';
+        if ($optionResult->isExecutedSuccessfully()) {
+            $output .= 'OK ' . round($optionResult->getOptimizationPercentage(), 2) . '%';
         } else {
-            $output .= 'Failed';
+            $output .= 'Failed ';
         }
-
-        $output .= implode("\n\n\t| ", explode("\n", wordwrap($result->getInfo(), 70))) . "\n\n" .
-            implode("\n\n", $stepProvidersInfo) . "\n\n";
-
+        if (strlen($optionResult->getInfo())) {
+            $output .= implode("\n\n\t\t| ", explode("\n", wordwrap($optionResult->getInfo(), 70)));
+        }
+        if (!empty($stepProvidersInfo)) {
+            $output .= "\n\n" . implode("\n\n", $stepProvidersInfo) . "\n\n";
+        }
         return $output;
     }
 }

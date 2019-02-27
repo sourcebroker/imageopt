@@ -51,7 +51,7 @@ class ImageoptCommandController extends CommandController
             foreach ($filesToProcess as $fileToProcess) {
                 $optimizationResults = $optimizeImagesFalService->optimizeFalProcessedFile($fileToProcess);
                 foreach ($optimizationResults as $optimizationResult) {
-                    $this->outputLine(CliDisplayUtility::displayOptionResult($optimizationResult));
+                    $this->outputLine(CliDisplayUtility::displayOptionResult($optimizationResult, $configurator->getConfig()));
                 }
             }
         } else {

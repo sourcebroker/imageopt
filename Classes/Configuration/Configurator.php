@@ -115,11 +115,11 @@ class Configurator
             throw new \Exception('Providers are not defined.');
         }
 
-        if (!$this->isConfigBranchValid('optimize')) {
+        if (!$this->isConfigBranchValid('mode')) {
             throw new \Exception('Optimize modes are not defined.');
         }
 
-        foreach ($this->config['optimize'] as $name => &$optimizeMode) {
+        foreach ($this->config['mode'] as $name => &$optimizeMode) {
             if (empty($optimizeMode['name'])) {
                 $optimizeMode['name'] = $name;
             }

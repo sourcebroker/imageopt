@@ -80,21 +80,21 @@ class OptimizeImageService
         // create original image copy - it may vary (provider may overwrite original image)
         $sourceImagePath = $this->temporaryFile->createTemporaryCopy($originalImagePath);
 
-        $OptionResults = [];
-        foreach ((array)$this->configurator->getOption('optimize') as $optimizeOptionName => $optimizeOption) {
+        $optionResults = [];
+        foreach ((array)$this->configurator->getOption('mode') as $optimizeOptionName => $optimizeOption) {
             $regexp = '@' . $optimizeOption['fileRegexp'] . '@';
             if (!preg_match($regexp, $originalImagePath)) {
                 continue;
             }
 
-            $OptionResults[$optimizeOptionName] = $this->optimizeSingleOption(
+            $optionResults[$optimizeOptionName] = $this->optimizeSingleOption(
                 $optimizeOption,
                 $sourceImagePath,
                 $originalImagePath
             );
         }
 
-        return $OptionResults;
+        return $optionResults;
     }
 
     /**
@@ -115,7 +115,7 @@ class OptimizeImageService
         $chainImagePath = $this->temporaryFile->createTemporaryCopy($sourceImagePath);
 
         // execute all providers in chain
-        foreach ($optimizeOption['chain'] as $chainLinkName => $chainLink) {
+        foreach ($optimizeOption['step'] as $chainLinkName => $chainLink) {
             $providers = $this->findProvidersForFile($originalImagePath, $chainLink['providerType']);
             if (empty($providers)) {
                 // skip this chain link - no providers for this type of image
