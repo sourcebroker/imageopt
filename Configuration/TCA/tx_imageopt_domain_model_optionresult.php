@@ -15,10 +15,10 @@ return [
         'iconfile' => 'EXT:imageopt/Resources/Public/Icons/tx_imageopt_domain_model_optimizationoptionresult.gif'
     ],
     'interface' => [
-        'showRecordFieldList' => 'file_relative_path, size_before, size_after, optimization_bytes, optimization_percentage, provider_winner_name, executed_successfully, info, optimization_step_results',
+        'showRecordFieldList' => 'file_relative_path, size_before, size_after, optimization_bytes, optimization_percentage, provider_winner_name, executed_successfully, info, step_results',
     ],
     'types' => [
-        '1' => ['showitem' => 'file_relative_path, --palette--;;sizes, --palette--;;optimization, provider_winner_name, info, executed_successfully, optimization_step_results'],
+        '1' => ['showitem' => 'file_relative_path, --palette--;;sizes, --palette--;;optimization, provider_winner_name, info, executed_successfully, step_results'],
     ],
     'palettes' => [
         'sizes' => [
@@ -70,16 +70,6 @@ return [
                 'type' => 'input',
                 'size' => 4,
                 'eval' => 'int',
-                'readOnly' => 1
-            ],
-        ],
-        'provider_winner_name' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationoptionresult.provider_winner_name',
-            'config' => [
-                'type' => 'input',
-                'size' => 200,
-                'eval' => 'trim',
                 'readOnly' => 1
             ],
         ],

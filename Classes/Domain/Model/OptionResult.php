@@ -24,7 +24,12 @@ class OptionResult extends AbstractBaseResult
     /**
      * @var string
      */
-    protected $optimizationMode = '';
+    protected $name = '';
+
+    /**
+     * @var string
+     */
+    protected $description = '';
 
     /**
      * @var string
@@ -62,18 +67,36 @@ class OptionResult extends AbstractBaseResult
     /**
      * @return string $fileRelativePath
      */
-    public function getOptimizationMode()
+    public function getName()
     {
-        return $this->optimizationMode;
+        return $this->name;
     }
 
     /**
-     * @param string $optimizationMode
+     * @param string $name
      * @return static
      */
-    public function setOptimizationMode($optimizationMode)
+    public function setName($name)
     {
-        $this->optimizationMode = $optimizationMode;
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * @return string $fileRelativePath
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     * @return static
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
         return $this;
     }
 

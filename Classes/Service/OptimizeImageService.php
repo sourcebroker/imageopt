@@ -80,69 +80,68 @@ class OptimizeImageService
         // create original image copy - it may vary (provider may overwrite original image)
         $sourceImagePath = $this->temporaryFile->createTemporaryCopy($originalImagePath);
 
-        $optionResults = [];
-        foreach ((array)$this->configurator->getOption('mode') as $optimizeOptionName => $optimizeOption) {
-            $regexp = '@' . $optimizeOption['fileRegexp'] . '@';
+        $modeResults = [];
+        foreach ((array)$this->configurator->getOption('mode') as $modeKey => $modeConfig) {
+            $regexp = '@' . $modeConfig['fileRegexp'] . '@';
+            $modeConfig['name'] = $modeKey;
             if (!preg_match($regexp, $originalImagePath)) {
                 continue;
             }
 
-            $optionResults[$optimizeOptionName] = $this->optimizeSingleOption(
-                $optimizeOption,
+            $modeResults[$modeKey] = $this->optimizeSingleOption(
+                $modeConfig,
                 $sourceImagePath,
                 $originalImagePath
             );
         }
 
-        return $optionResults;
+        return $modeResults;
     }
 
     /**
-     * @param array $optimizeOption
+     * @param array $modeConfig
      * @param string $sourceImagePath Path to original image COPY (default optimization mode will overwrite original image)
      * @param string $originalImagePath Path to original image
      * @return OptionResult
      * @throws \Exception
      */
-    protected function optimizeSingleOption($optimizeOption, $sourceImagePath, $originalImagePath)
+    protected function optimizeSingleOption($modeConfig, $sourceImagePath, $originalImagePath)
     {
         $optionResult = GeneralUtility::makeInstance(OptionResult::class)
             ->setFileRelativePath(substr($originalImagePath, strlen(PATH_site)))
-            ->setOptimizationMode($optimizeOption['name'])
+            ->setName($modeConfig['name'])
+            ->setDescription($modeConfig['description'])
             ->setSizeBefore(filesize($sourceImagePath))
             ->setExecutedSuccessfully(false);
 
         $chainImagePath = $this->temporaryFile->createTemporaryCopy($sourceImagePath);
 
-        // execute all providers in chain
-        foreach ($optimizeOption['step'] as $chainLinkName => $chainLink) {
-            $providers = $this->findProvidersForFile($originalImagePath, $chainLink['providerType']);
+        foreach ($modeConfig['step'] as $stepKey => $stepConfig) {
+            $providers = $this->findProvidersForFile($originalImagePath, $stepConfig['providerType']);
             if (empty($providers)) {
-                // skip this chain link - no providers for this type of image
+                // skip this step - no providers for this type of image
                 continue;
             }
-
             $stepResult = $this->optimizeWithBestProvider($chainImagePath, $providers);
-            $stepResult->setName($chainLinkName);
-
+            $stepResult->setName(!empty($stepConfig['name']) ?
+                $stepConfig['name'] : $stepKey);
+            $stepResult->setDescription(!empty($stepConfig['description']) ?
+                $stepConfig['description'] : $stepKey);
             $optionResult->addStepResult($stepResult);
         }
 
-        if ($optionResult->getExecutedSuccessfullyNum() == $optionResult->getStepResults()
-                ->count()) {
+        if ($optionResult->getExecutedSuccessfullyNum() == $optionResult->getStepResults()->count()) {
             $optionResult->setExecutedSuccessfully(true);
         }
 
         clearstatcache(true, $chainImagePath);
-        $optionResult
-            ->setSizeAfter(filesize($chainImagePath));
+        $optionResult->setSizeAfter(filesize($chainImagePath));
 
-        // save under defined output path
         $pathInfo = pathinfo($originalImagePath);
         copy($chainImagePath, str_replace(
             ['{dirname}', '{basename}', '{extension}', '{filename}'],
             [$pathInfo['dirname'], $pathInfo['basename'], $pathInfo['extension'], $pathInfo['filename']],
-            $optimizeOption['outputFilename']
+            $modeConfig['outputFilename']
         ));
 
         return $optionResult;

@@ -23,12 +23,35 @@ class StepResult extends AbstractBaseResult
     /**
      * @var string
      */
+    protected $description = '';
+
+    /**
+     * @var string
+     */
     protected $providerWinnerName = '';
 
     /**
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\SourceBroker\Imageopt\Domain\Model\ProviderResult>
      */
     protected $providersResults = null;
+
+    /**
+     * @return string $fileRelativePath
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     * @return static
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+        return $this;
+    }
 
     /**
      * @var string

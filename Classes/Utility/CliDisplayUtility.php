@@ -70,9 +70,9 @@ class CliDisplayUtility
 
             $statsInfo = '';
             if (!empty($providers)) {
-                $statsInfo = 'Step ' . ($stepKey + 1) . "\t\t| "
-                    . $stepResult->getExecutedSuccessfullyNum() . ' out of ' . $stepResult->getProvidersResults()->count()
-                    . ' providers finished successfully:' . "\n";
+                $providerType = $config['mode'][$optionResult->getName()]['step'][$stepResult->getName()]['providerType'];
+                $statsInfo = 'Step ' . ($stepKey + 1) . "\t\t| " . $stepResult->getDescription() . "\n"
+                    . "\t\t| Finding providers for: \"" . $providerType . "\"... found " . $stepResult->getProvidersResults()->count() . "\n";
             }
             if (strlen($statsInfo)) {
                 $stepProvidersInfo[] = $statsInfo .
@@ -83,26 +83,26 @@ class CliDisplayUtility
         $outputFile = str_replace(
             ['{dirname}', '{basename}', '{extension}', '{filename}'],
             [$pathInfo['dirname'], $pathInfo['basename'], $pathInfo['extension'], $pathInfo['filename']],
-            $config['mode'][$optionResult->getOptimizationMode()]['outputFilename']
+            $config['mode'][$optionResult->getName()]['outputFilename']
         );
 
         $output = '---------------------------------------------------------------------' . "\n" .
             "File in\t\t| " . $optionResult->getFileRelativePath() . "\n" .
             "File out\t| " . $outputFile . "\n" .
-            "Mode\t\t| " . $optionResult->getOptimizationMode() . "\n" .
-            "Result\t\t| ";
+            "Mode\t\t| " . $optionResult->getDescription() . ' (mode: ' . $optionResult->getName() . ')' . "\n";
 
+        if (strlen($optionResult->getInfo())) {
+            $output .= implode("\t\t| ", explode("\n", wordwrap($optionResult->getInfo(), 100))) . "\n";
+        }
+        if (!empty($stepProvidersInfo)) {
+            $output .= implode("\n", $stepProvidersInfo);
+        }
+        $output .= "\n\n" . "Result\t\t| ";
         if ($optionResult->isExecutedSuccessfully()) {
             $output .= 'OK ' . round($optionResult->getOptimizationPercentage(), 2) . '%';
         } else {
             $output .= 'Failed ';
         }
-        if (strlen($optionResult->getInfo())) {
-            $output .= implode("\n\n\t\t| ", explode("\n", wordwrap($optionResult->getInfo(), 70)));
-        }
-        if (!empty($stepProvidersInfo)) {
-            $output .= "\n\n" . implode("\n\n", $stepProvidersInfo) . "\n\n";
-        }
-        return $output;
+        return $output . "\n\n";
     }
 }
