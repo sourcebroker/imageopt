@@ -65,19 +65,31 @@ class CliDisplayUtility
             $providers = array_values($providers);
 
             foreach ($providers as $i => &$provider) {
-                $provider = ($i + 1) . ') ' . $provider;
+                $provider = '* ' . $provider;
             }
 
-            $statsInfo = '';
+            $providerType = $config['mode'][$optionResult->getName()]['step'][$stepResult->getName()]['providerType'];
+            $stepResultFinal = ($stepResult->getProvidersResults()->count() > 0 &&
+            $stepResult->getProvidersResults()->count() == $stepResult->getExecutedSuccessfullyNum() ? 'OK' : 'FAIL');
+
+            $fileType = strtolower(explode('/',
+                image_type_to_mime_type(getimagesize($optionResult->getFileRelativePath())[2]))[1]);
+
+            $statsInfo = 'Step ' . ($stepKey + 1) . "\t\t| Description: " . $stepResult->getDescription() . "\n"
+            . "\t\t| Providers to find for this step: \"" . $providerType . "\" for file type \"" . $fileType . "\"\n"
+            . "\t\t| Found " . $stepResult->getProvidersResults()->count() . " provider" . ($stepResult->getProvidersResults()->count() > 1 ? 's' : '')
+                . " for \"" . $providerType . "\" and file type \"" . $fileType . "\". ";
+
             if (!empty($providers)) {
-                $providerType = $config['mode'][$optionResult->getName()]['step'][$stepResult->getName()]['providerType'];
-                $statsInfo = 'Step ' . ($stepKey + 1) . "\t\t| " . $stepResult->getDescription() . "\n"
-                    . "\t\t| Finding providers for: \"" . $providerType . "\"... found " . $stepResult->getProvidersResults()->count() . "\n";
+                $statsInfo .= "Running found providers:\n"
+                    . "\t\t| " . implode("\n\t\t| ", $providers);
             }
-            if (strlen($statsInfo)) {
-                $stepProvidersInfo[] = $statsInfo .
-                    "\t\t| " . implode("\n\t\t| ", $providers);
+            $statsInfo .= "\n\t\t| Result: " . $stepResultFinal . "\n"
+                . "\t\t| " . $stepResult->getInfo() . "\n";
+            if($stepKey < $optionResult->getStepResults()->count() ) {
+                $statsInfo .= "\t\t| Passing the output file of this step to next step...";
             }
+            $stepProvidersInfo[] = $statsInfo;
         }
         $pathInfo = pathinfo($optionResult->getFileRelativePath());
         $outputFile = str_replace(
@@ -89,7 +101,9 @@ class CliDisplayUtility
         $output = '---------------------------------------------------------------------' . "\n" .
             "File in\t\t| " . $optionResult->getFileRelativePath() . "\n" .
             "File out\t| " . $outputFile . "\n" .
-            "Mode\t\t| " . $optionResult->getDescription() . ' (mode: ' . $optionResult->getName() . ')' . "\n";
+            "Mode\t\t| Name: " . $optionResult->getName() . "\n" .
+            "\t\t| Description: " . $optionResult->getDescription() . "\n" .
+            "\t\t| Number of steps: " . $optionResult->getStepResults()->count() . "\n";
 
         if (strlen($optionResult->getInfo())) {
             $output .= implode("\t\t| ", explode("\n", wordwrap($optionResult->getInfo(), 100))) . "\n";
@@ -101,7 +115,7 @@ class CliDisplayUtility
         if ($optionResult->isExecutedSuccessfully()) {
             $output .= 'OK ' . round($optionResult->getOptimizationPercentage(), 2) . '%';
         } else {
-            $output .= 'Failed ';
+            $output .= 'FAIL ';
         }
         return $output . "\n\n";
     }

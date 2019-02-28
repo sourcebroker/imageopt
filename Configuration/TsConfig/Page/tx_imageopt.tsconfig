@@ -23,7 +23,6 @@ tx_imageopt {
                 10 {
                     providerType = webp
                     description = Webp convert
-                    description = Webp convert
                 }
             }
             fileRegexp = \.(jpg|jpeg|png)$

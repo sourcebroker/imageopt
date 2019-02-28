@@ -117,19 +117,21 @@ class OptimizeImageService
         $chainImagePath = $this->temporaryFile->createTemporaryCopy($sourceImagePath);
 
         foreach ($modeConfig['step'] as $stepKey => $stepConfig) {
+            $stepResult = GeneralUtility::makeInstance(StepResult::class)
+                ->setExecutedSuccessfully(false)
+                ->setSizeBefore(filesize($chainImagePath))
+                ->setName(!empty($stepConfig['name']) ? $stepConfig['name'] : $stepKey)
+                ->setDescription(!empty($stepConfig['description']) ? $stepConfig['description'] : $stepKey);
+
             $providers = $this->findProvidersForFile($originalImagePath, $stepConfig['providerType']);
             if (empty($providers)) {
                 // skip this step - no providers for this type of image
+                $stepResult->setInfo('No providers found for "' . $stepConfig['providerType'] . '"');
                 continue;
             }
-            $stepResult = $this->optimizeWithBestProvider($chainImagePath, $providers);
-            $stepResult->setName(!empty($stepConfig['name']) ?
-                $stepConfig['name'] : $stepKey);
-            $stepResult->setDescription(!empty($stepConfig['description']) ?
-                $stepConfig['description'] : $stepKey);
+            $this->optimizeWithBestProvider($stepResult, $chainImagePath, $providers);
             $optionResult->addStepResult($stepResult);
         }
-
         if ($optionResult->getExecutedSuccessfullyNum() == $optionResult->getStepResults()->count()) {
             $optionResult->setExecutedSuccessfully(true);
         }
@@ -148,17 +150,15 @@ class OptimizeImageService
     }
 
     /**
+     * @param $stepResult
      * @param string $chainImagePath
      * @param array $providers
      * @return StepResult
      * @throws \Exception
      */
-    protected function optimizeWithBestProvider($chainImagePath, $providers)
+    protected function optimizeWithBestProvider($stepResult, $chainImagePath, $providers)
     {
         clearstatcache(true, $chainImagePath);
-        $stepResult = GeneralUtility::makeInstance(StepResult::class)
-            ->setExecutedSuccessfully(false)
-            ->setSizeBefore(filesize($chainImagePath));
 
         $providerExecutedCounter = 0;
         $providerExecutedSuccessfullyCounter = 0;
