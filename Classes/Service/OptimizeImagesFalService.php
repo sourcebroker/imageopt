@@ -28,6 +28,7 @@ use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Domain\Model\OptionResult;
 use SourceBroker\Imageopt\Domain\Repository\OptionResultRepository;
 use SourceBroker\Imageopt\Resource\ProcessedFileRepository;
+use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -110,7 +111,8 @@ class OptimizeImagesFalService
 
                 if ($defaultOptimizationResult->isExecutedSuccessfully()) {
                     if ($defaultOptimizationResult->getSizeBefore() > $defaultOptimizationResult->getSizeAfter()) {
-                        $processedFal->updateWithLocalFile($sourceFile);
+                        $processedFal->updateWithLocalFile(
+                            $this->objectManager->get(TemporaryFileUtility::class)->createTemporaryCopy($sourceFile));
                     }
                     $processedFal->updateProperties(['tx_imageopt_executed_successfully' => 1]);
                     $this->falProcessedFileRepository->update($processedFal);
