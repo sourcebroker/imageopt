@@ -1,78 +1,31 @@
 tx_imageopt {
     directories = typo3temp/pics*jpg|gif|png,typo3temp/GB*jpg|gif|png,typo3temp/assets/images*jpg|gif|png,
-
-    mode {
-        default {
-            description = Saving with low quality and the same name
-            step {
-                10 {
-                    providerType = lossyLow
-                    description = Lossy, low quality image optimisation
-                }
-                20 {
-                    providerType = lossless
-                    description = Lossless image optimisation
-                }
-            }
-            fileRegexp = .*
-            outputFilename = {dirname}/{filename}.{extension}
-        }
-        webp {
-            description = Saving under webp format and different name
-            step {
-                10 {
-                    providerType = webp
-                    description = Webp convert
-                }
-            }
-            fileRegexp = \.(jpg|jpeg|png)$
-            outputFilename = {dirname}/{filename}.{extension}.webp
-        }
-        highQuality {
-            description = Saving with high quality and differnt name
-            step {
-                10 {
-                    providerType = lossyGood
-                    description = Lossy, good quality image optimisation
-                }
-                20 {
-                    providerType = lossless
-                    description = Lossless image optimisation
-                }
-            }
-            fileRegexp = .*
-            outputFilename = {dirname}/{filename}-hq.{extension}
-        }
-    }
-
     executorsDefault {
         /* not supported yet
         notifications {
-        limitsExeeded {
-        active = 1
-        }
+            limitsExeeded {
+                active = 1
+            }
         }
         */
     }
-
     providersDefault {
         enabled = 0
         /* not supported yet
         email {
-        sender {
-        email =
-        name =
-        }
-        reciver {
-        email =
-        name =
-        }
+            sender {
+                email =
+                name =
+            }
+            reciver {
+                email =
+                name =
+            }
         }
         */
     }
-
     providers {
-        webp {
+        webpImagemagick {
             type = webp
             fileType = jpeg,png
             executors {
@@ -85,7 +38,6 @@ tx_imageopt {
                 }
             }
         }
-
         jpegoptim {
             type = lossyGood,lossyLow
             fileType = jpeg
@@ -109,7 +61,6 @@ tx_imageopt {
                 }
             }
         }
-
         jpegtran {
             type = lossless
             fileType = jpeg
@@ -123,7 +74,6 @@ tx_imageopt {
                 }
             }
         }
-
         jpegtranMozjpeg {
             type = lossless
             fileType = jpeg
@@ -137,7 +87,6 @@ tx_imageopt {
                 }
             }
         }
-
         mozjpeg {
             type = lossyLow,lossyGood
             typeOverride.lossyLow.executors.10.options.quality.value = lossyLow
@@ -169,7 +118,6 @@ tx_imageopt {
                 }
             }
         }
-
         gifsicle {
             type = lossless
             fileType = gif
@@ -183,7 +131,6 @@ tx_imageopt {
                 }
             }
         }
-
         optipng {
             type = lossless
             fileType = png
@@ -197,7 +144,6 @@ tx_imageopt {
                 }
             }
         }
-
         pngcrush {
             type = lossless
             fileType = png
@@ -211,7 +157,6 @@ tx_imageopt {
                 }
             }
         }
-
         pngquant {
             type = lossyLow,lossyGood
             typeOverride.lossyLow.executors.10.options.quality.value = lossyLow
@@ -236,7 +181,6 @@ tx_imageopt {
                 }
             }
         }
-
         pngquantPngcrush {
             type = lossyLow,lossyGood
             fileType = png
@@ -245,12 +189,12 @@ tx_imageopt {
                 20 < tx_imageopt.providers.pngcrush.executors.10
             }
         }
-
         kraken {
-            type = lossyLow,lossyGood,lossless
+            type = lossyLow,lossyGood,lossless,webp
             // do not set for "number" quality becase kraken inteligent optimisation - its enough to make "lossy = true"
             typeOverride.lossyGood.executors.10.api.options.lossy = true
             typeOverride.lossyLow.executors.10.api.options.quality = 6
+            typeOverride.webp.executors.10.api.options.webp = true
             fileType = jpeg,png,gif
             executors {
                 10 {
@@ -267,7 +211,6 @@ tx_imageopt {
                 }
             }
         }
-
         tinypng {
             // tinypng has no way to force quality of loosles so it can not be provider for "lossyLow" quality
             type = lossyGood
@@ -287,7 +230,6 @@ tx_imageopt {
                 }
             }
         }
-
         imageoptim {
             type = lossyLow,lossyGood,lossless
             typeOverride.lossless.executors.10.options.quality.value = lossless

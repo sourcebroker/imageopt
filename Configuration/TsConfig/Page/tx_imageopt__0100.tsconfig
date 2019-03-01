@@ -1,0 +1,41 @@
+// [LOCAL] Good standard. mozjpeg / pngquant / gifsicle + loosless finishers.
+
+<INCLUDE_TYPOSCRIPT: source="FILE:EXT:imageopt/Configuration/TsConfig/Page/tx_imageopt.tsconfig">
+tx_imageopt {
+    mode {
+        default {
+            description = Saving with high quality and the same filename.
+            step {
+                10 {
+                    providerType = lossyGood
+                    description = Lossy, good quality image optimisation.
+                }
+                20 {
+                    providerType = lossless
+                    description = Lossless image optimisation.
+                }
+            }
+            fileRegexp = .*
+            outputFilename = {dirname}/{filename}.{extension}
+        }
+        webp {
+            description = Saving under webp format and different name.
+            step {
+                10 {
+                    providerType = webp
+                    description = Webp convert
+                }
+            }
+            fileRegexp = \.(jpg|jpeg|png)$
+            outputFilename = {dirname}/{filename}.{extension}.webp
+        }
+    }
+    providers {
+        mozjpeg.enable = 1
+        jpegtranMozjpeg.enable = 1
+        pngquant.enable = 1
+        pngcrush.enable = 1
+        gifsicle.enable = 1
+        webpImagemagick.enabled = 1
+    }
+}

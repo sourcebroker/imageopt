@@ -1,0 +1,54 @@
+// [LOCAL] Default as low quality && additional image with good quality && webp.
+
+<INCLUDE_TYPOSCRIPT: source="FILE:EXT:imageopt/Configuration/TsConfig/Page/tx_imageopt.tsconfig">
+
+tx_imageopt {
+    mode {
+        default {
+            description = Saving with low quality and the same name.
+            step {
+                10 {
+                    providerType = lossyLow
+                    description = Lossy, low quality image optimisation.
+                }
+                20 {
+                    providerType = lossless
+                    description = Lossless image optimisation.
+                }
+            }
+            fileRegexp = .*
+        }
+        webp {
+            description = Saving under webp format and different name.
+            step {
+                10 {
+                    providerType = webp
+                    description = Webp convert
+                }
+            }
+            fileRegexp = \.(jpg|jpeg|png)$
+            outputFilename = {dirname}/{filename}.{extension}.webp
+        }
+        highQuality {
+            description = Saving with high quality and differnt name.
+            step {
+                10 {
+                    providerType = lossyGood
+                    description = Lossy, good quality image optimisation.
+                }
+                20 {
+                    providerType = lossless
+                    description = Lossless image optimisation.
+                }
+            }
+            fileRegexp = .*
+            outputFilename = {dirname}/{filename}-hq.{extension}
+        }
+    }
+    providers {
+        mozjpeg.enable = 1
+        jpegtranMozjpeg.enable = 1
+        pngquant.enable = 1
+        pngcrush.enable = 1
+    }
+}

@@ -124,13 +124,15 @@ class Configurator
                 $optimizeMode['name'] = $name;
             }
         }
-
         foreach ($this->config['providers'] as $providerKey => $providerValues) {
             if ($this->isConfigBranchValid('providersDefault')) {
                 $this->config['providers'][$providerKey] = ArrayUtility::arrayMergeAsFallback(
                     $providerValues,
                     $this->config['providersDefault']
                 );
+            }
+            if(!is_array($providerValues['executors'])) {
+                throw new \Exception('No executors defined for provider: "' . $providerKey . '""');
             }
             foreach ($providerValues['executors'] as $executorKey => $executorValues) {
                 if ($this->isConfigBranchValid('executorsDefault')) {

@@ -1,0 +1,26 @@
+// [REMOTE] Kraken intelligent lossy image optimisation.
+// More info: https://kraken.io/docs/lossy-optimization#lossy-image-optimization
+
+<INCLUDE_TYPOSCRIPT: source="FILE:EXT:imageopt/Configuration/TsConfig/Page/tx_imageopt.tsconfig">
+tx_imageopt {
+    mode {
+        default {
+            description = Saving with Kraken intelligent loosy optimisation under the same name.
+            step {
+                10 {
+                    providerType = lossyGood
+                    description = Kraken intelligent loosy image optimisation.
+                }
+            }
+            fileRegexp = .*
+            outputFilename = {dirname}/{filename}.{extension}
+        }
+    }
+    providers {
+        kraken {
+            enabled = 1
+            executors.10.api.auth.key =
+            executors.10.api.auth.pass =
+        }
+    }
+}

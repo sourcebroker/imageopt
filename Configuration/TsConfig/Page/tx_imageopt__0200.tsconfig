@@ -1,0 +1,25 @@
+// [REMOTE] Kraken loosless image optimisation.
+
+<INCLUDE_TYPOSCRIPT: source="FILE:EXT:imageopt/Configuration/TsConfig/Page/tx_imageopt.tsconfig">
+tx_imageopt {
+    mode {
+        default {
+            description = Saving with Kraken loosless under the same name.
+            step {
+                10 {
+                    providerType = lossless
+                    description = Kraken loosless image optimisation.
+                }
+            }
+            fileRegexp = .*
+            outputFilename = {dirname}/{filename}.{extension}
+        }
+    }
+    providers {
+        kraken {
+            enabled = 1
+            executors.10.api.auth.key =
+            executors.10.api.auth.pass =
+        }
+    }
+}
