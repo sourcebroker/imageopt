@@ -207,9 +207,10 @@ class OptimizeImageService
             if ($stepResult->getOptimizationBytes() === 0) {
                 $stepResult->setInfo('No winner of this step. Non of the optimized images were smaller than original.');
             } else {
-                if($stepResult->getProviderWinnerName()) {
+                if ($stepResult->getProviderWinnerName()) {
                     $stepResult->setInfo('Winner is ' . $stepResult->getProviderWinnerName() .
-                        ' with optimized image smaller by: ' . round($stepResult->getOptimizationPercentage(), 2) . '%');
+                        ' with optimized image smaller by: ' .
+                        round($stepResult->getOptimizationPercentage(), 2) . '%');
                 }
                 clearstatcache(true, $tmpBestImagePath);
                 // overwrite chain image with current best image

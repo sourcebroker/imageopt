@@ -131,7 +131,7 @@ class Configurator
                     $this->config['providersDefault']
                 );
             }
-            if(!is_array($providerValues['executors'])) {
+            if (!is_array($providerValues['executors'])) {
                 throw new \Exception('No executors defined for provider: "' . $providerKey . '""');
             }
             foreach ($providerValues['executors'] as $executorKey => $executorValues) {
