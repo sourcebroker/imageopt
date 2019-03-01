@@ -120,6 +120,7 @@ class OptimizeImageService
             $stepResult = GeneralUtility::makeInstance(StepResult::class)
                 ->setExecutedSuccessfully(false)
                 ->setSizeBefore(filesize($chainImagePath))
+                ->setSizeAfter(filesize($chainImagePath))
                 ->setName(!empty($stepConfig['name']) ? $stepConfig['name'] : $stepKey)
                 ->setDescription(!empty($stepConfig['description']) ? $stepConfig['description'] : $stepKey);
 
@@ -191,40 +192,31 @@ class OptimizeImageService
                     // overwrite current (in chain link) best image
                     $tmpBestImagePath = $tmpWorkingImagePath;
                     $stepResult->setProviderWinnerName($providerKey);
+                    $stepResult->setSizeAfter(filesize($tmpBestImagePath));
                 }
             }
-
             $stepResult->addProvidersResult($providerResult);
         }
 
         if ($providerEnabledCounter === 0) {
             $stepResult->setInfo('No providers enabled (or defined).');
         } elseif ($providerExecutedSuccessfullyCounter === 0) {
-            $stepResult->setInfo('No winner. All providers were unsuccessfull.');
+            $stepResult->setInfo('No winner. All providers in this step were unsuccessfull.');
         } else {
+            $stepResult->setExecutedSuccessfully(true);
             if ($stepResult->getOptimizationBytes() === 0) {
-                $stepResult->setInfo('No winner. Non of the optimized images was smaller than original.');
-
-                $stepResult
-                    ->setExecutedSuccessfully(true)
-                    ->setSizeAfter(filesize($chainImagePath));
+                $stepResult->setInfo('No winner of this step. Non of the optimized images were smaller than original.');
             } else {
-                $stepResult->setInfo('Winner is ' . $stepResult->getProviderWinnerName() .
-                    ' with optimized image smaller by: ' . $stepResult->getOptimizationPercentage() . '%');
-
+                if($stepResult->getProviderWinnerName()) {
+                    $stepResult->setInfo('Winner is ' . $stepResult->getProviderWinnerName() .
+                        ' with optimized image smaller by: ' . round($stepResult->getOptimizationPercentage(), 2) . '%');
+                }
                 clearstatcache(true, $tmpBestImagePath);
-                $stepResult
-                    ->setExecutedSuccessfully(true)
-                    ->setSizeAfter(filesize($tmpBestImagePath));
-
                 // overwrite chain image with current best image
                 copy($tmpBestImagePath, $chainImagePath);
             }
         }
-
         clearstatcache(true, $chainImagePath);
-
-        return $stepResult;
     }
 
     /**

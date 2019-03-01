@@ -69,27 +69,31 @@ class CliDisplayUtility
             }
 
             $providerType = $config['mode'][$optionResult->getName()]['step'][$stepResult->getName()]['providerType'];
-            $stepResultFinal = ($stepResult->getProvidersResults()->count() > 0 &&
-            $stepResult->getProvidersResults()->count() == $stepResult->getExecutedSuccessfullyNum() ? 'OK' : 'FAIL');
+            if($stepResult->getProvidersResults()->count() > 0 &&
+            $stepResult->getProvidersResults()->count() == $stepResult->getExecutedSuccessfullyNum()) {
+                $stepResultFinal = 'All providers executed sucessfuly.';
+            } else {
+                $stepResultFinal = 'Not all providers executed sucessfuly so this step failed.';
+            }
 
             $fileType = strtolower(explode('/',
                 image_type_to_mime_type(getimagesize($optionResult->getFileRelativePath())[2]))[1]);
 
             $statsInfo = 'Step ' . ($stepKey + 1) . "\t\t| Description: " . $stepResult->getDescription() . "\n"
-            . "\t\t| Providers to find for this step: \"" . $providerType . "\" for file type \"" . $fileType . "\"\n"
-            . "\t\t| Found " . $stepResult->getProvidersResults()->count() . " provider" . ($stepResult->getProvidersResults()->count() > 1 ? 's' : '')
+                . "\t\t| Providers to find for this step: \"" . $providerType . "\" for file type \"" . $fileType . "\".\n"
+                . "\t\t| Found " . $stepResult->getProvidersResults()->count() . " provider" . ($stepResult->getProvidersResults()->count() > 1 ? 's' : '')
                 . " for \"" . $providerType . "\" and file type \"" . $fileType . "\". ";
 
             if (!empty($providers)) {
                 $statsInfo .= "Running found providers:\n"
                     . "\t\t| " . implode("\n\t\t| ", $providers);
             }
-            $statsInfo .= "\n\t\t| Result: " . $stepResultFinal . "\n"
+            $statsInfo .= "\n\t\t| " . $stepResultFinal . "\n"
                 . "\t\t| " . $stepResult->getInfo() . "\n";
-            if($stepKey < $optionResult->getStepResults()->count() ) {
-                $statsInfo .= "\t\t| Passing the output file of this step to next step...";
+            if ($stepKey !== $optionResult->getStepResults()->count() - 1) {
+                $statsInfo .= "\t\t| Passing the output file of this step to Step " . ($stepKey + 2) . '.';
             }
-            $stepProvidersInfo[] = $statsInfo;
+            $stepProvidersInfo[] = $statsInfo . "\n";
         }
         $pathInfo = pathinfo($optionResult->getFileRelativePath());
         $outputFile = str_replace(
@@ -99,11 +103,11 @@ class CliDisplayUtility
         );
 
         $output = '---------------------------------------------------------------------' . "\n" .
-            "File in\t\t| " . $optionResult->getFileRelativePath() . "\n" .
-            "File out\t| " . $outputFile . "\n" .
+            "File \t\t| In : " . $optionResult->getFileRelativePath() . "\n" .
+            "     \t\t| Out: " . $outputFile . "\n\n" .
             "Mode\t\t| Name: " . $optionResult->getName() . "\n" .
             "\t\t| Description: " . $optionResult->getDescription() . "\n" .
-            "\t\t| Number of steps: " . $optionResult->getStepResults()->count() . "\n";
+            "\t\t| Number of steps: " . $optionResult->getStepResults()->count() . "\n\n";
 
         if (strlen($optionResult->getInfo())) {
             $output .= implode("\t\t| ", explode("\n", wordwrap($optionResult->getInfo(), 100))) . "\n";
@@ -111,12 +115,12 @@ class CliDisplayUtility
         if (!empty($stepProvidersInfo)) {
             $output .= implode("\n", $stepProvidersInfo);
         }
-        $output .= "\n\n" . "Result\t\t| ";
+        $output .= "Result\t\t| ";
         if ($optionResult->isExecutedSuccessfully()) {
-            $output .= 'OK ' . round($optionResult->getOptimizationPercentage(), 2) . '%';
+            $output .= 'All steps executed sucesfully. File is smaller by ' . round($optionResult->getOptimizationPercentage(), 2) . '%';
         } else {
-            $output .= 'FAIL ';
+            $output .= 'One of the steps failed. Image is not optimized.';
         }
-        return $output . "\n\n";
+        return $output . "\n";
     }
 }
