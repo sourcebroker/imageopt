@@ -69,8 +69,8 @@ class CliDisplayUtility
             }
 
             $providerType = $config['mode'][$optionResult->getName()]['step'][$stepResult->getName()]['providerType'];
-            if($stepResult->getProvidersResults()->count() > 0 &&
-            $stepResult->getProvidersResults()->count() == $stepResult->getExecutedSuccessfullyNum()) {
+            if ($stepResult->getProvidersResults()->count() > 0 &&
+                $stepResult->getProvidersResults()->count() == $stepResult->getExecutedSuccessfullyNum()) {
                 $stepResultFinal = 'All providers executed sucessfuly.';
             } else {
                 $stepResultFinal = 'Not all providers executed sucessfuly so this step failed.';
@@ -80,9 +80,9 @@ class CliDisplayUtility
                 image_type_to_mime_type(getimagesize($optionResult->getFileRelativePath())[2]))[1]);
 
             $statsInfo = 'Step ' . ($stepKey + 1) . "\t\t| Description: " . $stepResult->getDescription() . "\n"
-                . "\t\t| Providers to find for this step: \"" . $providerType . "\" for file type \"" . $fileType . "\".\n"
-                . "\t\t| Found " . $stepResult->getProvidersResults()->count() . " provider" . ($stepResult->getProvidersResults()->count() > 1 ? 's' : '')
-                . " for \"" . $providerType . "\" and file type \"" . $fileType . "\". ";
+                . "\t\t| Providers to find for this step: \"" . $providerType . '" for file type "' . $fileType . "\".\n"
+                . "\t\t| Found " . $stepResult->getProvidersResults()->count() . ' provider' . ($stepResult->getProvidersResults()->count() > 1 ? 's' : '')
+                . ' for "' . $providerType . '" and file type "' . $fileType . '". ';
 
             if (!empty($providers)) {
                 $statsInfo .= "Running found providers:\n"
