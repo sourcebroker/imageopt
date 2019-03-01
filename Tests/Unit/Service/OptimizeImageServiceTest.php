@@ -152,7 +152,10 @@ class OptimizeImageServiceTest extends UnitTestCase
     {
         $configurator = GeneralUtility::makeInstance(Configurator::class);
         $typoscriptParser = GeneralUtility::makeInstance(TypoScriptParser::class);
-        $typoscriptParser->parse(file_get_contents(realpath(__DIR__ . '/../../../Configuration/TsConfig/Page/tx_imageopt.tsconfig')));
+        $typoscriptParser->parse(
+            file_get_contents(realpath(__DIR__ . '/../../../Configuration/TsConfig/Page/tx_imageopt.tsconfig')) . "\n" .
+            file_get_contents(realpath(__DIR__ . '/../../../Configuration/TsConfig/Page/tx_imageopt__0100.tsconfig'))
+        );
 
         $rawConfig = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Service\TypoScriptService::class)
             ->convertTypoScriptArrayToPlainArray($typoscriptParser->setup)['tx_imageopt'];

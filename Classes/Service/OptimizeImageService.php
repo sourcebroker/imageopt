@@ -108,7 +108,7 @@ class OptimizeImageService
     protected function optimizeSingleOption($modeConfig, $sourceImagePath, $originalImagePath)
     {
         $optionResult = GeneralUtility::makeInstance(OptionResult::class)
-            ->setFileRelativePath(substr($originalImagePath, strlen(PATH_site)))
+            ->setFileRelativePath($originalImagePath) //TODO chnage method name to setFileAbsolutePath
             ->setName($modeConfig['name'])
             ->setDescription($modeConfig['description'])
             ->setSizeBefore(filesize($sourceImagePath))
