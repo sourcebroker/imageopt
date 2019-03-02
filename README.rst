@@ -41,11 +41,13 @@ Features
   or ``/uploads/``.
 
 - Support for following local binaries providers:
+
   * for png - pngquant, optipng, pngcrush,
   * for gif - gifsicle,
   * for jpeg - mozjpeg, jpegoptim, jpegrescan, jpegtran.
 
 - Support for following remote providers:
+
   * kraken.io
   * imageoptim.com
   * tinypng.com.
@@ -75,16 +77,16 @@ Configuration
 
 3) If you choosed Kraken in predefined mode then you need to enter the key / pass pair in PageTS.
 
-      ::
+   ::
 
-        tx_imageopt {
-          providers {
-            kraken {
-              executors.10.api.auth.key = 2dae79a5813bb19eda29cc0cb4c9d39c
-              executors.10.api.auth.pass = 87e06b68c69f71afbf5c1730b49f48e5c26db24a
-            }
+      tx_imageopt {
+        providers {
+          kraken {
+            executors.10.api.auth.key = 2dae79a5813bb19eda29cc0cb4c9d39c
+            executors.10.api.auth.pass = 87e06b68c69f71afbf5c1730b49f48e5c26db24a
           }
         }
+      }
 
 
 Usage
