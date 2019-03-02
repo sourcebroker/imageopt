@@ -181,14 +181,6 @@ tx_imageopt {
                 }
             }
         }
-        pngquantPngcrush {
-            type = lossyLow,lossyGood
-            fileType = png
-            executors {
-                10 < tx_imageopt.providers.pngquant.executors.10
-                20 < tx_imageopt.providers.pngcrush.executors.10
-            }
-        }
         kraken {
             type = lossyLow,lossyGood,lossless,webp
             // do not set for "number" quality becase kraken inteligent optimisation - its enough to make "lossy = true"

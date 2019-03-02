@@ -31,11 +31,12 @@ tx_imageopt {
         }
     }
     providers {
-        mozjpeg.enable = 1
-        jpegtranMozjpeg.enable = 1
-        pngquant.enable = 1
-        pngcrush.enable = 1
-        gifsicle.enable = 1
+        mozjpeg.enabled = 1
+        jpegtranMozjpeg.enabled = 1
+        pngquant.enabled = 1
+        pngcrush.enabled = 1
+        optipng.enabled = 1
+        gifsicle.enabled = 1
         webpImagemagick.enabled = 1
     }
 }

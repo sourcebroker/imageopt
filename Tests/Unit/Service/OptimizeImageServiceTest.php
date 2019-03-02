@@ -168,14 +168,12 @@ class OptimizeImageServiceTest extends UnitTestCase
         $envConfig = [];
         foreach ($_ENV as $key => $value) {
             if (strpos($key, 'tx_imageopt__') === 0) {
-                $key = substr($key, 13);
-                $envConfig[$key] = $value;
+                $envConfig[substr($key, 13)] = $value;
             }
         }
         foreach ($_SERVER as $key => $value) {
             if (strpos($key, 'tx_imageopt__') === 0) {
-                $key = substr($key, 13);
-                $envConfig[$key] = $value;
+                $envConfig[substr($key, 13)] = $value;
             }
         }
         foreach ($envConfig as $name => $value) {
