@@ -105,8 +105,8 @@ class CliDisplayUtility
         $output = '---------------------------------------------------------------------' . "\n" .
             "File \t\t| In : " . $modeResult->getFileAbsolutePath() . "\n";
 
-        if($outputFile) {
-            $output .= "     \t\t| Out: " . $outputFile . "\n\n";
+        if ($outputFile) {
+            $output .= "\t\t| Out: " . $outputFile . "\n\n";
         }
 
         if ($modeResult->getName()) {

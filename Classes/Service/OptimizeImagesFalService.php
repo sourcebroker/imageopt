@@ -76,7 +76,6 @@ class OptimizeImagesFalService
             throw new \Exception('Configuration not set for OptimizeImagesFalService class');
         }
 
-
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->configurator = GeneralUtility::makeInstance(Configurator::class, $config);
         $this->configurator->init();
