@@ -2,8 +2,8 @@
 Changelog
 ---------
 
-master
-~~~~~~
+5.0.0
+~~~~~
 
 1) [FEATURE] Support for executorsDefault and providersDefault.
 2) [TASK][BREAKING] Remove executor.enabled option.
@@ -12,11 +12,16 @@ master
 5) [TASK] Add support for TYPO3 7.6 and PHP 5.6.
 6) [FEATURE] Add .env files for unit test passwords for remote executors.
 7) [FEATURE] Add type for providers and config override by type.
-8) [FEATURE] Add new way to decide what images should be optimized: mix of provider type and regexp on
-    filepath and filename.
+8) [FEATURE] Add new way to decide what images should be optimized: mix of provider type and regexp on filepath and filename.
 9) [FEATURE] Add support for mozjpeg.
 10) [TASK][BREAKING] Remove int key based quality as its hard to compare qualities.
 11) [BUGFIX] Fix results not being persisted.
+12) [FEATURE][!!!BREAKING] Add support for chained provides executors.
+13) [TASK] Rename models / fix TCA relations.
+14) [TASK] Set name and description for mode and step for better CLI reporting.
+15) [TASK] Update FAL with file outside file storage.
+16) [TASK] Make cli results more descriptive and easy to understand.
+17) [FEATURE] Add configuration sets choosable in page properties
 
 4.0.0
 ~~~~~

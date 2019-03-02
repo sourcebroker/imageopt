@@ -44,12 +44,12 @@ Features
 
   * for png - pngquant, optipng, pngcrush,
   * for gif - gifsicle,
-  * for jpeg - mozjpeg, jpegoptim, jpegrescan, jpegtran.
+  * for jpeg - mozjpeg, jpegoptim, jpegtran.
 
 - Support for following remote providers:
 
-  * kraken.io
-  * imageoptim.com
+  * kraken.io,
+  * imageoptim.com,
   * tinypng.com.
 
 - Own providers can be registered with page TSconfig.
