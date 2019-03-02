@@ -26,11 +26,6 @@ Example CLI output:
 .. image:: Documentation/Images/OutputCliExample.png
     :width: 100%
 
-TYPO3 backend - "Optimization Result" record example:
-
-.. image:: Documentation/Images/OptimizationResultExample.png
-    :width: 100%
-
 TYPO3 backend - "Executor Result" record example:
 
 .. image:: Documentation/Images/ExecutorResultExample.png
@@ -39,25 +34,20 @@ TYPO3 backend - "Executor Result" record example:
 Features
 --------
 
-- If you enable more than one image type optimization provider then all of them will be executed and the best optimized
-  image is choosen as result. All other results are stored in database so you can build results statistics later.
-
-- Own providers can be registered with page TSconfig.
-
-- Providers can have more than one executor and executors can be chained. So for example you create provider that
-  consist of two chained executors: first executor will optimize png (loosy) and the second executor will optimize
-  image with loosless technicques. (its real case for pngquant + pngcrush)
-
 - Its safe as the original images, for example in folder ``fileadmin/``, ``uploads/`` are not optmized!
   Only already resized images are optmized, so for FAL that would be files form ``_processed_/`` folders and for
   ``uploads/`` it will be files from ``typo3temp/assets/images``. Imageopt can force images to be processed so
   in other words you will not find any image in HTML that links directly to original images in ``/fileadmin/``
   or ``/uploads/``.
 
-- Support for following linux binaries.
-  For png: mozjpeg, optipng, pngcrush, pngquant. For gif: gifsicle. For jpeg: jpegoptim, jpegrescan, jpegtran.
+- Support for following local binaries providers:
+  For png - pngquant, optipng, pngcrush. For gif - gifsicle. For jpeg - mozjpeg, jpegoptim, jpegrescan, jpegtran.
 
-- Support for following remote optimisation providers: imageoptim.com, kraken.io, tinypng.com.
+- Support for following remote providers: imageoptim.com, kraken.io, tinypng.com.
+
+- Own providers can be registered with page TSconfig.
+
+- Can create file variants with diffent name. For example optimize as webp and save under {filename}.{extension}.webp
 
 
 Installation
@@ -76,153 +66,21 @@ Configuration
 
 1) Open main Template record and add "imageopt" in tab "Includes" -> field "Include static (from extensions)"
 
-2) Enable provides you need.
+2) Open homepage properties and choose one of predefined modes (or create own)
 
-   a) If you accept lossy optimisations then good start is:
-
-      For local binaries:
-      - for jpeg: mozjpeg
-      - for gif: gifsicle
-      - for png: pngquant (with pngcrush)
-
-      For remote providers:
-      - for jpeg: kraken.io, tinypng.com, imageoptim.com
-      - for gif: kraken.io, imageoptim.com
-      - for png: kraken.io, tinypng.com, imageoptim.com
-
-      Now the question is if you want more providers to optimize image and choose the best optimisation of you trust
-      one provider and want to have results from this one provider always.
-
-      If you want only one privider and you accept paying for example for kraken.io then the config for you is:
+3) If you choosed Kraken in predefined mode then you need to enter the key / pass pair.
 
       ::
 
         tx_imageopt {
           providers {
             kraken {
-                enabled = 1
-                executors.10.api.auth.key = your_kraken_key
-                executors.10.api.auth.pass = your_kraken_pass
+              executors.10.api.auth.key = 2dae79a5813bb19eda29cc0cb4c9d39c
+              executors.10.api.auth.pass = 87e06b68c69f71afbf5c1730b49f48e5c26db24a
             }
           }
         }
 
-      If you want that more provides will optimize image and the best optimisation will be used as result then
-      you can enable more than one provider like in following example:
-
-      ::
-
-        tx_imageopt {
-          providers {
-            // remote
-            kraken {
-                enabled = 1
-                executors.10.api.auth.key = your_kraken_key
-                executors.10.api.auth.pass = your_kraken_pass
-            }
-            tinypng {
-                enabled = 1
-                executors.10.api.auth.key = your_tinypng_key
-            }
-            imageptim {
-                enabled = 1
-                executors.10.api.auth.key = your_imageptim_key
-            }
-
-            // binaries
-            gifsicle.enabled = 1
-            mozjpeg.enabled = 1
-            pngquant-pngcrush.enabled = 1
-            }
-          }
-        }
-
-   b) If you accept only lossless optimisations then good start is:
-
-      - jpeg: jpegtran, jpegtran-mozjpeg (jpegrescan is wrap around jpegtran-mozjpeg)
-      - gif: gifsicle
-      - png: pngcrush, optipng
-
-      So the Page TSConfig you should add that will enable providers is:
-
-      ::
-
-        tx_imageopt {
-          optimize >
-          optimize {
-              10 {
-                  fileRegexp = .*
-                  providerType = lossless
-              }
-          }
-          providers {
-            // remote
-            kraken.enabled = 1
-            tinypng.enabled = 1
-            imageptim.enabled = 1
-
-            // binaries
-            gifsicle.enabled = 1
-            jpegtran.enabled = 1
-            jpegtran-mozjpeg.enabled = 1
-            optipng.enabled = 1
-            pngcrush.enabled = 1
-          }
-        }
-
-3) Disable not needed providers.
-
-   a) If you accept lossy optimisations then good start is:
-
-      - for jpeg: mozjpeg (best results), jpgoptim
-      - for git: gifsicle
-      - for png: pngquant
-
-      So the Page TSConfig you should add that will enable providers is:
-
-      ::
-
-        tx_imageopt {
-          providers {
-            gif {
-              gifsicle.enabled = 1
-            }
-            jpeg {
-              jpegoptim.enabled = 1
-              mozjpeg.enabled = 1
-            }
-            png {
-              pngquant.enabled = 1
-              pngquant-pngcrush.enabled = 1
-            }
-          }
-        }
-
-   b) If you accept only lossless optimisations then good start is:
-
-      - jpeg: jpegtran, jpegtran-mozjpeg (jpegrescan is wrap around jpegtran-mozjpeg)
-      - git: gifsicle
-      - png: pngcrush, optipng
-
-      So the Page TSConfig you should add that will enable providers is:
-
-      ::
-
-        tx_imageopt {
-          providers {
-            gif {
-              gifsicle.enabled = 1
-            }
-            jpeg {
-              jpegtran.enabled = 1
-              jpegtran-mozjpeg.enabled = 1
-            }
-            png {
-              optipng.enabled = 1
-              pngcrush.enabled = 1
-            }
-          }
-        }
 
 Usage
 -----
@@ -245,8 +103,7 @@ Usage
       - typo3temp/GB/
       - typo3temp/assets/images/
 
-2) For all images which will be processed in future set up scheduler job. For TYPO3 9.5 use
-   "Execute console commands" task.
+2) For all images which will be processed in future set up scheduler job.
 
 
 Configuration for frontend image processing
@@ -275,11 +132,6 @@ The Typoscript added by imageopt is:
 
 As you see you can use ``plugin.tx_imageopt.exclusion.regexp`` to exclude files which will be not forced to be processed (so the original version will be used). This is handy for example for gif animations (which are not supported to be processed by TYPO3). You can use ``plugin.tx_imageopt.exclusion.regexp`` also to not process images that you think are arleady optimized enough.
 
-Configuration for images optimisation
--------------------------------------
-
-Check https://github.com/sourcebroker/imageopt/blob/master/Configuration/TsConfig/Page/tx_imageopt.tsconfig for
-avaliable configuration options.
 
 Technical notes
 ---------------
@@ -306,11 +158,6 @@ Technical notes
 
   This can be handy for testing purposes.
 
-* There is table "tx_imageopt_domain_model_optimizationresult" with relation to two more tables
-  "tx_imageopt_domain_model_providerresult" and "tx_imageopt_domain_model_executorresult".
-  They hold statistics from images optimizations. You can check there what command exactly was
-  used to optimize image, what was the result, error, how many bytes image has before and after
-  for each executor and for each provider.
 
 Changelog
 ---------
