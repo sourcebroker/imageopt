@@ -3,7 +3,7 @@
 namespace SourceBroker\Imageopt\Utility;
 
 use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
-use SourceBroker\Imageopt\Domain\Model\OptionResult;
+use SourceBroker\Imageopt\Domain\Model\ModeResult;
 use SourceBroker\Imageopt\Domain\Model\ProviderResult;
 use SourceBroker\Imageopt\Domain\Model\StepResult;
 
@@ -13,14 +13,14 @@ class CliDisplayUtility
     /**
      * Displays optimization result in CLI window
      *
-     * @param OptionResult $optionResult
+     * @param ModeResult $modeResult
      * @return string
      */
-    public static function displayOptionResult(OptionResult $optionResult, $config)
+    public static function displayOptionResult(ModeResult $modeResult, $config)
     {
         $stepProvidersInfo = [];
         /** @var StepResult[] $stepResults */
-        $stepResults = $optionResult->getStepResults()->toArray();
+        $stepResults = $modeResult->getStepResults()->toArray();
 
         foreach ($stepResults as $stepKey => $stepResult) {
             $providers = [];
@@ -68,7 +68,7 @@ class CliDisplayUtility
                 $provider = '* ' . $provider;
             }
 
-            $providerType = $config['mode'][$optionResult->getName()]['step'][$stepResult->getName()]['providerType'];
+            $providerType = $config['mode'][$modeResult->getName()]['step'][$stepResult->getName()]['providerType'];
             if ($stepResult->getProvidersResults()->count() > 0 &&
                 $stepResult->getProvidersResults()->count() == $stepResult->getExecutedSuccessfullyNum()) {
                 $stepResultFinal = 'All providers executed sucessfuly.';
@@ -77,7 +77,7 @@ class CliDisplayUtility
             }
 
             $fileType = strtolower(explode('/',
-                image_type_to_mime_type(getimagesize($optionResult->getFileRelativePath())[2]))[1]);
+                image_type_to_mime_type(getimagesize($modeResult->getFileAbsolutePath())[2]))[1]);
 
             $statsInfo = 'Step ' . ($stepKey + 1) . "\t\t| Description: " . $stepResult->getDescription() . "\n"
                 . "\t\t| Providers to find for this step: \"" . $providerType . '" for file type "' . $fileType . "\".\n"
@@ -90,36 +90,45 @@ class CliDisplayUtility
             }
             $statsInfo .= "\n\t\t| " . $stepResultFinal . "\n"
                 . "\t\t| " . $stepResult->getInfo() . "\n";
-            if ($stepKey !== $optionResult->getStepResults()->count() - 1) {
+            if ($stepKey !== $modeResult->getStepResults()->count() - 1) {
                 $statsInfo .= "\t\t| Passing the output file of this step to Step " . ($stepKey + 2) . '.';
             }
             $stepProvidersInfo[] = $statsInfo . "\n";
         }
-        $pathInfo = pathinfo($optionResult->getFileRelativePath());
+        $pathInfo = pathinfo($modeResult->getFileAbsolutePath());
         $outputFile = str_replace(
             ['{dirname}', '{basename}', '{extension}', '{filename}'],
             [$pathInfo['dirname'], $pathInfo['basename'], $pathInfo['extension'], $pathInfo['filename']],
-            $config['mode'][$optionResult->getName()]['outputFilename']
+            $config['mode'][$modeResult->getName()]['outputFilename']
         );
 
         $output = '---------------------------------------------------------------------' . "\n" .
-            "File \t\t| In : " . $optionResult->getFileRelativePath() . "\n" .
-            "     \t\t| Out: " . $outputFile . "\n\n" .
-            "Mode\t\t| Name: " . $optionResult->getName() . "\n" .
-            "\t\t| Description: " . $optionResult->getDescription() . "\n" .
-            "\t\t| Number of steps: " . $optionResult->getStepResults()->count() . "\n\n";
+            "File \t\t| In : " . $modeResult->getFileAbsolutePath() . "\n";
 
-        if (strlen($optionResult->getInfo())) {
-            $output .= implode("\t\t| ", explode("\n", wordwrap($optionResult->getInfo(), 100))) . "\n";
+        if($outputFile) {
+            $output .= "     \t\t| Out: " . $outputFile . "\n\n";
+        }
+
+        if ($modeResult->getName()) {
+            $output .= "Mode\t\t| Name: " . $modeResult->getName() . "\n" .
+                "\t\t| Description: " . $modeResult->getDescription() . "\n" .
+                "\t\t| Number of steps: " . $modeResult->getStepResults()->count() . "\n\n";
         }
         if (!empty($stepProvidersInfo)) {
             $output .= implode("\n", $stepProvidersInfo);
         }
         $output .= "Result\t\t| ";
-        if ($optionResult->isExecutedSuccessfully()) {
-            $output .= 'All steps executed sucesfully. File is smaller by ' . round($optionResult->getOptimizationPercentage(), 2) . '%';
+        if ($modeResult->isExecutedSuccessfully()) {
+            $output .= 'All steps executed sucesfully. File is smaller by ' . round($modeResult->getOptimizationPercentage(),
+                    2) . '%';
         } else {
-            $output .= 'One of the steps failed. Image is not optimized.';
+            if (strlen($modeResult->getInfo())) {
+                $output .= implode("\t\t| ", array_map(function ($line) {
+                    return trim($line) . "\n";
+                }, explode("\n", wordwrap($modeResult->getInfo(), 100))));
+            } else {
+                $output .= 'One of the steps failed. Image is not optimized.';
+            }
         }
         return $output . "\n";
     }

@@ -25,8 +25,8 @@
 namespace SourceBroker\Imageopt\Service;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
-use SourceBroker\Imageopt\Domain\Model\OptionResult;
-use SourceBroker\Imageopt\Domain\Repository\OptionResultRepository;
+use SourceBroker\Imageopt\Domain\Model\ModeResult;
+use SourceBroker\Imageopt\Domain\Repository\ModeResultRepository;
 use SourceBroker\Imageopt\Resource\ProcessedFileRepository;
 use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
@@ -61,9 +61,9 @@ class OptimizeImagesFalService
     private $optimizeImageService;
 
     /**
-     * @var OptionResultRepository
+     * @var ModeResultRepository
      */
-    private $optionResultRepository;
+    private $modeResultRepository;
 
     /**
      * OptimizeImagesFalService constructor.
@@ -76,22 +76,25 @@ class OptimizeImagesFalService
             throw new \Exception('Configuration not set for OptimizeImagesFalService class');
         }
 
+
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->configurator = GeneralUtility::makeInstance(Configurator::class, $config);
+        $this->configurator->init();
         $this->falProcessedFileRepository = $this->objectManager->get(ProcessedFileRepository::class);
         $this->optimizeImageService = $this->objectManager->get(OptimizeImageService::class, $config);
-        $this->optionResultRepository = $this->objectManager->get(OptionResultRepository::class);
+        $this->modeResultRepository = $this->objectManager->get(ModeResultRepository::class);
     }
 
     /**
      * @param $notOptimizedFileRaw array $notOptimizedProcessedFileRaw,
-     * @return OptionResult|null
+     * @return ModeResult|null
      * @throws \Exception
      */
     public function optimizeFalProcessedFile($notOptimizedFileRaw)
     {
         $fileDoesNotExistOrNotReadable = false;
-        $optimizationResultInfo = '';
-        $optionResults = [];
+        $modeResultInfo = '';
+        $modeResults = [];
 
         /** @var ProcessedFile $processedFal */
         $processedFal = $this->falProcessedFileRepository->findByIdentifier($notOptimizedFileRaw['uid']);
@@ -99,16 +102,17 @@ class OptimizeImagesFalService
 
         if (file_exists($sourceFile)) {
             if (is_readable($sourceFile)) {
-                $optionResults = $this->optimizeImageService->optimize($sourceFile);
+                $modeResults = $this->optimizeImageService->optimize($sourceFile);
 
-                $defaultOptimizationResult = isset($optionResults['default'])
-                    ? $optionResults['default']
-                    : reset($optionResults);
+                $defaultOptimizationResult = isset($modeResults['default'])
+                    ? $modeResults['default']
+                    : reset($modeResults);
 
-                foreach ($optionResults as $optionResult) {
-                    $this->optionResultRepository->add($optionResult);
+                if ($this->configurator->getOption('log.enable')) {
+                    foreach ($modeResults as $modeResult) {
+                        $this->modeResultRepository->add($modeResult);
+                    }
                 }
-
                 if ($defaultOptimizationResult->isExecutedSuccessfully()) {
                     if ($defaultOptimizationResult->getSizeBefore() > $defaultOptimizationResult->getSizeAfter()) {
                         $processedFal->updateWithLocalFile(
@@ -119,31 +123,32 @@ class OptimizeImagesFalService
                 }
             } else {
                 $fileDoesNotExistOrNotReadable = true;
-                $optimizationResultInfo = 'The file above exists but is not readable for imageopt process.';
+                $modeResultInfo = 'The file above exists but is not readable for imageopt process.';
             }
         } else {
             $fileDoesNotExistOrNotReadable = true;
-            $optimizationResultInfo = 'The file does not exists but exists as reference in "sys_file_processedfile" ' .
+            $modeResultInfo = 'The file does not exists but exists as reference in "sys_file_processedfile" ' .
                 'database table. Seems like it was processed in past but the processed file does not exist now. ' .
                 'The record has been deleted from "sys_file_processedfile" table.';
             $processedFal->delete();
         }
 
         if ($fileDoesNotExistOrNotReadable) {
-            $optionResult = $this->objectManager->get(OptionResult::class)
-                ->setFileRelativePath(substr($sourceFile, strlen(PATH_site)))
+            $modeResult = $this->objectManager->get(ModeResult::class)
+                ->setFileAbsolutePath(substr($sourceFile, strlen(PATH_site)))
                 ->setExecutedSuccessfully(false)
-                ->setInfo($optimizationResultInfo);
+                ->setInfo($modeResultInfo);
 
-            $this->objectManager->get(OptionResultRepository::class)
-                ->add($optionResult);
-
-            $optionResults[] = $optionResult;
+            if ($this->configurator->getOption('log.enable')) {
+                $this->objectManager->get(ModeResultRepository::class)
+                    ->add($modeResult);
+            }
+            $modeResults[] = $modeResult;
         }
 
         $this->objectManager->get(PersistenceManager::class)->persistAll();
 
-        return $optionResults;
+        return $modeResults;
     }
 
     /**

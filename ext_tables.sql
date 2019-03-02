@@ -2,16 +2,15 @@ CREATE TABLE sys_file_processedfile (
   tx_imageopt_executed_successfully tinyint(3) unsigned DEFAULT '0' NOT NULL
 );
 
-
 #
-# Table structure for table 'tx_imageopt_domain_model_optionresult'
+# Table structure for table 'tx_imageopt_domain_model_moderesult'
 #
-CREATE TABLE tx_imageopt_domain_model_optionresult (
+CREATE TABLE tx_imageopt_domain_model_moderesult (
 
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
 
-	file_relative_path text,
+	file_absolute_path text,
 	size_before int(10) UNSIGNED DEFAULT 0 NOT NULL,
 	size_after int(10) UNSIGNED DEFAULT 0 NOT NULL,
 	executed_successfully smallint(5) unsigned DEFAULT '0' NOT NULL,
@@ -29,7 +28,6 @@ CREATE TABLE tx_imageopt_domain_model_optionresult (
 
 );
 
-
 #
 # Table structure for table 'tx_imageopt_domain_model_stepresult'
 #
@@ -39,11 +37,12 @@ CREATE TABLE tx_imageopt_domain_model_stepresult (
 	pid int(11) DEFAULT '0' NOT NULL,
 
 	name varchar(100) DEFAULT '' NOT NULL,
+	description varchar(255) DEFAULT '' NOT NULL,
 	size_before int(10) UNSIGNED DEFAULT 0 NOT NULL,
 	size_after int(10) UNSIGNED DEFAULT 0 NOT NULL,
 	provider_winner_name varchar(255) DEFAULT '' NOT NULL,
 	executed_successfully smallint(5) unsigned DEFAULT '0' NOT NULL,
-	option_result int(11) unsigned DEFAULT '0' NOT NULL,
+	mode_result int(11) unsigned DEFAULT '0' NOT NULL,
 	providers_results int(11) unsigned DEFAULT '0' NOT NULL,
 	info text,
 
@@ -70,7 +69,6 @@ CREATE TABLE tx_imageopt_domain_model_providerresult (
 	size_before varchar(20) DEFAULT '0' NOT NULL,
 	size_after varchar(20) DEFAULT '' NOT NULL,
 	executed_successfully smallint(5) unsigned DEFAULT '0' NOT NULL,
-	winner smallint(5) unsigned DEFAULT '0' NOT NULL,
 	step_result int(11) unsigned DEFAULT '0' NOT NULL,
 	executors_results int(11) unsigned DEFAULT '0' NOT NULL,
 

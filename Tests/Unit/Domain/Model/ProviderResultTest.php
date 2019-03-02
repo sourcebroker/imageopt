@@ -128,31 +128,6 @@ class ProviderResultTest extends UnitTestCase
     /**
      * @test
      */
-    public function getWinnerReturnsInitialValueForBool()
-    {
-        self::assertSame(
-            false,
-            $this->subject->getWinner()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function setWinnerForBoolSetsWinner()
-    {
-        $this->subject->setWinner(true);
-
-        self::assertAttributeEquals(
-            true,
-            'winner',
-            $this->subject
-        );
-    }
-
-    /**
-     * @test
-     */
     public function getExecutorsResultsReturnsInitialValueForExecutorResult()
     {
         $newObjectStorage = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();

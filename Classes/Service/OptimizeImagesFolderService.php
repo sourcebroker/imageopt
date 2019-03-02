@@ -25,7 +25,7 @@
 namespace SourceBroker\Imageopt\Service;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
-use SourceBroker\Imageopt\Domain\Model\OptionResult;
+use SourceBroker\Imageopt\Domain\Model\ModeResult;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
@@ -92,16 +92,16 @@ class OptimizeImagesFolderService
 
     /**
      * @param $absoluteFilePath
-     * @return OptionResult
+     * @return ModeResult
      * @throws \Exception
      */
     public function optimizeFolderFile($absoluteFilePath)
     {
-        $optionResults = $this->optimizeImageService->optimize($absoluteFilePath);
+        $modeResults = $this->optimizeImageService->optimize($absoluteFilePath);
 
-        $defaultOptimizationResult = isset($optionResults['default'])
-            ? $optionResults['default']
-            : reset($optionResults);
+        $defaultOptimizationResult = isset($modeResults['default'])
+            ? $modeResults['default']
+            : reset($modeResults);
 
         if ($defaultOptimizationResult->isExecutedSuccessfully()) {
             // Temporary resized images are created by default with permission 644.
@@ -115,7 +115,7 @@ class OptimizeImagesFolderService
             }
         }
 
-        return $optionResults;
+        return $modeResults;
     }
 
     /**

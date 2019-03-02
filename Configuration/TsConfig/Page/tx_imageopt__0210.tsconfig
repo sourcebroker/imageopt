@@ -1,4 +1,4 @@
-// [REMOTE] Kraken intelligent lossy image optimisation.
+// [REMOTE] Kraken intelligent lossy.
 // More info: https://kraken.io/docs/lossy-optimization#lossy-image-optimization
 
 <INCLUDE_TYPOSCRIPT: source="FILE:EXT:imageopt/Configuration/TsConfig/Page/tx_imageopt.tsconfig">

@@ -2,7 +2,7 @@
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationoptionresult',
-        'label' => 'file_relative_path',
+        'label' => 'file_absolute_path',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
         'cruser_id' => 'cruser_id',
@@ -11,14 +11,14 @@ return [
         'enablecolumns' => [
             'disabled' => 'hidden',
         ],
-        'searchFields' => 'file_relative_path,size_before,size_after,optimization_bytes,optimization_percentage,provider_winner_name,executed_successfully,info,providers_results',
+        'searchFields' => 'file_absolute_path,size_before,size_after,optimization_bytes,optimization_percentage,executed_successfully,info',
         'iconfile' => 'EXT:imageopt/Resources/Public/Icons/tx_imageopt_domain_model_optimizationoptionresult.gif'
     ],
     'interface' => [
-        'showRecordFieldList' => 'file_relative_path, size_before, size_after, optimization_bytes, optimization_percentage, provider_winner_name, executed_successfully, info, step_results',
+        'showRecordFieldList' => 'file_absolute_path, size_before, size_after, optimization_bytes, optimization_percentage, executed_successfully, info, step_results',
     ],
     'types' => [
-        '1' => ['showitem' => 'file_relative_path, --palette--;;sizes, --palette--;;optimization, provider_winner_name, info, executed_successfully, step_results'],
+        '1' => ['showitem' => 'file_absolute_path, --palette--;;sizes, --palette--;;optimization, info, executed_successfully, step_results'],
     ],
     'palettes' => [
         'sizes' => [
@@ -43,9 +43,9 @@ return [
                 ],
             ],
         ],
-        'file_relative_path' => [
+        'file_absolute_path' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationoptionresult.file_relative_path',
+            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationoptionresult.file_absolute_path',
             'config' => [
                 'type' => 'input',
                 'size' => 200,
@@ -105,7 +105,7 @@ return [
                 'type' => 'inline',
                 'readOnly' => 1,
                 'foreign_table' => 'tx_imageopt_domain_model_stepresult',
-                'foreign_field' => 'option_result',
+                'foreign_field' => 'mode_result',
                 'maxitems' => 9999,
                 'appearance' => [
                     'collapseAll' => 1,
@@ -115,7 +115,6 @@ return [
                     'showAllLocalizationLink' => 1
                 ],
             ],
-
         ],
     ],
 ];

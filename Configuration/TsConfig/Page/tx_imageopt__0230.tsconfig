@@ -1,4 +1,4 @@
-// [REMOTE] Kraken intelligent lossy image optimisation && imagemagick webp.
+// [REMOTE] Kraken intelligent lossy & imagemagick webp.
 
 <INCLUDE_TYPOSCRIPT: source="FILE:EXT:imageopt/Configuration/TsConfig/Page/tx_imageopt.tsconfig">
 tx_imageopt {

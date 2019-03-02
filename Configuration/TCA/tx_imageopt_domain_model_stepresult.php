@@ -2,7 +2,7 @@
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationstepresult',
-        'label' => 'name',
+        'label' => 'description',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
         'cruser_id' => 'cruser_id',
@@ -12,14 +12,14 @@ return [
             'disabled' => 'hidden',
         ],
         'hideTable' => 1,
-        'searchFields' => 'name,size_before,size_after,optimization_bytes,optimization_percentage,provider_winner_name,executed_successfully,info',
+        'searchFields' => 'description,size_before,size_after,optimization_bytes,optimization_percentage,provider_winner_name,executed_successfully,info',
         'iconfile' => 'EXT:imageopt/Resources/Public/Icons/tx_imageopt_domain_model_optimizationstepresult.gif'
     ],
     'interface' => [
         'showRecordFieldList' => 'name, size_before, size_after, optimization_bytes, optimization_percentage, provider_winner_name, executed_successfully, info',
     ],
     'types' => [
-        '1' => ['showitem' => 'name, --palette--;;sizes, --palette--;;optimization, provider_winner_name, info, executed_successfully, providers_results'],
+        '1' => ['showitem' => 'description, --palette--;;sizes, --palette--;;optimization, provider_winner_name, info, executed_successfully, providers_results'],
     ],
     'palettes' => [
         'sizes' => [
@@ -50,6 +50,16 @@ return [
             'config' => [
                 'type' => 'input',
                 'size' => 200,
+                'eval' => 'trim',
+                'readOnly' => 1
+            ],
+        ],
+        'description' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationstepresult.name',
+            'config' => [
+                'type' => 'input',
+                'size' => 255,
                 'eval' => 'trim',
                 'readOnly' => 1
             ],
@@ -128,7 +138,7 @@ return [
             ],
 
         ],
-        'option_result' => [
+        'mode_result' => [
             'config' => [
                 'type' => 'passthrough',
             ],

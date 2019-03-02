@@ -18,9 +18,6 @@
 			<trans-unit id="tx_imageopt_domain_model_providerresult.executed_successfully">
 				<source>Executed Successfully</source>
 			</trans-unit>
-			<trans-unit id="tx_imageopt_domain_model_providerresult.winner">
-				<source>Winner</source>
-			</trans-unit>
 			<trans-unit id="tx_imageopt_domain_model_providerresult.executors_results">
 				<source>Executors Results</source>
 			</trans-unit>
@@ -51,8 +48,8 @@
 			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult">
 				<source>Image Optimization Result</source>
 			</trans-unit>
-			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult.file_relative_path">
-				<source>File Relative Path</source>
+			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult.file_absolute_path">
+				<source>File Absolute Path</source>
 			</trans-unit>
 			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult.size_before">
 				<source>Size Before</source>
@@ -83,6 +80,9 @@
 			</trans-unit>
 			<trans-unit id="tx_imageopt_domain_model_optimizationstepresult.name">
 				<source>Name</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationstepresult.description">
+				<source>Description</source>
 			</trans-unit>
 			<trans-unit id="tx_imageopt_domain_model_optimizationstepresult.size_before">
 				<source>Size Before</source>

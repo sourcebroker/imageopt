@@ -12,11 +12,11 @@ return [
             'disabled' => 'hidden',
         ],
         'hideTable' => 1,
-        'searchFields' => 'name,size_before,size_after,executed_successfully,winner,executors_results',
+        'searchFields' => 'name,size_before,size_after,executed_successfully,executors_results',
         'iconfile' => 'EXT:imageopt/Resources/Public/Icons/tx_imageopt_domain_model_providerresult.gif'
     ],
     'interface' => [
-        'showRecordFieldList' => 'name, size_before, size_after, executed_successfully, winner, executors_results',
+        'showRecordFieldList' => 'name, size_before, size_after, executed_successfully, executors_results',
     ],
     'types' => [
         '1' => ['showitem' => '--palette--;;sizes, --palette--;;checks, executors_results'],
@@ -27,7 +27,7 @@ return [
             'canNotCollapse' => true
         ],
         'checks' => [
-            'showitem' => 'executed_successfully, winner',
+            'showitem' => 'executed_successfully',
             'canNotCollapse' => true
         ]
     ],
@@ -79,20 +79,6 @@ return [
         'executed_successfully' => [
             'exclude' => true,
             'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_providerresult.executed_successfully',
-            'config' => [
-                'type' => 'check',
-                'items' => [
-                    '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
-                    ]
-                ],
-                'default' => 0,
-                'readOnly' => 1,
-            ]
-        ],
-        'winner' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_providerresult.winner',
             'config' => [
                 'type' => 'check',
                 'items' => [

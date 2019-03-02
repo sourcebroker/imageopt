@@ -10,14 +10,14 @@ use Nimut\TestingFramework\TestCase\UnitTestCase;
 class OptionResultTest extends UnitTestCase
 {
     /**
-     * @var \SourceBroker\Imageopt\Domain\Model\OptionResult
+     * @var \SourceBroker\Imageopt\Domain\Model\ModeResult
      */
     protected $subject = null;
 
     protected function setUp()
     {
         parent::setUp();
-        $this->subject = new \SourceBroker\Imageopt\Domain\Model\OptionResult();
+        $this->subject = new \SourceBroker\Imageopt\Domain\Model\ModeResult();
     }
 
     protected function tearDown()
@@ -32,7 +32,7 @@ class OptionResultTest extends UnitTestCase
     {
         self::assertSame(
             '',
-            $this->subject->getFileRelativePath()
+            $this->subject->getFileAbsolutePath()
         );
     }
 
@@ -41,11 +41,11 @@ class OptionResultTest extends UnitTestCase
      */
     public function setFileRelativePathForStringSetsFileRelativePath()
     {
-        $this->subject->setFileRelativePath('Conceived at T3CON10');
+        $this->subject->setFileAbsolutePath('Conceived at T3CON10');
 
         self::assertAttributeEquals(
             'Conceived at T3CON10',
-            'fileRelativePath',
+            'fileAbsolutePath',
             $this->subject
         );
     }

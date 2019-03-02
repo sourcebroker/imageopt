@@ -25,7 +25,7 @@
 namespace SourceBroker\Imageopt\Service;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
-use SourceBroker\Imageopt\Domain\Model\OptionResult;
+use SourceBroker\Imageopt\Domain\Model\ModeResult;
 use SourceBroker\Imageopt\Domain\Model\StepResult;
 use SourceBroker\Imageopt\Provider\OptimizationProvider;
 use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
@@ -68,7 +68,7 @@ class OptimizeImageService
      * Optimize image using chained Image Optimization Provider
      *
      * @param string $originalImagePath
-     * @return OptionResult[]
+     * @return ModeResult[]
      * @throws \Exception
      */
     public function optimize($originalImagePath)
@@ -88,7 +88,7 @@ class OptimizeImageService
                 continue;
             }
 
-            $modeResults[$modeKey] = $this->optimizeSingleOption(
+            $modeResults[$modeKey] = $this->optimizeSingleMode(
                 $modeConfig,
                 $sourceImagePath,
                 $originalImagePath
@@ -102,13 +102,13 @@ class OptimizeImageService
      * @param array $modeConfig
      * @param string $sourceImagePath Path to original image COPY (default optimization mode will overwrite original image)
      * @param string $originalImagePath Path to original image
-     * @return OptionResult
+     * @return ModeResult
      * @throws \Exception
      */
-    protected function optimizeSingleOption($modeConfig, $sourceImagePath, $originalImagePath)
+    protected function optimizeSingleMode($modeConfig, $sourceImagePath, $originalImagePath)
     {
-        $optionResult = GeneralUtility::makeInstance(OptionResult::class)
-            ->setFileRelativePath($originalImagePath) //TODO chnage method name to setFileAbsolutePath
+        $modeResult = GeneralUtility::makeInstance(ModeResult::class)
+            ->setFileAbsolutePath($originalImagePath)
             ->setName($modeConfig['name'])
             ->setDescription($modeConfig['description'])
             ->setSizeBefore(filesize($sourceImagePath))
@@ -121,24 +121,27 @@ class OptimizeImageService
                 ->setExecutedSuccessfully(false)
                 ->setSizeBefore(filesize($chainImagePath))
                 ->setSizeAfter(filesize($chainImagePath))
-                ->setName(!empty($stepConfig['name']) ? $stepConfig['name'] : $stepKey)
+                ->setName($stepKey)
                 ->setDescription(!empty($stepConfig['description']) ? $stepConfig['description'] : $stepKey);
 
-            $providers = $this->findProvidersForFile($originalImagePath, $stepConfig['providerType']);
+            $providers = $this->configurator->getProviders(
+                $stepConfig['providerType'],
+                strtolower(explode('/', image_type_to_mime_type(getimagesize($originalImagePath)[2]))[1])
+            );
             if (empty($providers)) {
                 // skip this step - no providers for this type of image
                 $stepResult->setInfo('No providers found for "' . $stepConfig['providerType'] . '"');
                 continue;
             }
             $this->optimizeWithBestProvider($stepResult, $chainImagePath, $providers);
-            $optionResult->addStepResult($stepResult);
+            $modeResult->addStepResult($stepResult);
         }
-        if ($optionResult->getExecutedSuccessfullyNum() == $optionResult->getStepResults()->count()) {
-            $optionResult->setExecutedSuccessfully(true);
+        if ($modeResult->getExecutedSuccessfullyNum() == $modeResult->getStepResults()->count()) {
+            $modeResult->setExecutedSuccessfully(true);
         }
 
         clearstatcache(true, $chainImagePath);
-        $optionResult->setSizeAfter(filesize($chainImagePath));
+        $modeResult->setSizeAfter(filesize($chainImagePath));
 
         $pathInfo = pathinfo($originalImagePath);
         copy($chainImagePath, str_replace(
@@ -147,7 +150,7 @@ class OptimizeImageService
             $modeConfig['outputFilename']
         ));
 
-        return $optionResult;
+        return $modeResult;
     }
 
     /**
@@ -218,18 +221,5 @@ class OptimizeImageService
             }
         }
         clearstatcache(true, $chainImagePath);
-    }
-
-    /**
-     * Finds all providers available for given type of file
-     *
-     * @param string $imagePath
-     * @param string $providerType
-     * @return array
-     */
-    protected function findProvidersForFile($imagePath, $providerType)
-    {
-        $fileType = strtolower(explode('/', image_type_to_mime_type(getimagesize($imagePath)[2]))[1]);
-        return $this->configurator->getProviders($providerType, $fileType);
     }
 }

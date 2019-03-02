@@ -36,7 +36,7 @@ class StepResult extends AbstractBaseResult
     protected $providersResults = null;
 
     /**
-     * @return string $fileRelativePath
+     * @return string $fileAbsolutePath
      */
     public function getDescription()
     {

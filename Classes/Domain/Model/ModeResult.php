@@ -14,12 +14,12 @@ namespace SourceBroker\Imageopt\Domain\Model;
  ***/
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
-class OptionResult extends AbstractBaseResult
+class ModeResult extends AbstractBaseResult
 {
     /**
      * @var string
      */
-    protected $fileRelativePath = '';
+    protected $fileAbsolutePath = '';
 
     /**
      * @var string
@@ -47,25 +47,25 @@ class OptionResult extends AbstractBaseResult
     }
 
     /**
-     * @return string $fileRelativePath
+     * @return string $fileAbsolutePath
      */
-    public function getFileRelativePath()
+    public function getFileAbsolutePath()
     {
-        return $this->fileRelativePath;
+        return $this->fileAbsolutePath;
     }
 
     /**
-     * @param string $fileRelativePath
+     * @param string $fileAbsolutePath
      * @return static
      */
-    public function setFileRelativePath($fileRelativePath)
+    public function setFileAbsolutePath($fileAbsolutePath)
     {
-        $this->fileRelativePath = $fileRelativePath;
+        $this->fileAbsolutePath = $fileAbsolutePath;
         return $this;
     }
 
     /**
-     * @return string $fileRelativePath
+     * @return string $fileAbsolutePath
      */
     public function getName()
     {
@@ -83,7 +83,7 @@ class OptionResult extends AbstractBaseResult
     }
 
     /**
-     * @return string $fileRelativePath
+     * @return string $fileAbsolutePath
      */
     public function getDescription()
     {

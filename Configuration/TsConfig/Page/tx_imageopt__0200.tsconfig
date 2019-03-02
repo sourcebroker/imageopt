@@ -1,4 +1,4 @@
-// [REMOTE] Kraken loosless image optimisation.
+// [REMOTE] Kraken loosless.
 
 <INCLUDE_TYPOSCRIPT: source="FILE:EXT:imageopt/Configuration/TsConfig/Page/tx_imageopt.tsconfig">
 tx_imageopt {

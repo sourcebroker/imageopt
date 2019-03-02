@@ -22,13 +22,6 @@ class ProviderResult extends AbstractBaseResult
     protected $name = '';
 
     /**
-     * Boolean if provider is winner
-     *
-     * @var bool
-     */
-    protected $winner = false;
-
-    /**
      * executorsResults
      *
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\SourceBroker\Imageopt\Domain\Model\ExecutorResult>
@@ -99,37 +92,6 @@ class ProviderResult extends AbstractBaseResult
     public function setExecutorsResults(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $executorsResults)
     {
         $this->executorsResults = $executorsResults;
-    }
-
-    /**
-     * Returns the winner
-     *
-     * @return bool $winner
-     */
-    public function getWinner()
-    {
-        return $this->winner;
-    }
-
-    /**
-     * Sets the winner
-     *
-     * @param bool $winner
-     * @return void
-     */
-    public function setWinner($winner)
-    {
-        $this->winner = $winner;
-    }
-
-    /**
-     * Returns the boolean state of winner
-     *
-     * @return bool
-     */
-    public function isWinner()
-    {
-        return $this->winner;
     }
 
     /**
