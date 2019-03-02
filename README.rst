@@ -41,9 +41,14 @@ Features
   or ``/uploads/``.
 
 - Support for following local binaries providers:
-  For png - pngquant, optipng, pngcrush. For gif - gifsicle. For jpeg - mozjpeg, jpegoptim, jpegrescan, jpegtran.
+  * for png - pngquant, optipng, pngcrush,
+  * for gif - gifsicle,
+  * for jpeg - mozjpeg, jpegoptim, jpegrescan, jpegtran.
 
-- Support for following remote providers: imageoptim.com, kraken.io, tinypng.com.
+- Support for following remote providers:
+  * kraken.io
+  * imageoptim.com
+  * tinypng.com.
 
 - Own providers can be registered with page TSconfig.
 
@@ -68,7 +73,7 @@ Configuration
 
 2) Open homepage properties and choose one of predefined modes (or create own)
 
-3) If you choosed Kraken in predefined mode then you need to enter the key / pass pair.
+3) If you choosed Kraken in predefined mode then you need to enter the key / pass pair in PageTS.
 
       ::
 
