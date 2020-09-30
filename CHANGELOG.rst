@@ -2,6 +2,14 @@
 Changelog
 ---------
 
+6.0.0
+~~~~~
+
+1) [TASK][!!!BREAKING] Replace CommandController commands  with Symfony commands.
+2) [BUGFIX] Fix wrong TS config for tx_imageopt__0110.tsconfig
+3) [TASK] Drop support for TYPO3 7.6 and 8.7. Add support for TYPO3 10.
+4) [TASK] Optimise travis config file.
+
 5.0.0
 ~~~~~
 

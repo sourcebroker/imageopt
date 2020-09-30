@@ -12,13 +12,13 @@ $EM_CONF[$_EXTKEY] = [
     'title' => 'Optimize images created/resized by TYPO3',
     'description' => 'Optimize images created/resized by TYPO3 so they take less space. Safe as it does not optimize original images.',
     'category' => 'be',
-    'version' => '5.0.0',
+    'version' => '6.0.0',
     'state' => 'stable',
     'uploadfolder' => false,
     'createDirs' => '',
     'clearcacheonload' => false,
     'author' => 'SourceBroker Team',
-    'author_email' => 'office@sourcebroker.net',
+    'author_email' => 'office@sourcebroker.dev',
     'author_company' => 'SourceBroker',
     'constraints' =>
         [
