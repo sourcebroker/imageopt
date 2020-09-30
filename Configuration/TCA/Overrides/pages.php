@@ -6,7 +6,6 @@ defined('TYPO3_MODE') or die();
     'imageopt',
     'Configuration/TsConfig/Page/tx_imageopt__0100.tsconfig',
     'ext:imageopt [LOCAL] Good standard. mozjpeg / pngquant / gifsicle & loosless finishers.'
-    'ext:imageopt [LOCAL] Good standard. mozjpeg / pngquant / gifsicle & loosless finishers.'
 );
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::registerPageTSConfigFile(
