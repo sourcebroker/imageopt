@@ -1,7 +1,7 @@
 {
   "name": "sourcebroker/imageopt",
   "license": [
-    "GPL-2.0+"
+    "GPL-2.0-or-later"
   ],
   "type": "typo3-cms-extension",
   "description": "Optimize images created/resized by TYPO3 so they take less space. Safe as it does not optimize original images.",
@@ -27,7 +27,7 @@
     }
   },
   "replace": {
-    "imageopt": "self.version",
+    "sourcebroker/imageopt": "self.version",
     "typo3-ter/imageopt": "self.version"
   },
   "config": {
