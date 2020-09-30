@@ -46,8 +46,10 @@ class ContentObjectRenderer extends \TYPO3\CMS\Frontend\ContentObject\ContentObj
     public function getImgResource($file, $fileArray)
     {
         if (FrontendProcessingUtility::isAllowedToForceFrontendImageProcessing($file)) {
-            $paramsValue = isset($fileArray['params.']) ? $this->stdWrap($fileArray['params'],
-                $fileArray['params.']) : $fileArray['params'];
+            $paramsValue = isset($fileArray['params.']) ? $this->stdWrap(
+                $fileArray['params'],
+                $fileArray['params.']
+            ) : $fileArray['params'];
             unset($fileArray['params.']);
             // Make $fileArray['params'] at least one space to count that towards hash in order to make TYPO3 to process image even if it would not be processed without this.
             $fileArray['params'] = $paramsValue . ' ';

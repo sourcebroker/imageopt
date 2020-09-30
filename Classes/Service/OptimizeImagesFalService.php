@@ -116,7 +116,8 @@ class OptimizeImagesFalService
                 if ($defaultOptimizationResult->isExecutedSuccessfully()) {
                     if ($defaultOptimizationResult->getSizeBefore() > $defaultOptimizationResult->getSizeAfter()) {
                         $processedFal->updateWithLocalFile(
-                            $this->objectManager->get(TemporaryFileUtility::class)->createTemporaryCopy($sourceFile));
+                            $this->objectManager->get(TemporaryFileUtility::class)->createTemporaryCopy($sourceFile)
+                        );
                     }
                     $processedFal->updateProperties(['tx_imageopt_executed_successfully' => 1]);
                     $this->falProcessedFileRepository->update($processedFal);

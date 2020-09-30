@@ -61,8 +61,10 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
         $result = $this->request(file_get_contents($inputImageAbsolutePath), $this->url['upload']);
         if ($result['success']) {
             if (isset($result['response']['output']['url'])) {
-                $download = $this->getFileFromRemoteServer($inputImageAbsolutePath,
-                    $result['response']['output']['url']);
+                $download = $this->getFileFromRemoteServer(
+                    $inputImageAbsolutePath,
+                    $result['response']['output']['url']
+                );
 
                 if ($download) {
                     $executorResult->setExecutedSuccessfully(true);

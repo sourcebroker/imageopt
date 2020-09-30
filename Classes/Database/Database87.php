@@ -70,8 +70,10 @@ class Database87 implements Database
             ->from('sys_file_processedfile')
             ->where(
                 $queryBuilder->expr()->isNotNull('name'),
-                $queryBuilder->expr()->eq('tx_imageopt_executed_successfully',
-                    $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
+                $queryBuilder->expr()->eq(
+                    'tx_imageopt_executed_successfully',
+                    $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)
+                ),
                 $queryBuilder->expr()->neq('task_type', $queryBuilder->createNamedParameter('Image.Preview')),
                 $queryBuilder->expr()->neq('identifier', $queryBuilder->createNamedParameter(''))
             )->andWhere(

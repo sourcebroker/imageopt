@@ -67,7 +67,8 @@ class OptimizationExecutorShell extends OptimizationExecutorBase
                     );
                     $successfulStatuses = [0];
                     if (!empty($configurator->getOption('command.successfulExitStatus'))) {
-                        $successfulStatuses = array_merge($successfulStatuses,
+                        $successfulStatuses = array_merge(
+                            $successfulStatuses,
                             explode(',', (string)$configurator->getOption('command.successfulExitStatus'))
                         );
                     }
