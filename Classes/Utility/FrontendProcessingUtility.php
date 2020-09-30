@@ -32,12 +32,15 @@ class FrontendProcessingUtility
     public static function isAllowedToForceFrontendImageProcessing($filePath)
     {
         return !empty($GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_imageopt.']['imageProcessing.']['force'])
-            && (empty($GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_imageopt.']['imageProcessing.']['exclusion.']['regexp'])
+            && (
+                empty($GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_imageopt.']['imageProcessing.']['exclusion.']['regexp'])
                 || (
                     !empty($GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_imageopt.']['imageProcessing.']['exclusion.']['regexp'])
                     &&
-                    !preg_match($GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_imageopt.']['imageProcessing.']['exclusion.']['regexp'],
-                        $filePath)
+                    !preg_match(
+                        $GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_imageopt.']['imageProcessing.']['exclusion.']['regexp'],
+                        $filePath
+                    )
                 )
             );
     }

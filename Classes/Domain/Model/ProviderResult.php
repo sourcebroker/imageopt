@@ -2,6 +2,8 @@
 
 namespace SourceBroker\Imageopt\Domain\Model;
 
+use TYPO3\CMS\Extbase\Annotation\ORM\Cascade;
+
 /***
  *
  * This file is part of the "imageopt" Extension for TYPO3 CMS.

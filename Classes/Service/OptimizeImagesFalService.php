@@ -29,6 +29,7 @@ use SourceBroker\Imageopt\Domain\Model\ModeResult;
 use SourceBroker\Imageopt\Domain\Repository\ModeResultRepository;
 use SourceBroker\Imageopt\Resource\ProcessedFileRepository;
 use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -134,7 +135,7 @@ class OptimizeImagesFalService
 
         if ($fileDoesNotExistOrNotReadable) {
             $modeResult = $this->objectManager->get(ModeResult::class)
-                ->setFileAbsolutePath(substr($sourceFile, strlen(PATH_site)))
+                ->setFileAbsolutePath(substr($sourceFile, strlen(Environment::getPublicPath() . '/')))
                 ->setExecutedSuccessfully(false)
                 ->setInfo($modeResultInfo);
 
