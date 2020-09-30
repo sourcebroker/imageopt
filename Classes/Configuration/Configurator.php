@@ -24,10 +24,11 @@
 
 namespace SourceBroker\Imageopt\Configuration;
 
+use Exception;
 use SourceBroker\Imageopt\Utility\ArrayUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 /**
  * Configuration Class
@@ -66,7 +67,7 @@ class Configurator
      * Set configuration via page Id
      *
      * @param int|null $pageId
-     * @throws \Exception
+     * @throws Exception
      */
     public function setConfigByPage($pageId)
     {
@@ -103,20 +104,20 @@ class Configurator
     /**
      * Initialize configurator
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function init()
     {
         if ($this->config === null) {
-            throw new \Exception('Configuration not set for ImageOpt ext');
+            throw new Exception('Configuration not set for ImageOpt ext');
         }
 
         if (!$this->isConfigBranchValid('providers')) {
-            throw new \Exception('Providers are not defined.');
+            throw new Exception('Providers are not defined.');
         }
 
         if (!$this->isConfigBranchValid('mode')) {
-            throw new \Exception('Optimize modes are not defined.');
+            throw new Exception('Optimize modes are not defined.');
         }
 
         foreach ($this->config['mode'] as $name => &$optimizeMode) {
@@ -132,7 +133,7 @@ class Configurator
                 );
             }
             if (!is_array($providerValues['executors'])) {
-                throw new \Exception('No executors defined for provider: "' . $providerKey . '""');
+                throw new Exception('No executors defined for provider: "' . $providerKey . '""');
             }
             foreach ($providerValues['executors'] as $executorKey => $executorValues) {
                 if ($this->isConfigBranchValid('executorsDefault')) {
@@ -149,8 +150,10 @@ class Configurator
                 $providerTyped = $providerValues;
                 $providerTyped['type'] = $type;
                 if (isset($providerTyped['typeOverride'][$type])) {
-                    \TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule($providerTyped,
-                        $providerValues['typeOverride'][$type]);
+                    \TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule(
+                        $providerTyped,
+                        $providerValues['typeOverride'][$type]
+                    );
                 }
                 unset($providerTyped['typeOverride']);
                 if (!isset($this->providers[$type])) {
@@ -162,10 +165,10 @@ class Configurator
 
         foreach ($this->config['providers'] as $providerKey => $providerValues) {
             if (empty($providerValues['type'])) {
-                throw new \Exception('Provider types is not set for provider: "' . $providerKey . '"');
+                throw new Exception('Provider types is not set for provider: "' . $providerKey . '"');
             }
             if (empty($providerValues['fileType'])) {
-                throw new \Exception('File types is not set for provider: "' . $providerKey . '"');
+                throw new Exception('File types is not set for provider: "' . $providerKey . '"');
             }
         }
     }
@@ -205,7 +208,7 @@ class Configurator
      *
      * @param int|null $rootPageForTsConfig
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function getConfigForPage($rootPageForTsConfig = null)
     {
@@ -215,19 +218,15 @@ class Configurator
             if ($rootPageForTsConfigRow !== null) {
                 $rootPageForTsConfig = $rootPageForTsConfigRow['uid'];
             } else {
-                throw new \Exception('Can not detect the root page to generate page TSconfig.', 1501700792654);
+                throw new Exception('Can not detect the root page to generate page TSconfig.', 1501700792654);
             }
         }
-        $serviceConfig = GeneralUtility::makeInstance(
-            VersionNumberUtility::convertVersionNumberToInteger(TYPO3_version) < 8007000 ?
-                \TYPO3\CMS\Extbase\Service\TypoScriptService::class :
-                \TYPO3\CMS\Core\TypoScript\TypoScriptService::class)
+        $serviceConfig = GeneralUtility::makeInstance(TypoScriptService::class)
             ->convertTypoScriptArrayToPlainArray(BackendUtility::getPagesTSconfig($rootPageForTsConfig));
         if (isset($serviceConfig['tx_imageopt'])) {
             return $serviceConfig['tx_imageopt'];
         } else {
-            throw new \Exception('There is no TSconfig for tx_imageopt in the root page id=' . $rootPageForTsConfig,
-                1501692752398);
+            throw new Exception('There is no TSconfig for tx_imageopt in the root page id=' . $rootPageForTsConfig, 1501692752398);
         }
     }
 

@@ -24,6 +24,8 @@
 
 namespace SourceBroker\Imageopt\Utility;
 
+use Exception;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -81,19 +83,21 @@ class TemporaryFileUtility implements SingletonInterface
     /**
      * Delete all temporary files
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public function unlinkTempFiles()
     {
-        if (defined('PATH_site')) {
-            foreach (glob(PATH_site . 'typo3temp/' . $this->tempFilePrefix . '*') as $tempFile) {
+        $pathSite = Environment::getPublicPath();
+        if (!empty($pathSite)) {
+            $pathSite .= '/';
+            foreach (glob($pathSite . 'typo3temp/' . $this->tempFilePrefix . '*') as $tempFile) {
                 GeneralUtility::unlink_tempfile($tempFile);
             }
-            foreach (glob(PATH_site . 'typo3temp/var/transient/' . $this->tempFilePrefix . '*') as $tempFile) {
+            foreach (glob($pathSite . 'typo3temp/var/transient/' . $this->tempFilePrefix . '*') as $tempFile) {
                 GeneralUtility::unlink_tempfile($tempFile);
             }
         } else {
-            throw new \Exception('PATH_site is not declared');
+            throw new Exception('PathSite is missing');
         }
     }
 }

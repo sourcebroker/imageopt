@@ -76,7 +76,6 @@ class OptimizeImageService
         if (!file_exists($originalImagePath) || !filesize($originalImagePath)) {
             throw new \Exception('Can not read file to optimize. File: "' . $originalImagePath . '"');
         }
-
         // create original image copy - it may vary (provider may overwrite original image)
         $sourceImagePath = $this->temporaryFile->createTemporaryCopy($originalImagePath);
 
@@ -87,7 +86,6 @@ class OptimizeImageService
             if (!preg_match($regexp, $originalImagePath)) {
                 continue;
             }
-
             $modeResults[$modeKey] = $this->optimizeSingleMode(
                 $modeConfig,
                 $sourceImagePath,

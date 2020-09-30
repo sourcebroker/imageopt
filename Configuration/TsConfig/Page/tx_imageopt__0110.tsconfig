@@ -17,6 +17,7 @@ tx_imageopt {
                 }
             }
             fileRegexp = .*
+            outputFilename = {dirname}/{filename}.{extension}
         }
         webp {
             description = Saving under webp format and different name.
@@ -46,9 +47,9 @@ tx_imageopt {
         }
     }
     providers {
-        mozjpeg.enable = 1
-        jpegtranMozjpeg.enable = 1
-        pngquant.enable = 1
-        pngcrush.enable = 1
+        mozjpeg.enabled = 1
+        jpegtranMozjpeg.enabled = 1
+        pngquant.enabled = 1
+        pngcrush.enabled = 1
     }
 }

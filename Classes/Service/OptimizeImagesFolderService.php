@@ -26,6 +26,7 @@ namespace SourceBroker\Imageopt\Service;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Domain\Model\ModeResult;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
@@ -66,8 +67,8 @@ class OptimizeImagesFolderService
             if ($directoryWithExtensions != '') {
                 if (strpos($directoryWithExtensions, '*') !== false) {
                     list($directory, $stringExtensions) = explode('*', $directoryWithExtensions);
-                    if (is_dir(PATH_site . $directory)) {
-                        $directoryIterator = new \RecursiveDirectoryIterator(PATH_site . $directory);
+                    if (is_dir(Environment::getPublicPath() . '/' . $directory)) {
+                        $directoryIterator = new \RecursiveDirectoryIterator(Environment::getPublicPath() . '/' . $directory);
                         $iterator = new \RecursiveIteratorIterator($directoryIterator);
                         $regexIterator = new \RegexIterator(
                             $iterator,
@@ -127,8 +128,8 @@ class OptimizeImagesFolderService
         foreach ($directories as $directoryWithExtensions) {
             if (strpos($directoryWithExtensions, '*') !== false) {
                 $directory = trim(explode('*', $directoryWithExtensions)[0], '/\\');
-                if (is_dir(PATH_site . $directory)) {
-                    exec('find ' . PATH_site . $directory . ' -type f -exec chmod u-x {} \;');
+                if (is_dir(Environment::getPublicPath() . '/' . $directory)) {
+                    exec('find ' . Environment::getPublicPath() . '/' . $directory . ' -type f -exec chmod u-x {} \;');
                 }
             }
         }
