@@ -157,7 +157,7 @@ class OptimizeImageServiceTest extends UnitTestCase
             file_get_contents(realpath(__DIR__ . '/../../../Configuration/TsConfig/Page/tx_imageopt__0100.tsconfig'))
         );
 
-        $rawConfig = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Service\TypoScriptService::class)
+        $rawConfig = GeneralUtility::makeInstance(\TYPO3\CMS\Core\TypoScript\TypoScriptService::class)
             ->convertTypoScriptArrayToPlainArray($typoscriptParser->setup)['tx_imageopt'];
         $rawConfig['providersDefault']['enabled'] = 1;
         if (file_exists(__DIR__ . '/../../../.env')) {
