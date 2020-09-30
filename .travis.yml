@@ -18,22 +18,12 @@ matrix:
       env: TYPO3_VERSION=^10
     - php: 7.4
       env: TYPO3_VERSION=^10
-
-sudo: false
-
+``
 install:
   - export PROJECT_DIR=$PWD
   - sudo apt-get update -y
-  - sudo apt-get -y install build-essential cmake git libtool libwebp-dev unzip python-dev aptitude autoconf automake m4 nasm pkg-config libpng-dev libmagickcore-dev libmagickwand-dev pngnq pngcrush
+  - sudo apt-get -y install build-essential cmake libtool libwebp-dev unzip python-dev autoconf automake m4 nasm pkg-config libpng-dev libmagickcore-dev libmagickwand-dev pngnq
   - pip install setuptools
-
-  # install pngquant2
-  - cd ~
-  - git clone --recursive https://github.com/kornelski/pngquant.git
-  - cd pngquant
-  - make
-  - sudo make install
-  - sudo ln -s /usr/local/bin/pngquant /usr/bin/pngquant
 
   # intall mozjpeg
   - cd ~
@@ -48,18 +38,6 @@ install:
   - sudo ln -s /usr/local/bin/cjpeg /usr/bin/mozjpeg-cjpeg
   - sudo ln -s /usr/local/bin/jpegtran /usr/bin/mozjpeg-jpegtran
 
-  # install convert (webp)
-  - sudo apt-get -y install libjpeg62-dev
-  - sudo apt-get -y build-dep imagemagick
-  - cd ~
-  - wget https://www.imagemagick.org/download/ImageMagick.tar.gz
-  - tar xf ImageMagick.tar.gz
-  - cd ImageMagick-7*
-  - ./configure
-  - make
-  - sudo make install
-  - sudo ldconfig /usr/local/lib
-
   - cd $PROJECT_DIR
 
 addons:
@@ -70,8 +48,8 @@ addons:
       - optipng
       - pngcrush
       - gifsicle
+      - pngquant
       # jpgrescan
-      - libjpeg-progs
       - libjpeg-turbo-progs
       - libperl6-slurp-perl
       - libfile-slurp-perl
