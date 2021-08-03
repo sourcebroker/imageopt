@@ -2,6 +2,11 @@
 Changelog
 ---------
 
+6.0.1
+~~~~~
+
+1) [BUGFIX] Make ext_tables.sql compatible with compare database tool.
+
 6.0.0
 ~~~~~
 

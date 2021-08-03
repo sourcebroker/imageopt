@@ -11,8 +11,8 @@ CREATE TABLE tx_imageopt_domain_model_moderesult (
 	pid int(11) DEFAULT '0' NOT NULL,
 
 	file_absolute_path text,
-	size_before int(10) UNSIGNED DEFAULT 0 NOT NULL,
-	size_after int(10) UNSIGNED DEFAULT 0 NOT NULL,
+    size_before int(10) unsigned DEFAULT '0' NOT NULL,
+    size_after int(10) unsigned DEFAULT '0' NOT NULL,
 	executed_successfully smallint(5) unsigned DEFAULT '0' NOT NULL,
 	step_results int(11) unsigned DEFAULT '0' NOT NULL,
 	info text,
@@ -38,8 +38,8 @@ CREATE TABLE tx_imageopt_domain_model_stepresult (
 
 	name varchar(100) DEFAULT '' NOT NULL,
 	description varchar(255) DEFAULT '' NOT NULL,
-	size_before int(10) UNSIGNED DEFAULT 0 NOT NULL,
-	size_after int(10) UNSIGNED DEFAULT 0 NOT NULL,
+    size_before int(10) unsigned DEFAULT '0' NOT NULL,
+    size_after int(10) unsigned DEFAULT '0' NOT NULL,
 	provider_winner_name varchar(255) DEFAULT '' NOT NULL,
 	executed_successfully smallint(5) unsigned DEFAULT '0' NOT NULL,
 	mode_result int(11) unsigned DEFAULT '0' NOT NULL,
