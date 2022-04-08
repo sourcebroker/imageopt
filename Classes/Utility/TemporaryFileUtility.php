@@ -93,7 +93,7 @@ class TemporaryFileUtility implements SingletonInterface
             foreach (glob($pathSite . 'typo3temp/' . $this->tempFilePrefix . '*') as $tempFile) {
                 GeneralUtility::unlink_tempfile($tempFile);
             }
-            foreach (glob($pathSite . 'typo3temp/var/transient/' . $this->tempFilePrefix . '*') as $tempFile) {
+            foreach (glob(Environment::getVarPath() . '/transient/' . $this->tempFilePrefix . '*') as $tempFile) {
                 GeneralUtility::unlink_tempfile($tempFile);
             }
         } else {
