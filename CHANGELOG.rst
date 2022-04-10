@@ -2,6 +2,11 @@
 Changelog
 ---------
 
+6.0.3
+~~~~~
+
+1) [BUGFIX] Make composer.json valid.
+
 6.0.2
 ~~~~~
 
