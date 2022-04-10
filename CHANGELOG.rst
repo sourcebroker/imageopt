@@ -6,7 +6,7 @@ Changelog
 ~~~~~
 
 1) [BUGFIX] Fix removing of temporary filenames.
-
+2) [TASK] Add composer allow-plugins.
 
 6.0.1
 ~~~~~
