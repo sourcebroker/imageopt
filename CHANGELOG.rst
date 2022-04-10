@@ -2,6 +2,12 @@
 Changelog
 ---------
 
+6.0.2
+~~~~~
+
+1) [BUGFIX] Fix removing of temporary filenames.
+
+
 6.0.1
 ~~~~~
 

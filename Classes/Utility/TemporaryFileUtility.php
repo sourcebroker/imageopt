@@ -49,31 +49,19 @@ class TemporaryFileUtility implements SingletonInterface
     private $isUnlinkTempFilesRegisteredAsShutdownFunction = false;
 
     /**
-     * Create temporary file and register shoutdown function
-     *
-     * @return string $tempFile Name of temporary file
-     */
-    public function createTempFile()
-    {
-        $tempFile = GeneralUtility::tempnam($this->tempFilePrefix);
-        if (!$this->isUnlinkTempFilesRegisteredAsShutdownFunction) {
-            register_shutdown_function([$this, 'unlinkTempFiles']);
-            $this->isUnlinkTempFilesRegisteredAsShutdownFunction = true;
-        }
-
-        return $tempFile;
-    }
-
-    /**
      * Return a copy of file under a temporary filename.
-     * File is deleted autmaticaly after script end.
+     * File is deleted automatically after script end.
      *
      * @param string $originalFileAbsolutePath Absolute path/file with original image
      * @return string temporary file path
      */
     public function createTemporaryCopy($originalFileAbsolutePath)
     {
-        $tempFilename = $this->createTempFile();
+        $tempFilename = GeneralUtility::tempnam($this->tempFilePrefix);
+        if (!$this->isUnlinkTempFilesRegisteredAsShutdownFunction) {
+            register_shutdown_function([$this, 'unlinkTempFiles']);
+            $this->isUnlinkTempFilesRegisteredAsShutdownFunction = true;
+        }
         if (file_exists($tempFilename)) {
             copy($originalFileAbsolutePath, $tempFilename);
         }
@@ -81,23 +69,17 @@ class TemporaryFileUtility implements SingletonInterface
     }
 
     /**
-     * Delete all temporary files
+     * Delete all temporary files of imageopt
      * @return void
      * @throws Exception
      */
     public function unlinkTempFiles()
     {
-        $pathSite = Environment::getPublicPath();
-        if (!empty($pathSite)) {
-            $pathSite .= '/';
-            foreach (glob($pathSite . 'typo3temp/' . $this->tempFilePrefix . '*') as $tempFile) {
-                GeneralUtility::unlink_tempfile($tempFile);
-            }
+        $varPath = Environment::getVarPath();
+        if (!empty($varPath)) {
             foreach (glob(Environment::getVarPath() . '/transient/' . $this->tempFilePrefix . '*') as $tempFile) {
                 GeneralUtility::unlink_tempfile($tempFile);
             }
-        } else {
-            throw new Exception('PathSite is missing');
         }
     }
 }
