@@ -6,6 +6,7 @@ master
 ~~~~~~
 
 1) [TASK] TYPO3 11 compatibility.
+2) [BUGFIX] Fix failing when step has no provider.
 
 6.0.3
 ~~~~~

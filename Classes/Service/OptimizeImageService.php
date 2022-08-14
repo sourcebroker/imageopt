@@ -126,11 +126,6 @@ class OptimizeImageService
                 $stepConfig['providerType'],
                 strtolower(explode('/', image_type_to_mime_type(getimagesize($originalImagePath)[2]))[1])
             );
-            if (empty($providers)) {
-                // skip this step - no providers for this type of image
-                $stepResult->setInfo('No providers found for "' . $stepConfig['providerType'] . '"');
-                continue;
-            }
             $this->optimizeWithBestProvider($stepResult, $chainImagePath, $providers);
             $modeResult->addStepResult($stepResult);
         }
@@ -201,6 +196,7 @@ class OptimizeImageService
 
         if ($providerEnabledCounter === 0) {
             $stepResult->setInfo('No providers enabled (or defined).');
+            $stepResult->setExecutedSuccessfully(true);
         } elseif ($providerExecutedSuccessfullyCounter === 0) {
             $stepResult->setInfo('No winner. All providers in this step were unsuccessfull.');
         } else {
