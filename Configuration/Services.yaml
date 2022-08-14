@@ -1,0 +1,30 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  SourceBroker\Imageopt\Command\OptimizeFolderImages:
+    tags:
+      - name: 'console.command'
+        command: 'imageopt:optimizefolderimages'
+        schedulable: true
+
+  SourceBroker\Imageopt\Command\OptimizeFalProcessedImages:
+    tags:
+      - name: 'console.command'
+        command: 'imageopt:optimizefalprocessedimages'
+        schedulable: true
+
+  SourceBroker\Imageopt\Command\ResetOptimizationFlagForFal:
+    tags:
+      - name: 'console.command'
+        command: 'imageopt:resetoptimizationflagforfal'
+        schedulable: false
+
+
+  SourceBroker\Imageopt\Command\ResetOptimizationFlagForFolders:
+    tags:
+      - name: 'console.command'
+        command: 'imageopt:resetoptimizationflagforfolders'
+        schedulable: false

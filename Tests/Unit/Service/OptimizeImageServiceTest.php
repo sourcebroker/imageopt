@@ -23,13 +23,13 @@ class OptimizeImageServiceTest extends UnitTestCase
     /** @var string Path to TYPO3 web root */
     private $typo3WebRoot;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->typo3WebRoot = realpath(__DIR__ . '/../../../.Build/Web/');
         parent::setUp();
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         foreach (glob($this->typo3WebRoot . '/typo3temp/tx_imageopt*') as $tempFile) {
             unlink($tempFile);

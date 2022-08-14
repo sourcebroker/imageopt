@@ -2,6 +2,11 @@
 Changelog
 ---------
 
+master
+~~~~~~
+
+1) [TASK] TYPO3 11 compatibility.
+
 6.0.3
 ~~~~~
 

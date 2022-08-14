@@ -6,15 +6,15 @@
   "type": "typo3-cms-extension",
   "description": "Optimize images created/resized by TYPO3 so they take less space. Safe as it does not optimize original images.",
   "require": {
-    "typo3/cms-core": "^9.5 || ^10.4"
+    "typo3/cms-core": "^10.4 || ^11.5"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^2.0",
     "nimut/testing-framework": "^5.0",
-    "symfony/dotenv": "^3.4 || ^4.2 || ^5.0"
+    "symfony/dotenv": "^5.0"
   },
   "suggest": {
-    "typo3/cms-scheduler": "^9.5 || ^10.4"
+    "typo3/cms-scheduler": "^10.4 || ^11.5"
   },
   "autoload": {
     "psr-4": {
@@ -25,9 +25,6 @@
     "psr-4": {
       "SourceBroker\\Imageopt\\Tests\\": "Tests"
     }
-  },
-  "replace": {
-    "typo3-ter/imageopt": "self.version"
   },
   "config": {
     "vendor-dir": ".Build/vendor",
