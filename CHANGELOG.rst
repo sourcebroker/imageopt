@@ -8,6 +8,7 @@ master
 1) [TASK] TYPO3 11 compatibility.
 2) [BUGFIX] Fix failing when step has no provider.
 3) [TASK] Extended ddev testbed.
+4) [TASK] Cleanup ext_tables.sql from standard fields / rename TS setup extension
 
 6.0.3
 ~~~~~
