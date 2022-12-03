@@ -24,13 +24,19 @@
 
 namespace SourceBroker\Imageopt\Utility;
 
+use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\FileReference;
+
 /**
  * Manage temporary files
  */
 class FrontendProcessingUtility
 {
-    public static function isAllowedToForceFrontendImageProcessing($filePath)
+    public static function isAllowedToForceFrontendImageProcessing($file)
     {
+        if ($file instanceof FileReference || $file instanceof File) {
+            $file = $file->getPublicUrl();
+        }
         return !empty($GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_imageopt.']['imageProcessing.']['force'])
             && (
                 empty($GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_imageopt.']['imageProcessing.']['exclusion.']['regexp'])
@@ -39,7 +45,7 @@ class FrontendProcessingUtility
                     &&
                     !preg_match(
                         $GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_imageopt.']['imageProcessing.']['exclusion.']['regexp'],
-                        $filePath
+                        $file
                     )
                 )
             );

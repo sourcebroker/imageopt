@@ -9,6 +9,7 @@ master
 2) [BUGFIX] Fix failing when step has no provider.
 3) [TASK] Extended ddev testbed.
 4) [TASK] Cleanup ext_tables.sql from standard fields / rename TS setup extension
+5) [BUGFIX] Fix $file in isAllowedToForceFrontendImageProcessing is not always a path (string).
 
 6.0.3
 ~~~~~
