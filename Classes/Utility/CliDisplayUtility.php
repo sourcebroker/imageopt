@@ -95,11 +95,15 @@ class CliDisplayUtility
             $stepProvidersInfo[] = $statsInfo . "\n";
         }
         $pathInfo = pathinfo($modeResult->getFileAbsolutePath());
-        $outputFile = str_replace(
-            ['{dirname}', '{basename}', '{extension}', '{filename}'],
-            [$pathInfo['dirname'], $pathInfo['basename'], $pathInfo['extension'], $pathInfo['filename']],
-            $config['mode'][$modeResult->getName()]['outputFilename']
-        );
+
+        $outputFile = '';
+        if ($modeResult->isExecutedSuccessfully()) {
+            $outputFile = str_replace(
+                ['{dirname}', '{basename}', '{extension}', '{filename}'],
+                [$pathInfo['dirname'], $pathInfo['basename'], $pathInfo['extension'], $pathInfo['filename']],
+                $config['mode'][$modeResult->getName()]['outputFilename']
+            );
+        }
 
         $output = '---------------------------------------------------------------------' . "\n" .
             "File \t\t| In : " . $modeResult->getFileAbsolutePath() . "\n";

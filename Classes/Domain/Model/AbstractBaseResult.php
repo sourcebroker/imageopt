@@ -7,14 +7,14 @@ use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 abstract class AbstractBaseResult extends AbstractEntity
 {
     /**
-     * @var string
+     * @var int
      */
-    protected $sizeBefore = '';
+    protected $sizeBefore = 0;
 
     /**
-     * @var string
+     * @var int
      */
-    protected $sizeAfter = '';
+    protected $sizeAfter = 0;
 
     /**
      * @var int
@@ -32,7 +32,7 @@ abstract class AbstractBaseResult extends AbstractEntity
     protected $executedSuccessfully = false;
 
     /**
-     * @return string sizeBefore
+     * @return int sizeBefore
      */
     public function getSizeBefore()
     {
@@ -40,7 +40,7 @@ abstract class AbstractBaseResult extends AbstractEntity
     }
 
     /**
-     * @param string $sizeBefore
+     * @param int $sizeBefore
      * @return static
      */
     public function setSizeBefore($sizeBefore)
@@ -50,7 +50,7 @@ abstract class AbstractBaseResult extends AbstractEntity
     }
 
     /**
-     * @return string $sizeAfter
+     * @return int $sizeAfter
      */
     public function getSizeAfter()
     {
@@ -58,7 +58,7 @@ abstract class AbstractBaseResult extends AbstractEntity
     }
 
     /**
-     * @param string $sizeAfter
+     * @param int $sizeAfter
      * @return static
      */
     public function setSizeAfter($sizeAfter)
