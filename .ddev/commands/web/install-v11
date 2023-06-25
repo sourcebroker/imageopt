@@ -19,7 +19,7 @@ composer config --no-plugins allow-plugins.typo3/cms-composer-installers true -d
 composer config --no-plugins allow-plugins.typo3/class-alias-loader true -d $BASE_PATH
 
 composer config repositories.$EXTENSION_KEY path ../$EXTENSION_KEY --working-dir $BASE_PATH
-composer req typo3/minimal:'^11.5' typo3/cms-fluid-styled-content:'^11.5' typo3/cms-recycler:'^11.5' helhum/typo3-console:'^7.1.2' \ sourcebroker/$EXTENSION_KEY:'@dev' \
+composer req typo3/minimal:'^11.5' typo3/cms-tstemplate:'^11.5' typo3/cms-fluid-styled-content:'^11.5' typo3/cms-recycler:'^11.5' helhum/typo3-console:'^7.1.2' \ sourcebroker/$EXTENSION_KEY:'@dev' \
          --no-progress --no-interaction --working-dir $BASE_PATH
 
 $BASE_PATH/vendor/bin/typo3cms install:setup -n --database-name $DATABASE
