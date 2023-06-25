@@ -31,7 +31,7 @@ tx_imageopt {
     providers {
         webpImagemagick {
             type = webp
-            fileType = jpeg,png
+            fileType = jpeg,png,gif
             executors {
                 10 {
                     class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
