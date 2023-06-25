@@ -213,7 +213,7 @@ class Configurator
     public function getConfigForPage($rootPageForTsConfig = null)
     {
         if ($rootPageForTsConfig === null) {
-            $rootPageForTsConfigRow = GeneralUtility::makeInstance($GLOBALS['TYPO3_CONF_VARS']['EXT']['EXTCONF']['imageopt']['database'])
+            $rootPageForTsConfigRow = GeneralUtility::makeInstance(\SourceBroker\Imageopt\Resource\PageRepository::class)
                 ->getRootPages();
             if ($rootPageForTsConfigRow !== null) {
                 $rootPageForTsConfig = $rootPageForTsConfigRow['uid'];

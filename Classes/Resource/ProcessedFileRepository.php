@@ -2,20 +2,7 @@
 
 namespace SourceBroker\Imageopt\Resource;
 
-/*
- * This file is part of the TYPO3 CMS project
- *
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- * The TYPO3 project - inspiring people to share!
- */
-
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -28,19 +15,42 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
      */
     public function resetOptimizationFlag()
     {
-        GeneralUtility::makeInstance($GLOBALS['TYPO3_CONF_VARS']['EXT']['EXTCONF']['imageopt']['database'])
-            ->resetOptimizationFlag();
+        GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getConnectionForTable('sys_file_processedfile')
+            ->update(
+                'sys_file_processedfile',
+                ['tx_imageopt_executed_successfully' => 0],
+                ['tx_imageopt_executed_successfully' => 1]
+            );
     }
 
     /**
      * Get all not optimized images with $limit
-     *
-     * @param int $limit Number of not optimized images to return
-     * @return array
      */
     public function findNotOptimizedRaw(int $limit, array $extensions)
     {
-        return GeneralUtility::makeInstance($GLOBALS['TYPO3_CONF_VARS']['EXT']['EXTCONF']['imageopt']['database'])
-            ->findNotOptimizedRaw($limit, $extensions);
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable('sys_file_processedfile');
+
+        $extensionsQuery = array_map(function ($extension) use ($queryBuilder) {
+            return $queryBuilder->expr()->like('identifier', $queryBuilder->createNamedParameter('%.' . $extension));
+        }, $extensions);
+
+        return $queryBuilder
+            ->select('*')
+            ->from('sys_file_processedfile')
+            ->where(
+                $queryBuilder->expr()->isNotNull('name'),
+                $queryBuilder->expr()->eq(
+                    'tx_imageopt_executed_successfully',
+                    $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)
+                ),
+                $queryBuilder->expr()->neq('task_type', $queryBuilder->createNamedParameter('Image.Preview')),
+                $queryBuilder->expr()->neq('identifier', $queryBuilder->createNamedParameter(''))
+            )->andWhere(
+                $queryBuilder->expr()->orX(
+                    ...$extensionsQuery
+                )
+            )->setMaxResults((int)$limit)->execute()->fetchAll();
     }
 }

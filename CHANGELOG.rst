@@ -11,6 +11,7 @@ master
 4) [TASK] Cleanup ext_tables.sql from standard fields / rename TS setup extension
 5) [BUGFIX] Fix $file in isAllowedToForceFrontendImageProcessing is not always a path (string).
 6) [FEATURE] Allow to choose what files extensions are to be optimised.
+7) [TASK] Remove wrap for database queries. Was used when yet TYPO3 below 8.7 was supported.
 
 6.0.3
 ~~~~~
