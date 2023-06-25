@@ -1,0 +1,21 @@
+// [LOCAL] Only local webp.
+
+<INCLUDE_TYPOSCRIPT: source="FILE:EXT:imageopt/Configuration/TsConfig/Page/tx_imageopt.tsconfig">
+tx_imageopt {
+    mode {
+        webp {
+            description = Saving under webp format and different name.
+            step {
+                10 {
+                    providerType = webp
+                    description = Webp convert
+                }
+            }
+            fileRegexp = \.(jpg|jpeg|png|gif)$
+            outputFilename = {dirname}/{filename}.{extension}.webp
+        }
+    }
+    providers {
+        webpImagemagick.enabled = 1
+    }
+}

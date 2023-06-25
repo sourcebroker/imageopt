@@ -12,6 +12,8 @@ master
 5) [BUGFIX] Fix $file in isAllowedToForceFrontendImageProcessing is not always a path (string).
 6) [FEATURE] Allow to choose what files extensions are to be optimised.
 7) [TASK] Remove wrap for database queries. Was used when yet TYPO3 below 8.7 was supported.
+8) [BUGFIX][BREAKING] Add gif as supported extension for webp imagemagick provider.
+9) [FEATURE] Add new default settings. Only webp optimisation.
 
 6.0.3
 ~~~~~
