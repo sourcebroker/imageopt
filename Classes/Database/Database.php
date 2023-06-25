@@ -44,5 +44,5 @@ interface Database
      * @param int $limit Number of not optimized images to return
      * @return array
      */
-    public function findNotOptimizedRaw($limit = 50);
+    public function findNotOptimizedRaw(int $limit, array $extensions);
 }

@@ -61,10 +61,15 @@ class Database87 implements Database
     /**
      * @inheritdoc
      */
-    public function findNotOptimizedRaw($limit = 50)
+    public function findNotOptimizedRaw(int $limit = 50, array $extensions)
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable('sys_file_processedfile');
+
+        $extensionsQuery = array_map(function ($extension) use ($queryBuilder) {
+            return $queryBuilder->expr()->like('identifier', $queryBuilder->createNamedParameter('%.' . $extension));
+        }, $extensions);
+
         return $queryBuilder
             ->select('*')
             ->from('sys_file_processedfile')
@@ -78,10 +83,7 @@ class Database87 implements Database
                 $queryBuilder->expr()->neq('identifier', $queryBuilder->createNamedParameter(''))
             )->andWhere(
                 $queryBuilder->expr()->orX(
-                    $queryBuilder->expr()->like('identifier', $queryBuilder->createNamedParameter('%.png')),
-                    $queryBuilder->expr()->like('identifier', $queryBuilder->createNamedParameter('%.jpg')),
-                    $queryBuilder->expr()->like('identifier', $queryBuilder->createNamedParameter('%.jpeg')),
-                    $queryBuilder->expr()->like('identifier', $queryBuilder->createNamedParameter('%.gif'))
+                    ...$extensionsQuery
                 )
             )->setMaxResults((int)$limit)->execute()->fetchAll();
     }

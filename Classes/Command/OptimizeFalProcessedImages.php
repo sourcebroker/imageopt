@@ -71,8 +71,8 @@ class OptimizeFalProcessedImages extends BaseCommand
 
         /** @var OptimizeImagesFalService $optimizeImagesFalService */
         $optimizeImagesFalService = $objectManager->get(OptimizeImagesFalService::class, $configurator->getConfig());
-
-        $filesToProcess = $optimizeImagesFalService->getFalProcessedFilesToOptimize($numberOfImagesToProcess);
+        $extensions = GeneralUtility::trimExplode(',', $configurator->getOption('extensions'), true);
+        $filesToProcess = $optimizeImagesFalService->getFalProcessedFilesToOptimize($numberOfImagesToProcess, $extensions);
         if (!empty($filesToProcess)) {
             foreach ($filesToProcess as $fileToProcess) {
                 $optimizationResults = $optimizeImagesFalService->optimizeFalProcessedFile($fileToProcess);

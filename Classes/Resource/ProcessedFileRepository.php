@@ -38,9 +38,9 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
      * @param int $limit Number of not optimized images to return
      * @return array
      */
-    public function findNotOptimizedRaw($limit = 50)
+    public function findNotOptimizedRaw(int $limit, array $extensions)
     {
         return GeneralUtility::makeInstance($GLOBALS['TYPO3_CONF_VARS']['EXT']['EXTCONF']['imageopt']['database'])
-            ->findNotOptimizedRaw($limit);
+            ->findNotOptimizedRaw($limit, $extensions);
     }
 }

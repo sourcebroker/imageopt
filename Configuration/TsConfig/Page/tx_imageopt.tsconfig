@@ -2,6 +2,7 @@ tx_imageopt {
     log {
         enable = 1
     }
+    extensions = jpg,jpeg,png,gif
     directories = typo3temp/pics*jpg|gif|png,typo3temp/GB*jpg|gif|png,typo3temp/assets/images*jpg|gif|png,
     executorsDefault {
         /* not supported yet

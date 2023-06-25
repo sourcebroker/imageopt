@@ -152,18 +152,12 @@ class OptimizeImagesFalService
         return $modeResults;
     }
 
-    /**
-     * @param int $numberOfImagesToProcess
-     * @return array
-     */
-    public function getFalProcessedFilesToOptimize($numberOfImagesToProcess)
+
+    public function getFalProcessedFilesToOptimize(int $numberOfImagesToProcess, array $extensions): array
     {
-        return $this->falProcessedFileRepository->findNotOptimizedRaw($numberOfImagesToProcess);
+        return $this->falProcessedFileRepository->findNotOptimizedRaw($numberOfImagesToProcess, $extensions);
     }
 
-    /**
-     *
-     */
     public function resetOptimizationFlag()
     {
         $this->falProcessedFileRepository->resetOptimizationFlag();
