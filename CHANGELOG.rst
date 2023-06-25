@@ -14,6 +14,8 @@ master
 7) [TASK] Remove wrap for database queries. Was used when yet TYPO3 below 8.7 was supported.
 8) [BUGFIX][BREAKING] Add gif as supported extension for webp imagemagick provider.
 9) [FEATURE] Add new default settings. Only webp optimisation.
+10) [BUGFIX] Normalise size_before, size_after database schema to varchar. The best would be
+    "int(11) unsigned DEFAULT NULL", but TYPO3 database update schema command do not accept this.
 
 6.0.3
 ~~~~~
