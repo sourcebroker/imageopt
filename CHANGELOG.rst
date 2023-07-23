@@ -2,8 +2,8 @@
 Changelog
 ---------
 
-master
-~~~~~~
+7.0.0
+~~~~~
 
 1) [TASK] TYPO3 11 compatibility.
 2) [BUGFIX] Fix failing when step has no provider.
