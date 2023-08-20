@@ -1,42 +1,20 @@
 <?php
 
-/***************************************************************
- *  Copyright notice
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
-
 namespace SourceBroker\Imageopt\Executor;
+
+/*
+This file is part of the "imageopt" Extension for TYPO3 CMS.
+For the full copyright and license information, please read the
+LICENSE.txt file that was distributed with this source code.
+*/
 
 use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class OptimizationExecutorRemote
- */
 class OptimizationExecutorRemote extends OptimizationExecutorBase
 {
-    /**
-     * @var int
-     */
-    protected $timeout = 30;
+    protected int $timeout = 30;
 
     /**
      * @var mixed
@@ -46,51 +24,32 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
     /**
      * @var string[]
      */
-    protected $url = [];
+    protected array $url = [];
 
     /**
      * @var string[]
      */
-    protected $auth = [];
+    protected array $auth = [];
 
-    /**
-     * @var array
-     */
-    protected $apiOptions = [];
+    protected array $apiOptions = [];
 
-    /**
-     * @var array
-     */
-    protected $executorOptions = [];
+    protected array $executorOptions = [];
 
-    /**
-     * Optimize image
-     *
-     * @param $inputImageAbsolutePath string Absolute path/file with image to be optimized
-     * @param Configurator $configurator
-     * @return ExecutorResult Optimization result
-     */
-    public function optimize($inputImageAbsolutePath, Configurator $configurator)
+    public function optimize(string $imageAbsolutePath, Configurator $configurator): ExecutorResult
     {
         $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
         $executorResult->setExecutedSuccessfully(false);
         if ($this->initConfiguration($configurator)) {
-            $executorResult->setSizeBefore(filesize($inputImageAbsolutePath));
-            $this->process($inputImageAbsolutePath, $executorResult);
-            $executorResult->setSizeAfter(filesize($inputImageAbsolutePath));
+            $executorResult->setSizeBefore(filesize($imageAbsolutePath));
+            $this->process($imageAbsolutePath, $executorResult);
+            $executorResult->setSizeAfter(filesize($imageAbsolutePath));
         } else {
             $executorResult->setErrorMessage('Unable to initialize executor - check configuration');
         }
         return $executorResult;
     }
 
-    /**
-     * Initialize executor
-     *
-     * @param Configurator $configurator
-     * @return bool
-     */
-    protected function initConfiguration(Configurator $configurator)
+    protected function initConfiguration(Configurator $configurator): bool
     {
         $timeout = $configurator->getOption('timeout');
         if ($timeout !== null) {
@@ -129,25 +88,11 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
         return true;
     }
 
-    /**
-     * Process specific executor logic
-     *
-     * @param string $inputImageAbsolutePath Absolute path/file with original image
-     * @param ExecutorResult $executorResult
-     */
-    protected function process($inputImageAbsolutePath, ExecutorResult $executorResult)
+    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): void
     {
     }
 
-    /**
-     * Executes request to remote server
-     *
-     * @param string|array $data Data of request
-     * @param string $url Url to execute request
-     * @param array $options Additional options
-     * @return array
-     */
-    protected function request($data, $url, array $options = [])
+    protected function request($data, string $url, array $options = []): array
     {
         $curl = curl_init();
 
@@ -155,7 +100,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
             curl_setopt_array($curl, $options['curl']);
         }
 
-        if ($this->proxy) {
+        if (is_array($this->proxy) && count($this->proxy) > 0) {
             curl_setopt($curl, CURLOPT_PROXY, $this->proxy['host']);
             curl_setopt($curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
 
@@ -172,7 +117,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
                 $creds .= ':' . $this->proxy['pass'];
             }
 
-            if ($creds != '') {
+            if ($creds !== '') {
                 curl_setopt($curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
                 curl_setopt($curl, CURLOPT_PROXYUSERPWD, $creds);
             }
@@ -184,16 +129,18 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
             CURLOPT_USERAGENT,
             'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.85 Safari/537.36'
         );
-        curl_setopt($curl, CURLOPT_BINARYTRANSFER, 1); //kraken?
+        curl_setopt($curl, CURLOPT_BINARYTRANSFER, 1);
+        //kraken?
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_POST, 1);//tiny?
+        curl_setopt($curl, CURLOPT_POST, 1);
+        //tiny?
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         curl_setopt($curl, CURLOPT_FAILONERROR, 0);
         curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
         //curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);//imageopt?
         $response = curl_exec($curl);
 
-        $httpCode = (int)curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         $headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
 
         $result = [
@@ -207,13 +154,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
         return $result;
     }
 
-    /**
-     * Handles response errors
-     *
-     * @param array $response
-     * @return string|null
-     */
-    protected function handleResponseError(array $response)
+    protected function handleResponseError(array $response): ?string
     {
         $result = null;
 
@@ -231,7 +172,7 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
                     $result = 'Limit out';
                     break;
                 default:
-                    if (!in_array($response['http_code'], [200, 201])) {
+                    if (!in_array($response['http_code'], [200, 201], true)) {
                         $result = 'HTTP code: ' . $response['http_code'];
                     } elseif (empty($response['response'])) {
                         $result = 'Empty response';
@@ -244,17 +185,13 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
 
     /**
      * Gets the image and saves
-     *
-     * @param string $inputImageAbsolutePath Absolute path to target image
-     * @param string $url Url of the image to download
-     * @return bool Returns true if the image exists and will be saved
      */
-    protected function getFileFromRemoteServer($inputImageAbsolutePath, $url)
+    protected function getFileFromRemoteServer(string $inputImageAbsolutePath, string $url): bool
     {
         $headers = get_headers($url);
 
         if (stripos($headers[0], '200 OK')) {
-            file_put_contents($inputImageAbsolutePath, fopen($url, 'r'));
+            file_put_contents($inputImageAbsolutePath, fopen($url, 'b'));
             return true;
         }
 

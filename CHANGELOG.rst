@@ -2,6 +2,21 @@
 Changelog
 ---------
 
+master
+~~~~~~
+
+1) [BREAKING] Drop support for TYPO3 10.4. Refactor code.
+2) [BREAKING] Change folders for ``imageopt:optimizefolderimages`` task to
+    ``typo3temp/assets/_processed_*jpg|gif|png,typo3temp/assets/images*jpg|gif|png``
+3) [BREAKING] Add new field to ``tx_imageopt_executed`` to table ``sys_file_processedfile``.
+    Now the record from ``sys_file_processedfile`` is set as to true on field
+    ``tx_imageopt_executed`` even if execution was not successful. When selecting
+    new filese to optimising ``tx_imageopt_executed`` is now taken into count
+    and not ``tx_imageopt_executed_successfully``. This means that after
+    installing this version you need to reprocess all images meaning: remove
+    ``_processed_`` folder and truncate ``sys_file_processedfile`` table.
+    You can also use backend module Maintenance->Remove Temporary Assets->Button Delete files in /fileadmin/_processed_/
+
 7.0.0
 ~~~~~
 

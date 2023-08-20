@@ -1,4 +1,5 @@
 <?php
+
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationoptionresult',
@@ -12,35 +13,42 @@ return [
             'disabled' => 'hidden',
         ],
         'searchFields' => 'file_absolute_path,size_before,size_after,optimization_bytes,optimization_percentage,executed_successfully,info',
-        'iconfile' => 'EXT:imageopt/Resources/Public/Icons/tx_imageopt_domain_model_optimizationoptionresult.gif'
-    ],
-    'interface' => [
-        'showRecordFieldList' => 'file_absolute_path, size_before, size_after, optimization_bytes, optimization_percentage, executed_successfully, info, step_results',
+        'iconfile' => 'EXT:imageopt/Resources/Public/Icons/tx_imageopt_domain_model_optimizationoptionresult.gif',
     ],
     'types' => [
-        '1' => ['showitem' => 'file_absolute_path, --palette--;;sizes, --palette--;;optimization, info, executed_successfully, step_results'],
+        '1' => ['showitem' => 'name, file_absolute_path, output_filename, --palette--;;sizes, --palette--;;optimization, info, executed_successfully, file_does_not_exists, step_results'],
     ],
     'palettes' => [
         'sizes' => [
             'showitem' => 'size_before, size_after',
-            'canNotCollapse' => true
+            'canNotCollapse' => true,
         ],
         'optimization' => [
             'showitem' => 'optimization_bytes, optimization_percentage',
-            'canNotCollapse' => true
-        ]
+            'canNotCollapse' => true,
+        ],
     ],
     'columns' => [
         'hidden' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.hidden',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
             'config' => [
                 'type' => 'check',
                 'items' => [
                     '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
-                    ]
+                        '0' => 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled',
+                    ],
                 ],
+            ],
+        ],
+        'name' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationoptionresult.name',
+            'config' => [
+                'type' => 'input',
+                'size' => 200,
+                'eval' => 'trim',
+                'readOnly' => 1,
             ],
         ],
         'file_absolute_path' => [
@@ -50,7 +58,7 @@ return [
                 'type' => 'input',
                 'size' => 200,
                 'eval' => 'trim',
-                'readOnly' => 1
+                'readOnly' => 1,
             ],
         ],
         'size_before' => [
@@ -60,7 +68,7 @@ return [
                 'type' => 'input',
                 'size' => 4,
                 'eval' => 'int',
-                'readOnly' => 1
+                'readOnly' => 1,
             ],
         ],
         'size_after' => [
@@ -70,22 +78,26 @@ return [
                 'type' => 'input',
                 'size' => 4,
                 'eval' => 'int',
-                'readOnly' => 1
+                'readOnly' => 1,
             ],
         ],
         'executed_successfully' => [
             'exclude' => true,
             'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationoptionresult.executed_successfully',
             'config' => [
+                'readOnly' => 1,
                 'type' => 'check',
-                'items' => [
-                    '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
-                    ]
-                ],
-                'default' => 0,
-                'readOnly' => 1
-            ]
+                'renderType' => 'checkboxToggle',
+            ],
+        ],
+        'file_does_not_exist' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationoptionresult.file_does_not_exist',
+            'config' => [
+                'readOnly' => 1,
+                'type' => 'check',
+                'renderType' => 'checkboxToggle',
+            ],
         ],
         'info' => [
             'exclude' => true,
@@ -96,7 +108,17 @@ return [
                 'rows' => 3,
                 'eval' => 'trim',
                 'readOnly' => 1,
-            ]
+            ],
+        ],
+        'output_filename' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationoptionresult.output_filename',
+            'config' => [
+                'type' => 'input',
+                'size' => 200,
+                'eval' => 'trim',
+                'readOnly' => 1,
+            ],
         ],
         'step_results' => [
             'exclude' => true,
@@ -112,7 +134,7 @@ return [
                     'levelLinksPosition' => 'top',
                     'showSynchronizationLink' => 1,
                     'showPossibleLocalizationRecords' => 1,
-                    'showAllLocalizationLink' => 1
+                    'showAllLocalizationLink' => 1,
                 ],
             ],
         ],

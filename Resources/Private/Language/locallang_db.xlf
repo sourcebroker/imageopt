@@ -75,6 +75,15 @@
 			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult.info">
 				<source>Info</source>
 			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult.file_does_not_exist">
+				<source>File does not exist</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult.output_filename">
+				<source>Output filename</source>
+			</trans-unit>
+			<trans-unit id="tx_imageopt_domain_model_optimizationoptionresult.name">
+				<source>Mode name</source>
+			</trans-unit>
 			<trans-unit id="tx_imageopt_domain_model_optimizationstepresult">
 				<source>Image Optimization Step Result</source>
 			</trans-unit>

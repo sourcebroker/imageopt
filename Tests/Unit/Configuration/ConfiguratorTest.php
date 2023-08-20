@@ -2,12 +2,11 @@
 
 namespace SourceBroker\Imageopt\Tests\Unit\Configuration;
 
-use Nimut\TestingFramework\TestCase\UnitTestCase;
 use SourceBroker\Imageopt\Configuration\Configurator;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Tests for configurator
- *
  */
 class ConfiguratorTest extends UnitTestCase
 {
@@ -19,7 +18,7 @@ class ConfiguratorTest extends UnitTestCase
      * @param $given
      * @param $expected
      */
-    public function configuratorOptionsAreCorrectlyReturned($given, $expected)
+    public function configuratorOptionsAreCorrectlyReturned($given, $expected): void
     {
         /** @var \SourceBroker\Imageopt\Configuration\Configurator $configurator */
         $configurator = $this->getMockBuilder(Configurator::class)
@@ -27,68 +26,66 @@ class ConfiguratorTest extends UnitTestCase
             ->getMock();
         $configurator->setConfig($this->staticTsConfig());
 
-        $this->assertEquals($expected, $configurator->getOption($given));
+        self::assertEquals($expected, $configurator->getOption($given));
     }
 
     /**
      * Data provider for configuratorOptionsAreCorrectlyReturned
-     *
-     * @return array
      */
-    public function configuratorOptionsAreCorrectlyReturnedDataProvider()
+    public function configuratorOptionsAreCorrectlyReturnedDataProvider(): array
     {
         return [
             'nonWorkingConfigurationNullConfig' => [
                 null,
-                null
+                null,
             ],
             'nonWorkingConfigurationEmptyConfig' => [
                 '',
-                null
+                null,
             ],
             'nonWorkingConfigurationArrayConfig' => [
                 ['value'],
-                null
+                null,
             ],
             'nonWorkingConfigurationNotExistingConfig' => [
                 'notExistingOption',
-                null
+                null,
             ],
             'workingConfigurationFirstLevelString' => [
                 'option1',
-                'value'
+                'value',
             ],
             'workingConfigurationFirstLevelArray' => [
                 'option2',
-                ['option2Sub' => 'value']
+                ['option2Sub' => 'value'],
             ],
             'workingConfigurationSecondLevelString' => [
                 'option2.option2Sub',
-                'value'
+                'value',
             ],
             'workingConfigurationSecondLevelArray' => [
                 'option3.option3Sub',
                 [
                     'option3SubSub1' => 'value1',
-                    'option3SubSub2' => 'value2'
-                ]
+                    'option3SubSub2' => 'value2',
+                ],
             ],
         ];
     }
 
-    public function staticTsConfig()
+    public function staticTsConfig(): array
     {
         return [
             'option1' => 'value',
             'option2' => [
-                'option2Sub' => 'value'
+                'option2Sub' => 'value',
             ],
             'option3' => [
                 'option3Sub' => [
                     'option3SubSub1' => 'value1',
-                    'option3SubSub2' => 'value2'
-                ]
-            ]
+                    'option3SubSub2' => 'value2',
+                ],
+            ],
         ];
     }
 }

@@ -2,128 +2,86 @@
 
 namespace SourceBroker\Imageopt\Domain\Model;
 
-/***
- *
- * This file is part of the "imageopt" Extension for TYPO3 CMS.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- *  (c) 2017
- *
- ***/
+/*
+This file is part of the "imageopt" Extension for TYPO3 CMS.
+For the full copyright and license information, please read the
+LICENSE.txt file that was distributed with this source code.
+*/
+
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 class ModeResult extends AbstractBaseResult
 {
-    /**
-     * @var string
-     */
-    protected $fileAbsolutePath = '';
+    protected string $fileAbsolutePath = '';
+
+    protected string $name = '';
+
+    protected string $description = '';
+
+    protected string $info = '';
+
+    protected string $outputFilename = '';
+
+    protected bool $fileDoesNotExist = false;
 
     /**
-     * @var string
+     * @var ObjectStorage<StepResult>
      */
-    protected $name = '';
-
-    /**
-     * @var string
-     */
-    protected $description = '';
-
-    /**
-     * @var string
-     */
-    protected $info = '';
-
-    /**
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\SourceBroker\Imageopt\Domain\Model\StepResult>
-     */
-    protected $stepResults;
+    protected ObjectStorage $stepResults;
 
     public function __construct()
     {
         $this->stepResults = new ObjectStorage();
     }
 
-    /**
-     * @return string $fileAbsolutePath
-     */
-    public function getFileAbsolutePath()
+    public function getFileAbsolutePath(): string
     {
         return $this->fileAbsolutePath;
     }
 
-    /**
-     * @param string $fileAbsolutePath
-     * @return static
-     */
-    public function setFileAbsolutePath($fileAbsolutePath)
+    public function setFileAbsolutePath(string $fileAbsolutePath): ModeResult
     {
         $this->fileAbsolutePath = $fileAbsolutePath;
         return $this;
     }
 
-    /**
-     * @return string $fileAbsolutePath
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     * @return static
-     */
-    public function setName($name)
+    public function setName(string $name): ModeResult
     {
         $this->name = $name;
         return $this;
     }
 
-    /**
-     * @return string $fileAbsolutePath
-     */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    /**
-     * @param string $description
-     * @return static
-     */
-    public function setDescription($description)
+    public function setDescription(string $description): ModeResult
     {
         $this->description = $description;
         return $this;
     }
 
-    /**
-     * @param \SourceBroker\Imageopt\Domain\Model\StepResult $stepResult
-     * @return static
-     */
-    public function addStepResult(StepResult $stepResult)
+    public function addStepResult(StepResult $stepResult): ModeResult
     {
         $this->stepResults->attach($stepResult);
         return $this;
     }
 
     /**
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\SourceBroker\Imageopt\Domain\Model\StepResult>
+     * @return ObjectStorage<StepResult>
      */
-    public function getStepResults()
+    public function getStepResults(): ObjectStorage
     {
         return $this->stepResults;
     }
 
-    /**
-     * Returns number of successfully runned executors
-     *
-     * @return int
-     */
-    public function getExecutedSuccessfullyNum()
+    public function getExecutedSuccessfullyNum(): int
     {
         $num = 0;
         foreach ($this->stepResults as $result) {
@@ -134,25 +92,36 @@ class ModeResult extends AbstractBaseResult
         return $num;
     }
 
-    /**
-     * Returns the info
-     *
-     * @return string $info
-     */
-    public function getInfo()
+    public function getInfo(): string
     {
         return $this->info;
     }
 
-    /**
-     * Sets the info
-     *
-     * @param string $info
-     * @return static
-     */
-    public function setInfo($info)
+    public function setInfo(string $info): ModeResult
     {
         $this->info = $info;
+        return $this;
+    }
+
+    public function getFileDoesNotExist(): bool
+    {
+        return $this->fileDoesNotExist;
+    }
+
+    public function setFileDoesNotExist(bool $fileDoesNotExist): ModeResult
+    {
+        $this->fileDoesNotExist = $fileDoesNotExist;
+        return $this;
+    }
+
+    public function getOutputFilename(): string
+    {
+        return $this->outputFilename;
+    }
+
+    public function setOutputFilename(string $outputFilename): ModeResult
+    {
+        $this->outputFilename = $outputFilename;
         return $this;
     }
 }

@@ -1,29 +1,14 @@
 <?php
 
-/***************************************************************
- *  Copyright notice
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
-
 namespace SourceBroker\Imageopt\Service;
 
+/*
+This file is part of the "imageopt" Extension for TYPO3 CMS.
+For the full copyright and license information, please read the
+LICENSE.txt file that was distributed with this source code.
+*/
+
+use Exception;
 use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Domain\Model\ModeResult;
 use SourceBroker\Imageopt\Domain\Model\StepResult;
@@ -38,24 +23,20 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class OptimizeImageService
 {
     /**
-     * @var object|Configurator
+     * @var Configurator
      */
     public $configurator;
 
-    /**
-     * @var TemporaryFileUtility
-     */
-    private $temporaryFile;
+    private TemporaryFileUtility $temporaryFile;
 
     /**
      * OptimizeImageService constructor.
-     * @param array $config
-     * @throws \Exception
+     * @throws Exception
      */
-    public function __construct($config = null)
+    public function __construct(array $config = null)
     {
         if ($config === null) {
-            throw new \Exception('Configuration not set for OptimizeImageService class');
+            throw new Exception('Configuration not set for OptimizeImageService class');
         }
 
         $this->configurator = GeneralUtility::makeInstance(Configurator::class, $config);
@@ -67,52 +48,62 @@ class OptimizeImageService
     /**
      * Optimize image using chained Image Optimization Provider
      *
-     * @param string $originalImagePath
      * @return ModeResult[]
-     * @throws \Exception
+     * @throws Exception
      */
-    public function optimize($originalImagePath)
+    public function optimize(string $sourceFile): array
     {
-        if (!file_exists($originalImagePath) || !filesize($originalImagePath)) {
-            throw new \Exception('Can not read file to optimize. File: "' . $originalImagePath . '"');
-        }
         // create original image copy - it may vary (provider may overwrite original image)
-        $sourceImagePath = $this->temporaryFile->createTemporaryCopy($originalImagePath);
+        $sourceFileTemporary = $this->temporaryFile->createTemporaryCopy($sourceFile);
 
         $modeResults = [];
         foreach ((array)$this->configurator->getOption('mode') as $modeKey => $modeConfig) {
-            $regexp = '@' . $modeConfig['fileRegexp'] . '@';
-            $modeConfig['name'] = $modeKey;
-            if (!preg_match($regexp, $originalImagePath)) {
-                continue;
-            }
             $modeResults[$modeKey] = $this->optimizeSingleMode(
                 $modeConfig,
-                $sourceImagePath,
-                $originalImagePath
+                $sourceFileTemporary,
+                $sourceFile
             );
         }
-
         return $modeResults;
     }
 
     /**
-     * @param array $modeConfig
-     * @param string $sourceImagePath Path to original image COPY (default optimization mode will overwrite original image)
-     * @param string $originalImagePath Path to original image
-     * @return ModeResult
-     * @throws \Exception
+     * @throws Exception
      */
-    protected function optimizeSingleMode($modeConfig, $sourceImagePath, $originalImagePath)
-    {
+    protected function optimizeSingleMode(
+        array $modeConfig,
+        string $sourceFileTemporary,
+        string $sourceFile
+    ): ModeResult {
         $modeResult = GeneralUtility::makeInstance(ModeResult::class)
-            ->setFileAbsolutePath($originalImagePath)
+            ->setFileAbsolutePath($sourceFile)
             ->setName($modeConfig['name'])
             ->setDescription($modeConfig['description'])
-            ->setSizeBefore(filesize($sourceImagePath))
+            ->setSizeBefore(filesize($sourceFileTemporary))
             ->setExecutedSuccessfully(false);
 
-        $chainImagePath = $this->temporaryFile->createTemporaryCopy($sourceImagePath);
+        if (!file_exists($sourceFile)) {
+            $modeResultInfo = 'The file does not exists.';
+            $modeResult->setFileDoesNotExist(true);
+            $modeResult->setInfo($modeResultInfo);
+            return $modeResult;
+        }
+
+        if (!is_readable($sourceFile)) {
+            $modeResultInfo = 'The file exists but is not readable for imageopt process.';
+            $modeResult->setInfo($modeResultInfo);
+            return $modeResult;
+        }
+
+        if (isset($modeConfig['fileRegexp'])) {
+            $regexp = '@' . $modeConfig['fileRegexp'] . '@';
+            if (!preg_match($regexp, $sourceFile)) {
+                $modeResult->setInfo('File does not match regexp: ' . $regexp . ' File: ' . $sourceFile);
+                return $modeResult;
+            }
+        }
+
+        $chainImagePath = $this->temporaryFile->createTemporaryCopy($sourceFileTemporary);
 
         foreach ($modeConfig['step'] as $stepKey => $stepConfig) {
             $stepResult = GeneralUtility::makeInstance(StepResult::class)
@@ -124,40 +115,40 @@ class OptimizeImageService
 
             $providers = $this->configurator->getProviders(
                 $stepConfig['providerType'],
-                strtolower(explode('/', image_type_to_mime_type(getimagesize($originalImagePath)[2]))[1])
+                strtolower(explode('/', image_type_to_mime_type(getimagesize($sourceFile)[2]))[1])
             );
             $this->optimizeWithBestProvider($stepResult, $chainImagePath, $providers);
             $modeResult->addStepResult($stepResult);
         }
-        if ($modeResult->getExecutedSuccessfullyNum() == $modeResult->getStepResults()->count()) {
+        if ($modeResult->getExecutedSuccessfullyNum() === $modeResult->getStepResults()->count()) {
             $modeResult->setExecutedSuccessfully(true);
         }
 
         clearstatcache(true, $chainImagePath);
         $modeResult->setSizeAfter(filesize($chainImagePath));
 
-        $pathInfo = pathinfo($originalImagePath);
-        copy($chainImagePath, str_replace(
+        $pathInfo = pathinfo($sourceFile);
+        $outputFile = str_replace(
             ['{dirname}', '{basename}', '{extension}', '{filename}'],
             [$pathInfo['dirname'], $pathInfo['basename'], $pathInfo['extension'], $pathInfo['filename']],
             $modeConfig['outputFilename']
-        ));
+        );
+        copy($chainImagePath, $outputFile);
+        $modeResult->setOutputFilename($outputFile);
 
         return $modeResult;
     }
 
     /**
-     * @param $stepResult
-     * @param string $chainImagePath
-     * @param array $providers
-     * @return StepResult
-     * @throws \Exception
+     * @throws Exception
      */
-    protected function optimizeWithBestProvider($stepResult, $chainImagePath, $providers)
-    {
+    protected function optimizeWithBestProvider(
+        StepResult $stepResult,
+        string $chainImagePath,
+        array $providers
+    ): void {
         clearstatcache(true, $chainImagePath);
 
-        $providerExecutedCounter = 0;
         $providerExecutedSuccessfullyCounter = 0;
         $providerEnabledCounter = 0;
 
@@ -173,7 +164,6 @@ class OptimizeImageService
             }
 
             $providerEnabledCounter++;
-            $providerExecutedCounter++;
 
             $tmpWorkingImagePath = $this->temporaryFile->createTemporaryCopy($chainImagePath);
             $optimizationProvider = GeneralUtility::makeInstance(OptimizationProvider::class);

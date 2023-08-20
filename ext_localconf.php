@@ -1,6 +1,6 @@
 <?php
 
-defined('TYPO3_MODE') || die('Access denied.');
+defined('TYPO3') || die('Access denied.');
 
 // Few xclasses to make TYPO3 to create copy of images even if not needed.
 // This way we can make optimization on copies always to not destroy original images.

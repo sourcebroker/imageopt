@@ -2,152 +2,88 @@
 
 namespace SourceBroker\Imageopt\Domain\Model;
 
-/***
- *
- * This file is part of the "imageopt" Extension for TYPO3 CMS.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- *  (c) 2017
- *
- ***/
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
+
+/*
+This file is part of the "imageopt" Extension for TYPO3 CMS.
+For the full copyright and license information, please read the
+LICENSE.txt file that was distributed with this source code.
+*/
+
 class StepResult extends AbstractBaseResult
 {
+    protected string $name = '';
+
+    protected string $description = '';
+
+    protected string $providerWinnerName = '';
 
     /**
-     * @var string
+     * @var ObjectStorage<ProviderResult>
      */
-    protected $name = '';
+    protected ObjectStorage $providersResults;
 
-    /**
-     * @var string
-     */
-    protected $description = '';
-
-    /**
-     * @var string
-     */
-    protected $providerWinnerName = '';
-
-    /**
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\SourceBroker\Imageopt\Domain\Model\ProviderResult>
-     */
-    protected $providersResults = null;
-
-    /**
-     * @return string $fileAbsolutePath
-     */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    /**
-     * @param string $description
-     * @return static
-     */
-    public function setDescription($description)
+    public function setDescription(string $description): StepResult
     {
         $this->description = $description;
         return $this;
     }
 
-    /**
-     * @var string
-     */
-    protected $info = '';
+    protected string $info = '';
 
-    /**
-     * __construct
-     */
     public function __construct()
     {
         //Do not remove the next line: It would break the functionality
         $this->initStorageObjects();
     }
 
-    /**
-     * Initializes all ObjectStorage properties
-     * Do not modify this method!
-     * It will be rewritten on each save in the extension builder
-     * You may modify the constructor of this class instead
-     *
-     * @return void
-     */
-    protected function initStorageObjects()
+    protected function initStorageObjects(): void
     {
-        $this->providersResults = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+        $this->providersResults = new ObjectStorage();
     }
 
-    /**
-     * Adds a ProviderResult
-     *
-     * @param \SourceBroker\Imageopt\Domain\Model\ProviderResult $providersResult
-     * @return static
-     */
-    public function addProvidersResult(\SourceBroker\Imageopt\Domain\Model\ProviderResult $providersResult)
+    public function addProvidersResult(ProviderResult $providersResult): StepResult
     {
         $this->providersResults->attach($providersResult);
         return $this;
     }
 
     /**
-     * Returns the providersResults
-     *
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\SourceBroker\Imageopt\Domain\Model\ProviderResult> $providersResults
+     * @return ObjectStorage<ProviderResult>
      */
-    public function getProvidersResults()
+    public function getProvidersResults(): ObjectStorage
     {
         return $this->providersResults;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     * @return static
-     */
-    public function setName($name)
+    public function setName(string $name): StepResult
     {
         $this->name = $name;
         return $this;
     }
 
-    /**
-     * Returns the providerWinnerName
-     *
-     * @return string $providerWinnerName
-     */
-    public function getProviderWinnerName()
+    public function getProviderWinnerName(): string
     {
         return $this->providerWinnerName;
     }
 
-    /**
-     * Sets the providerWinnerName
-     *
-     * @param string $providerWinnerName
-     * @return static
-     */
-    public function setProviderWinnerName($providerWinnerName)
+    public function setProviderWinnerName($providerWinnerName): StepResult
     {
         $this->providerWinnerName = $providerWinnerName;
         return $this;
     }
 
-    /**
-     * Returns number of successfully runned executors
-     *
-     * @return int
-     */
-    public function getExecutedSuccessfullyNum()
+    public function getExecutedSuccessfullyNum(): int
     {
         $num = 0;
         foreach ($this->providersResults as $result) {
@@ -158,23 +94,12 @@ class StepResult extends AbstractBaseResult
         return $num;
     }
 
-    /**
-     * Returns the info
-     *
-     * @return string $info
-     */
-    public function getInfo()
+    public function getInfo(): string
     {
         return $this->info;
     }
 
-    /**
-     * Sets the info
-     *
-     * @param string $info
-     * @return static
-     */
-    public function setInfo($info)
+    public function setInfo(string $info): StepResult
     {
         $this->info = $info;
         return $this;

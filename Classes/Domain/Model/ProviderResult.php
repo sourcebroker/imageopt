@@ -2,117 +2,66 @@
 
 namespace SourceBroker\Imageopt\Domain\Model;
 
-use TYPO3\CMS\Extbase\Annotation\ORM\Cascade;
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
-/***
- *
- * This file is part of the "imageopt" Extension for TYPO3 CMS.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- *  (c) 2017
- *
- ***/
+/*
+This file is part of the "imageopt" Extension for TYPO3 CMS.
+For the full copyright and license information, please read the
+LICENSE.txt file that was distributed with this source code.
+*/
+
 class ProviderResult extends AbstractBaseResult
 {
-    /**
-     * Provider name
-     *
-     * @var string
-     */
-    protected $name = '';
+    protected string $name = '';
 
     /**
-     * executorsResults
-     *
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\SourceBroker\Imageopt\Domain\Model\ExecutorResult>
-     * @cascade remove
+     * @var ObjectStorage<ExecutorResult>
      */
-    protected $executorsResults = null;
+    protected ObjectStorage $executorsResults;
 
-    /**
-     * __construct
-     */
     public function __construct()
     {
         //Do not remove the next line: It would break the functionality
         $this->initStorageObjects();
     }
 
-    /**
-     * Initializes all ObjectStorage properties
-     * Do not modify this method!
-     * It will be rewritten on each save in the extension builder
-     * You may modify the constructor of this class instead
-     *
-     * @return void
-     */
-    protected function initStorageObjects()
+    protected function initStorageObjects(): void
     {
-        $this->executorsResults = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+        $this->executorsResults = new ObjectStorage();
     }
 
-    /**
-     * Adds a ExecutorResult
-     *
-     * @param \SourceBroker\Imageopt\Domain\Model\ExecutorResult $executorsResult
-     * @return void
-     */
-    public function addExecutorsResult(\SourceBroker\Imageopt\Domain\Model\ExecutorResult $executorsResult)
+    public function addExecutorsResult(ExecutorResult $executorsResult): void
     {
         $this->executorsResults->attach($executorsResult);
     }
 
-    /**
-     * Removes a ExecutorResult
-     *
-     * @param \SourceBroker\Imageopt\Domain\Model\ExecutorResult $executorsResultToRemove The ExecutorResult to be removed
-     * @return void
-     */
-    public function removeExecutorsResult(\SourceBroker\Imageopt\Domain\Model\ExecutorResult $executorsResultToRemove)
+    public function removeExecutorsResult(ExecutorResult $executorsResultToRemove): void
     {
         $this->executorsResults->detach($executorsResultToRemove);
     }
 
     /**
-     * Returns the executorsResults
-     *
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\SourceBroker\Imageopt\Domain\Model\ExecutorResult> $executorsResults
+     * @return ObjectStorage<ExecutorResult> $executorsResults
      */
-    public function getExecutorsResults()
+    public function getExecutorsResults(): ObjectStorage
     {
         return $this->executorsResults;
     }
 
     /**
-     * Sets the executorsResults
-     *
-     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\SourceBroker\Imageopt\Domain\Model\ExecutorResult> $executorsResults
-     * @return void
+     * @param ObjectStorage<ExecutorResult> $executorsResults
      */
-    public function setExecutorsResults(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $executorsResults)
+    public function setExecutorsResults(ObjectStorage $executorsResults): void
     {
         $this->executorsResults = $executorsResults;
     }
 
-    /**
-     * Returns the name
-     *
-     * @return string $name
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * Sets the name
-     *
-     * @param string $name
-     * @return void
-     */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }

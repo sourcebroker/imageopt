@@ -1,38 +1,46 @@
 <?php
 
-defined('TYPO3_MODE') or die();
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::registerPageTSConfigFile(
+defined('TYPO3') || die();
+
+ExtensionManagementUtility::registerPageTSConfigFile(
     'imageopt',
     'Configuration/TsConfig/Page/tx_imageopt__0100.tsconfig',
     'ext:imageopt [LOCAL] Good standard. mozjpeg / pngquant / gifsicle & loosless finishers.'
 );
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::registerPageTSConfigFile(
+ExtensionManagementUtility::registerPageTSConfigFile(
     'imageopt',
     'Configuration/TsConfig/Page/tx_imageopt__0110.tsconfig',
     'ext:imageopt [LOCAL] Default as low quality & additional image with good quality & webp.'
 );
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::registerPageTSConfigFile(
+ExtensionManagementUtility::registerPageTSConfigFile(
+    'imageopt',
+    'Configuration/TsConfig/Page/tx_imageopt__0120.tsconfig',
+    'ext:imageopt [LOCAL] Only webp.'
+);
+
+ExtensionManagementUtility::registerPageTSConfigFile(
     'imageopt',
     'Configuration/TsConfig/Page/tx_imageopt__0200.tsconfig',
     'ext:imageopt [REMOTE] Kraken loosless.'
 );
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::registerPageTSConfigFile(
+ExtensionManagementUtility::registerPageTSConfigFile(
     'imageopt',
     'Configuration/TsConfig/Page/tx_imageopt__0210.tsconfig',
     'ext:imageopt [REMOTE] Kraken intelligent lossy.'
 );
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::registerPageTSConfigFile(
+ExtensionManagementUtility::registerPageTSConfigFile(
     'imageopt',
     'Configuration/TsConfig/Page/tx_imageopt__0220.tsconfig',
     'ext:imageopt [REMOTE] Kraken loosless & imagemagick webp.'
 );
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::registerPageTSConfigFile(
+ExtensionManagementUtility::registerPageTSConfigFile(
     'imageopt',
     'Configuration/TsConfig/Page/tx_imageopt__0230.tsconfig',
     'ext:imageopt [REMOTE] Kraken intelligent lossy & imagemagick webp.'

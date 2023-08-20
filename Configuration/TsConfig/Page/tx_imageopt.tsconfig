@@ -2,32 +2,35 @@ tx_imageopt {
     log {
         enable = 1
     }
+
     extensions = jpg,jpeg,png,gif
-    directories = typo3temp/pics*jpg|gif|png,typo3temp/GB*jpg|gif|png,typo3temp/assets/images*jpg|gif|png,
+    directories = typo3temp/assets/_processed_*jpg|gif|png,typo3temp/assets/images*jpg|gif|png
     executorsDefault {
         /* not supported yet
         notifications {
-            limitsExeeded {
-                active = 1
-            }
+        limitsExeeded {
+        active = 1
+        }
         }
         */
     }
+
     providersDefault {
         enabled = 0
         /* not supported yet
         email {
-            sender {
-                email =
-                name =
-            }
-            reciver {
-                email =
-                name =
-            }
+        sender {
+        email =
+        name =
+        }
+        reciver {
+        email =
+        name =
+        }
         }
         */
     }
+
     providers {
         webpImagemagick {
             type = webp
@@ -42,6 +45,7 @@ tx_imageopt {
                 }
             }
         }
+
         jpegoptim {
             type = lossyGood,lossyLow
             fileType = jpeg
@@ -54,6 +58,7 @@ tx_imageopt {
                         mask = {executable} {tempFile} -o --strip-all {quality}
                         exec = jpegoptim
                     }
+
                     options {
                         quality {
                             options {
@@ -65,6 +70,7 @@ tx_imageopt {
                 }
             }
         }
+
         jpegtran {
             type = lossless
             fileType = jpeg
@@ -78,6 +84,7 @@ tx_imageopt {
                 }
             }
         }
+
         jpegtranMozjpeg {
             type = lossless
             fileType = jpeg
@@ -91,6 +98,7 @@ tx_imageopt {
                 }
             }
         }
+
         mozjpeg {
             type = lossyLow,lossyGood
             typeOverride.lossyLow.executors.10.options.quality.value = lossyLow
@@ -103,6 +111,7 @@ tx_imageopt {
                         mask = {executable} -tune-hvs-psnr {quality} -optimize -outfile {tempFile}_tmp {tempFile}
                         exec = mozjpeg-cjpeg
                     }
+
                     options {
                         quality {
                             options {
@@ -112,6 +121,7 @@ tx_imageopt {
                         }
                     }
                 }
+
                 # cjpeg can not ouput to the same file so we need to use {tempFile}_tmp and then cp to {tempFile}
                 20 {
                     class = SourceBroker\Imageopt\Executor\OptimizationExecutorShell
@@ -122,6 +132,7 @@ tx_imageopt {
                 }
             }
         }
+
         gifsicle {
             type = lossless
             fileType = gif
@@ -135,6 +146,7 @@ tx_imageopt {
                 }
             }
         }
+
         optipng {
             type = lossless
             fileType = png
@@ -148,6 +160,7 @@ tx_imageopt {
                 }
             }
         }
+
         pngcrush {
             type = lossless
             fileType = png
@@ -161,6 +174,7 @@ tx_imageopt {
                 }
             }
         }
+
         pngquant {
             type = lossyLow,lossyGood
             typeOverride.lossyLow.executors.10.options.quality.value = lossyLow
@@ -174,6 +188,7 @@ tx_imageopt {
                         exec = pngquant
                         successfulExitStatus = 98
                     }
+
                     options {
                         quality {
                             options {
@@ -185,6 +200,7 @@ tx_imageopt {
                 }
             }
         }
+
         kraken {
             type = lossyLow,lossyGood,lossless,webp
             // do not set for "number" quality becase kraken inteligent optimisation - its enough to make "lossy = true"
@@ -199,6 +215,7 @@ tx_imageopt {
                         url {
                             upload = https://api.kraken.io/v1/upload
                         }
+
                         auth {
                             key =
                             pass =
@@ -207,6 +224,7 @@ tx_imageopt {
                 }
             }
         }
+
         tinypng {
             // tinypng has no way to force quality of loosles so it can not be provider for "lossyLow" quality
             type = lossyGood
@@ -218,6 +236,7 @@ tx_imageopt {
                         url {
                             upload = https://api.tinify.com/shrink
                         }
+
                         auth {
                             key =
                             pass =
@@ -226,6 +245,7 @@ tx_imageopt {
                 }
             }
         }
+
         imageoptim {
             type = lossyLow,lossyGood,lossless
             typeOverride.lossless.executors.10.options.quality.value = lossless
@@ -239,14 +259,17 @@ tx_imageopt {
                         url {
                             upload = https://im2.io
                         }
+
                         auth {
                             key =
                             pass =
                         }
+
                         options {
                             10 = full
                         }
                     }
+
                     options {
                         quality {
                             options {

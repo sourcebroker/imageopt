@@ -3,18 +3,13 @@
 namespace SourceBroker\Imageopt\Command;
 
 /*
- * This file is part of the TYPO3 CMS project.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- * The TYPO3 project - inspiring people to share!
- */
+This file is part of the "imageopt" Extension for TYPO3 CMS.
+For the full copyright and license information, please read the
+LICENSE.txt file that was distributed with this source code.
+*/
 
+use Exception;
+use InvalidArgumentException;
 use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Service\OptimizeImagesFalService;
 use SourceBroker\Imageopt\Utility\CliDisplayUtility;
@@ -27,7 +22,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class OptimizeFalProcessedImages extends BaseCommand
 {
-    public function configure()
+    public function configure(): void
     {
         $this->setDescription('Optimize FAL processed images')
             ->addOption(
@@ -45,13 +40,10 @@ class OptimizeFalProcessedImages extends BaseCommand
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     * @throws \InvalidArgumentException
-     * @throws \Exception
+     * @throws InvalidArgumentException
+     * @throws Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $io->title($this->getDescription());
@@ -72,8 +64,11 @@ class OptimizeFalProcessedImages extends BaseCommand
         /** @var OptimizeImagesFalService $optimizeImagesFalService */
         $optimizeImagesFalService = $objectManager->get(OptimizeImagesFalService::class, $configurator->getConfig());
         $extensions = GeneralUtility::trimExplode(',', $configurator->getOption('extensions'), true);
-        $filesToProcess = $optimizeImagesFalService->getFalProcessedFilesToOptimize($numberOfImagesToProcess, $extensions);
-        if (!empty($filesToProcess)) {
+        $filesToProcess = $optimizeImagesFalService->getFalProcessedFilesToOptimize(
+            $numberOfImagesToProcess,
+            $extensions
+        );
+        if (count($filesToProcess)) {
             foreach ($filesToProcess as $fileToProcess) {
                 $optimizationResults = $optimizeImagesFalService->optimizeFalProcessedFile($fileToProcess);
                 foreach ($optimizationResults as $optimizationResult) {

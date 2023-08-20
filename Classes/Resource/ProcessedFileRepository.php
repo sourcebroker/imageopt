@@ -2,18 +2,19 @@
 
 namespace SourceBroker\Imageopt\Resource;
 
+/*
+This file is part of the "imageopt" Extension for TYPO3 CMS.
+For the full copyright and license information, please read the
+LICENSE.txt file that was distributed with this source code.
+*/
+
+use PDO;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class ProcessedFileRepository
- */
 class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepository
 {
-    /**
-     * Reset optimization flag for all images
-     */
-    public function resetOptimizationFlag()
+    public function resetOptimizationFlag(): void
     {
         GeneralUtility::makeInstance(ConnectionPool::class)
             ->getConnectionForTable('sys_file_processedfile')
@@ -22,17 +23,21 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
                 ['tx_imageopt_executed_successfully' => 0],
                 ['tx_imageopt_executed_successfully' => 1]
             );
+        GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getConnectionForTable('sys_file_processedfile')
+            ->update(
+                'sys_file_processedfile',
+                ['tx_imageopt_executed' => 0],
+                ['tx_imageopt_executed' => 1]
+            );
     }
 
-    /**
-     * Get all not optimized images with $limit
-     */
     public function findNotOptimizedRaw(int $limit, array $extensions)
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable('sys_file_processedfile');
 
-        $extensionsQuery = array_map(function ($extension) use ($queryBuilder) {
+        $extensionsQuery = array_map(function ($extension) use ($queryBuilder): string {
             return $queryBuilder->expr()->like('identifier', $queryBuilder->createNamedParameter('%.' . $extension));
         }, $extensions);
 
@@ -42,8 +47,8 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
             ->where(
                 $queryBuilder->expr()->isNotNull('name'),
                 $queryBuilder->expr()->eq(
-                    'tx_imageopt_executed_successfully',
-                    $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)
+                    'tx_imageopt_executed',
+                    $queryBuilder->createNamedParameter(0, PDO::PARAM_INT)
                 ),
                 $queryBuilder->expr()->neq('task_type', $queryBuilder->createNamedParameter('Image.Preview')),
                 $queryBuilder->expr()->neq('identifier', $queryBuilder->createNamedParameter(''))
@@ -51,6 +56,6 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
                 $queryBuilder->expr()->orX(
                     ...$extensionsQuery
                 )
-            )->setMaxResults((int)$limit)->execute()->fetchAll();
+            )->setMaxResults($limit)->execute()->fetchAll();
     }
 }

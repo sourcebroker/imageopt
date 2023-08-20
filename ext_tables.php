@@ -1,8 +1,8 @@
 <?php
-defined('TYPO3_MODE') || die('Access denied.');
+defined('TYPO3') || die('Access denied.');
 
 call_user_func(
-    function () {
+    function (): void {
         \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr(
             'tx_imageopt_domain_model_providerresult',
             'EXT:imageopt/Resources/Private/Language/locallang_csh_tx_imageopt_domain_model_providerresult.xlf'

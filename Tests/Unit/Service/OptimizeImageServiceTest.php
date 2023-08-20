@@ -3,7 +3,6 @@
 namespace SourceBroker\Imageopt\Tests\Unit\Service;
 
 use Exception;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
 use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Domain\Model\ModeResult;
 use SourceBroker\Imageopt\Service\OptimizeImageService;
@@ -12,24 +11,25 @@ use SourceBroker\Imageopt\Utility\CliDisplayUtility;
 use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
 use Symfony\Component\Dotenv\Dotenv;
 use TYPO3\CMS\Core\TypoScript\Parser\TypoScriptParser;
+use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Test for OptimizeImageServiceTest
- *
  */
 class OptimizeImageServiceTest extends UnitTestCase
 {
     /** @var string Path to TYPO3 web root */
     private $typo3WebRoot;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->typo3WebRoot = realpath(__DIR__ . '/../../../.Build/Web/');
         parent::setUp();
     }
 
-    protected function tearDown() : void
+    protected function tearDown(): void
     {
         foreach (glob($this->typo3WebRoot . '/typo3temp/tx_imageopt*') as $tempFile) {
             unlink($tempFile);
@@ -47,19 +47,19 @@ class OptimizeImageServiceTest extends UnitTestCase
      * @param $image
      * @throws Exception
      */
-    public function allProvidersSuccessful($image)
+    public function allProvidersSuccessful(string $image)
     {
         fwrite(STDOUT, "\n" . 'TEST if all providers was executed succesfully.' . "\n");
 
-        /** @var \SourceBroker\Imageopt\Service\OptimizeImageService $optimizeImageService */
+        /** @var OptimizeImageService $optimizeImageService */
         $optimizeImageService = $this->getMockBuilder(OptimizeImageService::class)
             ->setConstructorArgs([$this->pluginConfig()])
             ->setMethods(null)
             ->getMock();
 
         $temporaryFileUtility = GeneralUtility::makeInstance(TemporaryFileUtility::class);
-        $orignalImagePath = $this->typo3WebRoot . '/typo3conf/ext/imageopt/Tests/Fixture/Unit/OptimizeImageService/' . $image;
-        $imageForTesting = $temporaryFileUtility->createTemporaryCopy($orignalImagePath);
+        $originalImagePath = $this->typo3WebRoot . '/typo3conf/ext/imageopt/Tests/Fixture/Unit/OptimizeImageService/' . $image;
+        $imageForTesting = $temporaryFileUtility->createTemporaryCopy($originalImagePath);
         if (is_readable($imageForTesting)) {
             /** @var ModeResult[] $optimizationResults */
             $optimizationResults = $optimizeImageService->optimize($imageForTesting);
@@ -69,11 +69,9 @@ class OptimizeImageServiceTest extends UnitTestCase
             }
 
             /** @var ModeResult $defaultResult */
-            $defaultResult = isset($optimizationResults['default'])
-                ? $optimizationResults['default']
-                : reset($optimizationResults);
+            $defaultResult = $optimizationResults['default'] ?? reset($optimizationResults);
 
-            $this->assertEquals(
+            self::assertEquals(
                 $defaultResult->getStepResults()->count(),
                 $defaultResult->getExecutedSuccessfullyNum()
             );
@@ -86,23 +84,22 @@ class OptimizeImageServiceTest extends UnitTestCase
      * imageIsOptimized
      * @test
      * @dataProvider imageIsOptimizedDataProvider
-     * @param $image
      * @throws Exception
      * @internal param $winner
      */
-    public function imageIsOptimized($image)
+    public function imageIsOptimized(string $image): void
     {
         fwrite(STDOUT, "\n" . 'TEST has been optimized.' . "\n");
 
-        /** @var \SourceBroker\Imageopt\Service\OptimizeImageService $optimizeImageService */
+        /** @var OptimizeImageService $optimizeImageService */
         $optimizeImageService = $this->getMockBuilder(OptimizeImageService::class)
             ->setConstructorArgs([$this->pluginConfig()])
             ->setMethods(null)
             ->getMock();
 
         $temporaryFileUtility = GeneralUtility::makeInstance(TemporaryFileUtility::class);
-        $orignalImagePath = $this->typo3WebRoot . '/typo3conf/ext/imageopt/Tests/Fixture/Unit/OptimizeImageService/' . $image;
-        $imageForTesting = $temporaryFileUtility->createTemporaryCopy($orignalImagePath);
+        $originalImagePath = $this->typo3WebRoot . '/typo3conf/ext/imageopt/Tests/Fixture/Unit/OptimizeImageService/' . $image;
+        $imageForTesting = $temporaryFileUtility->createTemporaryCopy($originalImagePath);
         if (is_readable($imageForTesting)) {
             $originalFileSize = filesize($imageForTesting);
             /** @var ModeResult[] $optimizationResults */
@@ -112,11 +109,9 @@ class OptimizeImageServiceTest extends UnitTestCase
                 fwrite(STDOUT, CliDisplayUtility::displayOptionResult($optimizationResult, $this->pluginConfig()));
             }
 
-            $defaultOptimizationResult = isset($optimizationResults['default'])
-                ? $optimizationResults['default']
-                : reset($optimizationResults);
+            $defaultOptimizationResult = $optimizationResults['default'] ?? reset($optimizationResults);
 
-            $this->assertGreaterThan($defaultOptimizationResult->getSizeAfter(), $originalFileSize);
+            self::assertGreaterThan($defaultOptimizationResult->getSizeAfter(), $originalFileSize);
         } else {
             throw new Exception('Image for testing is not existing:' . $imageForTesting);
         }
@@ -124,10 +119,8 @@ class OptimizeImageServiceTest extends UnitTestCase
 
     /**
      * Data provider for imageIsOptimized
-     *
-     * @return array
      */
-    public function imageIsOptimizedDataProvider()
+    public function imageIsOptimizedDataProvider(): array
     {
         return [
             'Test jpeg file resize' => [
@@ -157,7 +150,7 @@ class OptimizeImageServiceTest extends UnitTestCase
             file_get_contents(realpath(__DIR__ . '/../../../Configuration/TsConfig/Page/tx_imageopt__0100.tsconfig'))
         );
 
-        $rawConfig = GeneralUtility::makeInstance(\TYPO3\CMS\Core\TypoScript\TypoScriptService::class)
+        $rawConfig = GeneralUtility::makeInstance(TypoScriptService::class)
             ->convertTypoScriptArrayToPlainArray($typoscriptParser->setup)['tx_imageopt'];
         $rawConfig['providersDefault']['enabled'] = 1;
         if (file_exists(__DIR__ . '/../../../.env')) {

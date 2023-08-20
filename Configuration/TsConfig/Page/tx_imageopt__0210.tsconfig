@@ -12,10 +12,12 @@ tx_imageopt {
                     description = Kraken intelligent loosy image optimisation.
                 }
             }
+
             fileRegexp = .*
             outputFilename = {dirname}/{filename}.{extension}
         }
     }
+
     providers {
         kraken {
             enabled = 1

@@ -2,130 +2,58 @@
 
 namespace SourceBroker\Imageopt\Domain\Model;
 
-/***
- *
- * This file is part of the "imageopt" Extension for TYPO3 CMS.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- *  (c) 2017
- *
- ***/
+/*
+This file is part of the "imageopt" Extension for TYPO3 CMS.
+For the full copyright and license information, please read the
+LICENSE.txt file that was distributed with this source code.
+*/
 
-/**
- * ExecutorResult
- */
 class ExecutorResult extends AbstractBaseResult
 {
-    /**
-     * command
-     *
-     * @var string
-     */
-    protected $command = '';
+    protected string $command = '';
 
-    /**
-     * commandOutput
-     *
-     * @var string
-     */
-    protected $commandOutput = '';
+    protected string $commandOutput = '';
 
-    /**
-     * commandStatus
-     *
-     * @var string
-     */
-    protected $commandStatus = '';
+    protected string $commandStatus = '';
 
-    /**
-     * errorMessage
-     *
-     * @var string
-     */
-    protected $errorMessage = '';
+    protected string $errorMessage = '';
 
-    /**
-     * Returns the command
-     *
-     * @return string $command
-     */
-    public function getCommand()
+    public function getCommand(): string
     {
         return $this->command;
     }
 
-    /**
-     * Sets the command
-     *
-     * @param string $command
-     * @return void
-     */
-    public function setCommand($command)
+    public function setCommand(string $command): void
     {
         $this->command = $command;
     }
 
-    /**
-     * Returns the commandOutput
-     *
-     * @return string $commandOutput
-     */
-    public function getCommandOutput()
+    public function getCommandOutput(): string
     {
         return $this->commandOutput;
     }
 
-    /**
-     * Sets the commandOutput
-     *
-     * @param string $commandOutput
-     * @return void
-     */
-    public function setCommandOutput($commandOutput)
+    public function setCommandOutput(string $commandOutput): void
     {
         $this->commandOutput = $commandOutput;
     }
 
-    /**
-     * Returns the commandStatus
-     *
-     * @return string $commandStatus
-     */
-    public function getCommandStatus()
+    public function getCommandStatus(): string
     {
         return $this->commandStatus;
     }
 
-    /**
-     * Sets the commandStatus
-     *
-     * @param string $commandStatus
-     * @return void
-     */
-    public function setCommandStatus($commandStatus)
+    public function setCommandStatus(string $commandStatus): void
     {
         $this->commandStatus = $commandStatus;
     }
 
-    /**
-     * Returns the errorMessage
-     *
-     * @return string errorMessage
-     */
-    public function getErrorMessage()
+    public function getErrorMessage(): string
     {
         return $this->errorMessage;
     }
 
-    /**
-     * Sets the errorMessage
-     *
-     * @param string $errorMessage
-     * @return void
-     */
-    public function setErrorMessage($errorMessage)
+    public function setErrorMessage(string $errorMessage): void
     {
         $this->errorMessage = $errorMessage;
     }

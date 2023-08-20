@@ -1,35 +1,18 @@
 <?php
 
-/***************************************************************
- *  Copyright notice
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
-
 namespace SourceBroker\Imageopt\Service;
 
+/*
+This file is part of the "imageopt" Extension for TYPO3 CMS.
+For the full copyright and license information, please read the
+LICENSE.txt file that was distributed with this source code.
+*/
+
+use Exception;
 use SourceBroker\Imageopt\Configuration\Configurator;
-use SourceBroker\Imageopt\Domain\Model\ModeResult;
 use SourceBroker\Imageopt\Domain\Repository\ModeResultRepository;
 use SourceBroker\Imageopt\Resource\ProcessedFileRepository;
 use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
-use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -40,41 +23,24 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
  */
 class OptimizeImagesFalService
 {
+    private ObjectManager $objectManager;
 
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
+    protected ProcessedFileRepository $falProcessedFileRepository;
 
-    /**
-     * @var ProcessedFileRepository
-     */
-    protected $falProcessedFileRepository;
+    protected Configurator $configurator;
 
-    /**
-     * @var Configurator
-     */
-    protected $configurator;
+    private OptimizeImageService $optimizeImageService;
 
-    /**
-     * @var OptimizeImageService
-     */
-    private $optimizeImageService;
-
-    /**
-     * @var ModeResultRepository
-     */
-    private $modeResultRepository;
+    private ModeResultRepository $modeResultRepository;
 
     /**
      * OptimizeImagesFalService constructor.
-     * @param array $config
-     * @throws \Exception
+     * @throws Exception
      */
-    public function __construct($config = null)
+    public function __construct(array $config = null)
     {
         if ($config === null) {
-            throw new \Exception('Configuration not set for OptimizeImagesFalService class');
+            throw new Exception('Configuration not set for OptimizeImagesFalService class');
         }
 
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
@@ -87,74 +53,62 @@ class OptimizeImagesFalService
 
     /**
      * @param $notOptimizedFileRaw array $notOptimizedProcessedFileRaw,
-     * @return ModeResult|null
-     * @throws \Exception
+     * @throws Exception
      */
-    public function optimizeFalProcessedFile($notOptimizedFileRaw)
+    public function optimizeFalProcessedFile(array $notOptimizedFileRaw): array
     {
-        $fileDoesNotExistOrNotReadable = false;
-        $modeResultInfo = '';
-        $modeResults = [];
-
         /** @var ProcessedFile $processedFal */
         $processedFal = $this->falProcessedFileRepository->findByIdentifier($notOptimizedFileRaw['uid']);
         $sourceFile = $processedFal->getForLocalProcessing(false);
 
-        if (file_exists($sourceFile)) {
-            if (is_readable($sourceFile)) {
-                $modeResults = $this->optimizeImageService->optimize($sourceFile);
-                $defaultOptimizationResult = $modeResults['default'] ?? reset($modeResults);
-                if ($this->configurator->getOption('log.enable')) {
-                    foreach ($modeResults as $modeResult) {
-                        $this->modeResultRepository->add($modeResult);
-                    }
-                }
-                if ($defaultOptimizationResult->isExecutedSuccessfully()) {
-                    if ((int)$defaultOptimizationResult->getSizeBefore() > (int)$defaultOptimizationResult->getSizeAfter()) {
-                        $processedFal->updateWithLocalFile(
-                            $this->objectManager->get(TemporaryFileUtility::class)->createTemporaryCopy($sourceFile)
-                        );
-                    }
-                    $processedFal->updateProperties(['tx_imageopt_executed_successfully' => 1]);
-                    $this->falProcessedFileRepository->update($processedFal);
+        $modeResults = $this->optimizeImageService->optimize($sourceFile);
+
+        foreach ($modeResults as $modeResult) {
+            if ($modeResult->getFileDoesNotExist()) {
+                $modeResult->setInfo('The file does not exists but exists as reference in "sys_file_processedfile" ' .
+                    'database table. Seems like it was processed in past but the processed file does not exist now. ' .
+                    'The record has been deleted from "sys_file_processedfile" table.');
+                $processedFal->delete();
+            }
+        }
+
+        $executedSuccessfully = true;
+        foreach ($modeResults as $modeResult) {
+            if ($modeResult->isExecutedSuccessfully()) {
+                if ($modeResult->getOutputFilename() === $sourceFile && (int)$modeResult->getSizeBefore() > (int)$modeResult->getSizeAfter()) {
+                    // Modes can create files with different names than original like example.jpg -> example.jpg.webp, example.jpg.avif, etc.
+                    // We need to use updateWithLocalFile only for the name that match the original file name
+                    $processedFal->updateWithLocalFile(
+                        $this->objectManager->get(TemporaryFileUtility::class)->createTemporaryCopy($sourceFile)
+                    );
                 }
             } else {
-                $fileDoesNotExistOrNotReadable = true;
-                $modeResultInfo = 'The file above exists but is not readable for imageopt process.';
+                $executedSuccessfully = false;
             }
-        } else {
-            $fileDoesNotExistOrNotReadable = true;
-            $modeResultInfo = 'The file does not exists but exists as reference in "sys_file_processedfile" ' .
-                'database table. Seems like it was processed in past but the processed file does not exist now. ' .
-                'The record has been deleted from "sys_file_processedfile" table.';
-            $processedFal->delete();
-        }
-
-        if ($fileDoesNotExistOrNotReadable) {
-            $modeResult = $this->objectManager->get(ModeResult::class)
-                ->setFileAbsolutePath(substr($sourceFile, strlen(Environment::getPublicPath() . '/')))
-                ->setExecutedSuccessfully(false)
-                ->setInfo($modeResultInfo);
 
             if ($this->configurator->getOption('log.enable')) {
-                $this->objectManager->get(ModeResultRepository::class)
-                    ->add($modeResult);
+                $this->modeResultRepository->add($modeResult);
             }
-            $modeResults[] = $modeResult;
         }
+
+        if ($executedSuccessfully) {
+            $processedFal->updateProperties(['tx_imageopt_executed_successfully' => 1]);
+        }
+
+        $processedFal->updateProperties(['tx_imageopt_executed' => 1]);
+        $this->falProcessedFileRepository->update($processedFal);
 
         $this->objectManager->get(PersistenceManager::class)->persistAll();
 
         return $modeResults;
     }
 
-
     public function getFalProcessedFilesToOptimize(int $numberOfImagesToProcess, array $extensions): array
     {
         return $this->falProcessedFileRepository->findNotOptimizedRaw($numberOfImagesToProcess, $extensions);
     }
 
-    public function resetOptimizationFlag()
+    public function resetOptimizationFlag(): void
     {
         $this->falProcessedFileRepository->resetOptimizationFlag();
     }

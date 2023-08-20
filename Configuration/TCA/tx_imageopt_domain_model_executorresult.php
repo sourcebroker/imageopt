@@ -1,4 +1,5 @@
 <?php
+
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_executorresult',
@@ -13,10 +14,7 @@ return [
         ],
         'hideTable' => 1,
         'searchFields' => 'size_before,size_after,command,command_output,command_status,executed_successfully,error_message',
-        'iconfile' => 'EXT:imageopt/Resources/Public/Icons/tx_imageopt_domain_model_executorresult.gif'
-    ],
-    'interface' => [
-        'showRecordFieldList' => 'size_before, size_after, command, command_output, command_status, executed_successfully, error_message',
+        'iconfile' => 'EXT:imageopt/Resources/Public/Icons/tx_imageopt_domain_model_executorresult.gif',
     ],
     'types' => [
         '1' => ['showitem' => '--palette--;;sizes, command, command_output, command_status, error_message,  executed_successfully'],
@@ -24,19 +22,19 @@ return [
     'palettes' => [
         'sizes' => [
             'showitem' => 'size_before, size_after',
-            'canNotCollapse' => true
-        ]
+            'canNotCollapse' => true,
+        ],
     ],
     'columns' => [
         'hidden' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.hidden',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
             'config' => [
                 'type' => 'check',
                 'items' => [
                     '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
-                    ]
+                        '0' => 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled',
+                    ],
                 ],
             ],
         ],
@@ -47,8 +45,8 @@ return [
                 'type' => 'input',
                 'size' => 4,
                 'eval' => 'int',
-                'readOnly' => 1
-            ]
+                'readOnly' => 1,
+            ],
         ],
         'size_after' => [
             'exclude' => true,
@@ -57,8 +55,8 @@ return [
                 'type' => 'input',
                 'size' => 4,
                 'eval' => 'int',
-                'readOnly' => 1
-            ]
+                'readOnly' => 1,
+            ],
         ],
         'command' => [
             'exclude' => true,
@@ -68,7 +66,7 @@ return [
                 'rows' => 2,
                 'cols' => 200,
                 'eval' => 'trim',
-                'readOnly' => 1
+                'readOnly' => 1,
             ],
         ],
         'command_output' => [
@@ -79,7 +77,7 @@ return [
                 'rows' => 2,
                 'cols' => 200,
                 'eval' => 'trim',
-                'readOnly' => 1
+                'readOnly' => 1,
             ],
         ],
         'command_status' => [
@@ -89,7 +87,7 @@ return [
                 'type' => 'input',
                 'size' => 200,
                 'eval' => 'trim',
-                'readOnly' => 1
+                'readOnly' => 1,
             ],
         ],
         'error_message' => [
@@ -100,7 +98,7 @@ return [
                 'type' => 'text',
                 'rows' => 2,
                 'cols' => 200,
-                'eval' => 'trim'
+                'eval' => 'trim',
             ],
         ],
         'executed_successfully' => [
@@ -109,13 +107,8 @@ return [
             'config' => [
                 'readOnly' => 1,
                 'type' => 'check',
-                'items' => [
-                    '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
-                    ]
-                ],
-                'default' => 0,
-            ]
+                'renderType' => 'checkboxToggle',
+            ],
         ],
         'provider_result' => [
             'config' => [

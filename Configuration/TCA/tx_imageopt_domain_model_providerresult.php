@@ -1,4 +1,5 @@
 <?php
+
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_providerresult',
@@ -13,10 +14,7 @@ return [
         ],
         'hideTable' => 1,
         'searchFields' => 'name,size_before,size_after,executed_successfully,executors_results',
-        'iconfile' => 'EXT:imageopt/Resources/Public/Icons/tx_imageopt_domain_model_providerresult.gif'
-    ],
-    'interface' => [
-        'showRecordFieldList' => 'name, size_before, size_after, executed_successfully, executors_results',
+        'iconfile' => 'EXT:imageopt/Resources/Public/Icons/tx_imageopt_domain_model_providerresult.gif',
     ],
     'types' => [
         '1' => ['showitem' => '--palette--;;sizes, --palette--;;checks, executors_results'],
@@ -24,23 +22,23 @@ return [
     'palettes' => [
         'sizes' => [
             'showitem' => 'size_before, size_after',
-            'canNotCollapse' => true
+            'canNotCollapse' => true,
         ],
         'checks' => [
             'showitem' => 'executed_successfully',
-            'canNotCollapse' => true
-        ]
+            'canNotCollapse' => true,
+        ],
     ],
     'columns' => [
         'hidden' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.hidden',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
             'config' => [
                 'type' => 'check',
                 'items' => [
                     '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
-                    ]
+                        '0' => 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled',
+                    ],
                 ],
                 'readOnly' => 1,
             ],
@@ -63,8 +61,8 @@ return [
                 'type' => 'input',
                 'size' => 4,
                 'eval' => 'int',
-                'readOnly' => 1
-            ]
+                'readOnly' => 1,
+            ],
         ],
         'size_after' => [
             'exclude' => true,
@@ -73,22 +71,17 @@ return [
                 'type' => 'input',
                 'size' => 4,
                 'eval' => 'int',
-                'readOnly' => 1
+                'readOnly' => 1,
             ],
         ],
         'executed_successfully' => [
             'exclude' => true,
             'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_providerresult.executed_successfully',
             'config' => [
-                'type' => 'check',
-                'items' => [
-                    '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
-                    ]
-                ],
-                'default' => 0,
                 'readOnly' => 1,
-            ]
+                'type' => 'check',
+                'renderType' => 'checkboxToggle',
+            ],
         ],
         'executors_results' => [
             'exclude' => true,
@@ -103,7 +96,7 @@ return [
                     'levelLinksPosition' => 'top',
                     'showSynchronizationLink' => 1,
                     'showPossibleLocalizationRecords' => 1,
-                    'showAllLocalizationLink' => 1
+                    'showAllLocalizationLink' => 1,
                 ],
                 'readOnly' => 1,
             ],

@@ -3,18 +3,13 @@
 namespace SourceBroker\Imageopt\Command;
 
 /*
- * This file is part of the TYPO3 CMS project.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- * The TYPO3 project - inspiring people to share!
- */
+This file is part of the "imageopt" Extension for TYPO3 CMS.
+For the full copyright and license information, please read the
+LICENSE.txt file that was distributed with this source code.
+*/
 
+use Exception;
+use InvalidArgumentException;
 use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Service\OptimizeImagesFalService;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,7 +21,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class ResetOptimizationFlagForFal extends BaseCommand
 {
-    public function configure()
+    public function configure(): void
     {
         $this->setDescription('Reset optimized flag for FAL processed images so all files can be optimized once more')
             ->addOption(
@@ -38,13 +33,10 @@ class ResetOptimizationFlagForFal extends BaseCommand
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @throws \InvalidArgumentException
-     * @return int
-     * @throws \Exception
+     * @throws InvalidArgumentException
+     * @throws Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $io->title($this->getDescription());

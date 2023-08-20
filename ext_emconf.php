@@ -12,11 +12,8 @@ $EM_CONF[$_EXTKEY] = [
     'title' => 'Optimize images created/resized by TYPO3',
     'description' => 'Optimize images created/resized by TYPO3 so they take less space. Safe as it does not optimize original images.',
     'category' => 'be',
-    'version' => '7.0.0',
+    'version' => '8.0.0',
     'state' => 'stable',
-    'uploadfolder' => false,
-    'createDirs' => '',
-    'clearcacheonload' => false,
     'author' => 'Inscript Team',
     'author_email' => 'office@inscript.dev',
     'author_company' => 'Inscript',
@@ -24,7 +21,7 @@ $EM_CONF[$_EXTKEY] = [
         [
             'depends' =>
                 [
-                    'typo3' => '10.4.0-11.5.99',
+                    'typo3' => '11.5.99',
                 ],
             'conflicts' =>
                 [],

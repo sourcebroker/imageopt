@@ -2,6 +2,8 @@
 
 namespace SourceBroker\Imageopt\Domain\Repository;
 
+use TYPO3\CMS\Extbase\Persistence\Repository;
+
 /***
  *
  * This file is part of the "imageopt" Extension for TYPO3 CMS.
@@ -16,6 +18,6 @@ namespace SourceBroker\Imageopt\Domain\Repository;
 /**
  * The repository for ProviderResults
  */
-class ProviderResultRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+class ProviderResultRepository extends Repository
 {
 }

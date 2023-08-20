@@ -2,16 +2,18 @@
 
 namespace SourceBroker\Imageopt\Utility;
 
+/*
+This file is part of the "imageopt" Extension for TYPO3 CMS.
+For the full copyright and license information, please read the
+LICENSE.txt file that was distributed with this source code.
+*/
+
 class ArrayUtility
 {
     /**
      * Merge value from array2 into array1 only if it was not already set in array 1
-     *
-     * @param array $array1
-     * @param array $array2
-     * @return array
      */
-    public static function arrayMergeAsFallback(array &$array1, array &$array2)
+    public static function arrayMergeAsFallback(array &$array1, array &$array2): array
     {
         $merged = $array1;
         foreach ($array2 as $key => &$value) {
@@ -28,11 +30,8 @@ class ArrayUtility
 
     /**
      * Converts plain array into nested one
-     *
-     * @param array $plainArray
-     * @return array
      */
-    public static function plainToNested(array $plainArray)
+    public static function plainToNested(array $plainArray): array
     {
         $root = [];
         $node =& $root;

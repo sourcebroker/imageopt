@@ -1,6 +1,7 @@
 CREATE TABLE sys_file_processedfile
 (
-    tx_imageopt_executed_successfully tinyint(3) unsigned DEFAULT '0' NOT NULL
+    tx_imageopt_executed_successfully tinyint(3) unsigned DEFAULT '0' NOT NULL,
+    tx_imageopt_executed              tinyint(3) unsigned DEFAULT '0' NOT NULL
 );
 
 #
@@ -9,9 +10,12 @@ CREATE TABLE sys_file_processedfile
 CREATE TABLE tx_imageopt_domain_model_moderesult
 (
     file_absolute_path    text,
-    size_before           varchar(20)  DEFAULT '' NOT NULL,
-    size_after            varchar(20)  DEFAULT '' NOT NULL,
+    size_before           varchar(20) DEFAULT '' NOT NULL,
+    size_after            varchar(20) DEFAULT '' NOT NULL,
+    name           				varchar(50) DEFAULT '' NOT NULL,
     executed_successfully smallint(5) unsigned DEFAULT '0' NOT NULL,
+    file_does_not_exist   smallint(5) unsigned DEFAULT '0' NOT NULL,
+    output_filename       text,
     step_results          int(11) unsigned DEFAULT '0' NOT NULL,
     info                  text,
 );
@@ -37,9 +41,9 @@ CREATE TABLE tx_imageopt_domain_model_stepresult
 #
 CREATE TABLE tx_imageopt_domain_model_providerresult
 (
-    name                  varchar(255) DEFAULT ''  NOT NULL,
+    name                  varchar(255) DEFAULT '' NOT NULL,
     size_before           varchar(20)  DEFAULT '' NOT NULL,
-    size_after            varchar(20)  DEFAULT ''  NOT NULL,
+    size_after            varchar(20)  DEFAULT '' NOT NULL,
     executed_successfully smallint(5) unsigned DEFAULT '0' NOT NULL,
     step_result           int(11) unsigned DEFAULT '0' NOT NULL,
     executors_results     int(11) unsigned DEFAULT '0' NOT NULL,
@@ -55,7 +59,7 @@ CREATE TABLE tx_imageopt_domain_model_executorresult
     size_after            varchar(20)  DEFAULT '' NOT NULL,
     command               text,
     command_output        text,
-    command_status        varchar(255) DEFAULT ''  NOT NULL,
+    command_status        varchar(255) DEFAULT '' NOT NULL,
     executed_successfully smallint(5) unsigned DEFAULT '0' NOT NULL,
     error_message         text,
 );

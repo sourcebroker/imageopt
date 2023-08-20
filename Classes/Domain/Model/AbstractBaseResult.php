@@ -2,110 +2,67 @@
 
 namespace SourceBroker\Imageopt\Domain\Model;
 
+/*
+This file is part of the "imageopt" Extension for TYPO3 CMS.
+For the full copyright and license information, please read the
+LICENSE.txt file that was distributed with this source code.
+*/
+
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 abstract class AbstractBaseResult extends AbstractEntity
 {
-    /**
-     * @var string
-     */
-    protected $sizeBefore = '';
+    protected string $sizeBefore = '';
 
-    /**
-     * @var string
-     */
-    protected $sizeAfter = '';
+    protected string $sizeAfter = '';
 
-    /**
-     * @var int
-     */
-    protected $optimizationBytes;
+    protected int $optimizationBytes;
 
-    /**
-     * @var float
-     */
-    protected $optimizationPercent;
+    protected float $optimizationPercent;
 
-    /**
-     * @var bool
-     */
-    protected $executedSuccessfully = false;
+    protected bool $executedSuccessfully = false;
 
-    /**
-     * @return string sizeBefore
-     */
-    public function getSizeBefore()
+    public function getSizeBefore(): string
     {
         return $this->sizeBefore;
     }
 
-    /**
-     * @param string $sizeBefore
-     * @return static
-     */
-    public function setSizeBefore($sizeBefore)
+    public function setSizeBefore(string $sizeBefore): AbstractBaseResult
     {
         $this->sizeBefore = $sizeBefore;
         return $this;
     }
 
-    /**
-     * @return string $sizeAfter
-     */
-    public function getSizeAfter()
+    public function getSizeAfter(): string
     {
         return $this->sizeAfter;
     }
 
-    /**
-     * @param string $sizeAfter
-     * @return static
-     */
-    public function setSizeAfter($sizeAfter)
+    public function setSizeAfter(string $sizeAfter): AbstractBaseResult
     {
         $this->sizeAfter = $sizeAfter;
         return $this;
     }
 
-    /**
-     * @return string $optimizationBytes
-     */
-    public function getOptimizationBytes()
+    public function getOptimizationBytes(): int
     {
-        if ($this->optimizationBytes === null) {
-            $this->optimizationBytes = (int)$this->sizeBefore - (int)$this->sizeAfter;
-        }
-        return $this->optimizationBytes;
+        return (int)$this->sizeBefore - (int)$this->sizeAfter;
     }
 
-    /**
-     * @return string $optimizationPercentage
-     */
     public function getOptimizationPercentage()
     {
         if (!$this->sizeBefore) {
             return 0;
         }
-
-        if ($this->optimizationPercent === null) {
-            $this->optimizationPercent = ((int)$this->sizeBefore - (int)$this->sizeAfter) / (float)$this->sizeBefore * 100;
-        }
-        return $this->optimizationPercent;
+        return ((int)$this->sizeBefore - (int)$this->sizeAfter) / (float)$this->sizeBefore * 100;
     }
 
-    /**
-     * @return bool
-     */
-    public function isExecutedSuccessfully()
+    public function isExecutedSuccessfully(): bool
     {
         return $this->executedSuccessfully;
     }
 
-    /**
-     * @param bool $executedSuccessfully
-     * @return static
-     */
-    public function setExecutedSuccessfully($executedSuccessfully)
+    public function setExecutedSuccessfully(bool $executedSuccessfully): AbstractBaseResult
     {
         $this->executedSuccessfully = $executedSuccessfully;
         return $this;

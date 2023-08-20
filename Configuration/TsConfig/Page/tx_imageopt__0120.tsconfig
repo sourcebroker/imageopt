@@ -11,10 +11,12 @@ tx_imageopt {
                     description = Webp convert
                 }
             }
+
             fileRegexp = \.(jpg|jpeg|png|gif)$
             outputFilename = {dirname}/{filename}.{extension}.webp
         }
     }
+
     providers {
         webpImagemagick.enabled = 1
     }

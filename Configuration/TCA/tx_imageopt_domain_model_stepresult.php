@@ -1,4 +1,5 @@
 <?php
+
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationstepresult',
@@ -13,10 +14,7 @@ return [
         ],
         'hideTable' => 1,
         'searchFields' => 'description,size_before,size_after,optimization_bytes,optimization_percentage,provider_winner_name,executed_successfully,info',
-        'iconfile' => 'EXT:imageopt/Resources/Public/Icons/tx_imageopt_domain_model_optimizationstepresult.gif'
-    ],
-    'interface' => [
-        'showRecordFieldList' => 'name, size_before, size_after, optimization_bytes, optimization_percentage, provider_winner_name, executed_successfully, info',
+        'iconfile' => 'EXT:imageopt/Resources/Public/Icons/tx_imageopt_domain_model_optimizationstepresult.gif',
     ],
     'types' => [
         '1' => ['showitem' => 'description, --palette--;;sizes, --palette--;;optimization, provider_winner_name, info, executed_successfully, providers_results'],
@@ -24,23 +22,23 @@ return [
     'palettes' => [
         'sizes' => [
             'showitem' => 'size_before, size_after',
-            'canNotCollapse' => true
+            'canNotCollapse' => true,
         ],
         'optimization' => [
             'showitem' => 'optimization_bytes, optimization_percentage',
-            'canNotCollapse' => true
-        ]
+            'canNotCollapse' => true,
+        ],
     ],
     'columns' => [
         'hidden' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.hidden',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
             'config' => [
                 'type' => 'check',
                 'items' => [
                     '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
-                    ]
+                        '0' => 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled',
+                    ],
                 ],
             ],
         ],
@@ -51,7 +49,7 @@ return [
                 'type' => 'input',
                 'size' => 200,
                 'eval' => 'trim',
-                'readOnly' => 1
+                'readOnly' => 1,
             ],
         ],
         'description' => [
@@ -61,7 +59,7 @@ return [
                 'type' => 'input',
                 'size' => 255,
                 'eval' => 'trim',
-                'readOnly' => 1
+                'readOnly' => 1,
             ],
         ],
         'size_before' => [
@@ -71,7 +69,7 @@ return [
                 'type' => 'input',
                 'size' => 4,
                 'eval' => 'int',
-                'readOnly' => 1
+                'readOnly' => 1,
             ],
         ],
         'size_after' => [
@@ -81,7 +79,7 @@ return [
                 'type' => 'input',
                 'size' => 4,
                 'eval' => 'int',
-                'readOnly' => 1
+                'readOnly' => 1,
             ],
         ],
         'provider_winner_name' => [
@@ -91,22 +89,17 @@ return [
                 'type' => 'input',
                 'size' => 200,
                 'eval' => 'trim',
-                'readOnly' => 1
+                'readOnly' => 1,
             ],
         ],
         'executed_successfully' => [
             'exclude' => true,
             'label' => 'LLL:EXT:imageopt/Resources/Private/Language/locallang_db.xlf:tx_imageopt_domain_model_optimizationstepresult.executed_successfully',
             'config' => [
+                'readOnly' => 1,
                 'type' => 'check',
-                'items' => [
-                    '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
-                    ]
-                ],
-                'default' => 0,
-                'readOnly' => 1
-            ]
+                'renderType' => 'checkboxToggle',
+            ],
         ],
         'info' => [
             'exclude' => true,
@@ -117,7 +110,7 @@ return [
                 'rows' => 3,
                 'eval' => 'trim',
                 'readOnly' => 1,
-            ]
+            ],
         ],
         'providers_results' => [
             'exclude' => true,
@@ -133,7 +126,7 @@ return [
                     'levelLinksPosition' => 'top',
                     'showSynchronizationLink' => 1,
                     'showPossibleLocalizationRecords' => 1,
-                    'showAllLocalizationLink' => 1
+                    'showAllLocalizationLink' => 1,
                 ],
             ],
 

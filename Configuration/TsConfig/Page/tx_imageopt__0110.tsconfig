@@ -11,14 +11,17 @@ tx_imageopt {
                     providerType = lossyLow
                     description = Lossy, low quality image optimisation.
                 }
+
                 20 {
                     providerType = lossless
                     description = Lossless image optimisation.
                 }
             }
+
             fileRegexp = .*
             outputFilename = {dirname}/{filename}.{extension}
         }
+
         webp {
             description = Saving under webp format and different name.
             step {
@@ -27,9 +30,11 @@ tx_imageopt {
                     description = Webp convert
                 }
             }
-            fileRegexp = \.(jpg|jpeg|png)$
+
+            fileRegexp = \.(jpg|jpeg|png|gif)$
             outputFilename = {dirname}/{filename}.{extension}.webp
         }
+
         highQuality {
             description = Saving with high quality and differnt name.
             step {
@@ -37,15 +42,18 @@ tx_imageopt {
                     providerType = lossyGood
                     description = Lossy, good quality image optimisation.
                 }
+
                 20 {
                     providerType = lossless
                     description = Lossless image optimisation.
                 }
             }
+
             fileRegexp = .*
             outputFilename = {dirname}/{filename}-hq.{extension}
         }
     }
+
     providers {
         mozjpeg.enabled = 1
         jpegtranMozjpeg.enabled = 1
