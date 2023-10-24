@@ -1,5 +1,6 @@
 <?php
-defined('TYPO3_MODE') || die('Access denied.');
+
+defined('TYPO3') or die('Access denied.');
 
 call_user_func(
     function () {
@@ -22,7 +23,5 @@ call_user_func(
             'tx_imageopt_domain_model_optimizationstepresult',
             'EXT:imageopt/Resources/Private/Language/locallang_csh_tx_imageopt_domain_model_optimizationresult.xlf'
         );
-
-        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile('imageopt', 'Configuration/TypoScript', 'Imageopt');
     }
 );

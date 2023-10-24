@@ -2,6 +2,11 @@
 Changelog
 ---------
 
+7.0.1
+~~~~~
+
+1) [BUGFIX] Move addStaticFile from ext_tables to TCA/Overrides for sys_template. Replace TYPO3_MODE to TYPO3.
+
 7.0.0
 ~~~~~
 
