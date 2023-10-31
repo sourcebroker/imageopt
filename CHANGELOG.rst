@@ -2,6 +2,11 @@
 Changelog
 ---------
 
+7.0.2
+~~~~~
+
+1) [BUGFIX] Cleanup TCA from deprecated showRecordFieldList.
+
 7.0.1
 ~~~~~
 

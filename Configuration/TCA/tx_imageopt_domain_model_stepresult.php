@@ -15,9 +15,6 @@ return [
         'searchFields' => 'description,size_before,size_after,optimization_bytes,optimization_percentage,provider_winner_name,executed_successfully,info',
         'iconfile' => 'EXT:imageopt/Resources/Public/Icons/tx_imageopt_domain_model_optimizationstepresult.gif'
     ],
-    'interface' => [
-        'showRecordFieldList' => 'name, size_before, size_after, optimization_bytes, optimization_percentage, provider_winner_name, executed_successfully, info',
-    ],
     'types' => [
         '1' => ['showitem' => 'description, --palette--;;sizes, --palette--;;optimization, provider_winner_name, info, executed_successfully, providers_results'],
     ],

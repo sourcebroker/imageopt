@@ -14,9 +14,6 @@ return [
         'searchFields' => 'file_absolute_path,size_before,size_after,optimization_bytes,optimization_percentage,executed_successfully,info',
         'iconfile' => 'EXT:imageopt/Resources/Public/Icons/tx_imageopt_domain_model_optimizationoptionresult.gif'
     ],
-    'interface' => [
-        'showRecordFieldList' => 'file_absolute_path, size_before, size_after, optimization_bytes, optimization_percentage, executed_successfully, info, step_results',
-    ],
     'types' => [
         '1' => ['showitem' => 'file_absolute_path, --palette--;;sizes, --palette--;;optimization, info, executed_successfully, step_results'],
     ],

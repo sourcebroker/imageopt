@@ -15,9 +15,6 @@ return [
         'searchFields' => 'name,size_before,size_after,executed_successfully,executors_results',
         'iconfile' => 'EXT:imageopt/Resources/Public/Icons/tx_imageopt_domain_model_providerresult.gif'
     ],
-    'interface' => [
-        'showRecordFieldList' => 'name, size_before, size_after, executed_successfully, executors_results',
-    ],
     'types' => [
         '1' => ['showitem' => '--palette--;;sizes, --palette--;;checks, executors_results'],
     ],
