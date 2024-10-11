@@ -18,10 +18,19 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class OptimizeFalProcessedImages extends BaseCommand
 {
+    private Configurator $configurator;
+    private OptimizeImagesFalService $optimizeImagesFalService;
+
+    public function __construct(Configurator $configurator, OptimizeImagesFalService $optimizeImagesFalService)
+    {
+        $this->configurator = $configurator;
+        $this->optimizeImagesFalService = $optimizeImagesFalService;
+        parent::__construct();
+    }
+
     public function configure(): void
     {
         $this->setDescription('Optimize FAL processed images')
@@ -55,16 +64,12 @@ class OptimizeFalProcessedImages extends BaseCommand
             ? $input->getOption('rootPageForTsConfig')
             : null;
 
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-
-        $configurator = GeneralUtility::makeInstance(Configurator::class);
-        $configurator->setConfigByPage($rootPageForTsConfig);
-        $configurator->init();
+        $this->configurator->setConfigByPage($rootPageForTsConfig);
+        $this->configurator->init();
 
         /** @var OptimizeImagesFalService $optimizeImagesFalService */
-        $optimizeImagesFalService = $objectManager->get(OptimizeImagesFalService::class, $configurator->getConfig());
-        $extensions = GeneralUtility::trimExplode(',', $configurator->getOption('extensions'), true);
-        $filesToProcess = $optimizeImagesFalService->getFalProcessedFilesToOptimize(
+        $extensions = GeneralUtility::trimExplode(',', $this->configurator->getOption('extensions'), true);
+        $filesToProcess = $this->optimizeImagesFalService->getFalProcessedFilesToOptimize(
             $numberOfImagesToProcess,
             $extensions
         );
@@ -72,7 +77,7 @@ class OptimizeFalProcessedImages extends BaseCommand
             foreach ($filesToProcess as $fileToProcess) {
                 $optimizationResults = $optimizeImagesFalService->optimizeFalProcessedFile($fileToProcess);
                 foreach ($optimizationResults as $optimizationResult) {
-                    $io->write(CliDisplayUtility::displayOptionResult($optimizationResult, $configurator->getConfig()));
+                    $io->write(CliDisplayUtility::displayOptionResult($optimizationResult, $this->configurator->getConfig()));
                 }
             }
         } else {

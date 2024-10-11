@@ -12,10 +12,11 @@ use Exception;
 use SourceBroker\Imageopt\Resource\PageRepository;
 use SourceBroker\Imageopt\Utility\ArrayUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class Configurator
+class Configurator implements SingletonInterface
 {
     protected array $config;
 
@@ -56,7 +57,7 @@ class Configurator
         });
     }
 
-    public function init(): void
+    public function init(?array $config): void
     {
         if (count($this->config) === 0) {
             throw new Exception('Configuration not set for ImageOpt ext');

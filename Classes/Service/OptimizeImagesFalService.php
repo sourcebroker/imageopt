@@ -14,8 +14,6 @@ use SourceBroker\Imageopt\Domain\Repository\ModeResultRepository;
 use SourceBroker\Imageopt\Resource\ProcessedFileRepository;
 use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 /**
@@ -23,8 +21,6 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
  */
 class OptimizeImagesFalService
 {
-    private ObjectManager $objectManager;
-
     protected ProcessedFileRepository $falProcessedFileRepository;
 
     protected Configurator $configurator;
@@ -33,22 +29,30 @@ class OptimizeImagesFalService
 
     private ModeResultRepository $modeResultRepository;
 
+    private PersistenceManager $persistenceManager;
+
+    private TemporaryFileUtility $temporaryFileUtility;
+
     /**
      * OptimizeImagesFalService constructor.
      * @throws Exception
      */
-    public function __construct(array $config = null)
-    {
-        if ($config === null) {
-            throw new Exception('Configuration not set for OptimizeImagesFalService class');
-        }
-
-        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->configurator = GeneralUtility::makeInstance(Configurator::class, $config);
-        $this->configurator->init();
-        $this->falProcessedFileRepository = $this->objectManager->get(ProcessedFileRepository::class);
-        $this->optimizeImageService = $this->objectManager->get(OptimizeImageService::class, $config);
-        $this->modeResultRepository = $this->objectManager->get(ModeResultRepository::class);
+    public function __construct(
+        array $config = null,
+        ModeResultRepository $modeResultRepository,
+        ProcessedFileRepository $falProcessedFileRepository,
+        OptimizeImageService $optimizeImageService,
+        Configurator $configurator,
+        PersistenceManager $persistenceManager,
+        TemporaryFileUtility $temporaryFileUtility
+    ) {
+        $this->configurator = $configurator;
+        $this->configurator->init($config);
+        $this->falProcessedFileRepository = $falProcessedFileRepository;
+        $this->optimizeImageService = $optimizeImageService;
+        $this->modeResultRepository = $modeResultRepository;
+        $this->persistenceManager = $persistenceManager;
+        $this->temporaryFileUtility = $temporaryFileUtility;
     }
 
     /**
@@ -79,7 +83,7 @@ class OptimizeImagesFalService
                     // Modes can create files with different names than original like example.jpg -> example.jpg.webp, example.jpg.avif, etc.
                     // We need to use updateWithLocalFile only for the name that match the original file name
                     $processedFal->updateWithLocalFile(
-                        $this->objectManager->get(TemporaryFileUtility::class)->createTemporaryCopy($sourceFile)
+                        $this->temporaryFileUtility->createTemporaryCopy($sourceFile)
                     );
                 }
             } else {
@@ -98,7 +102,7 @@ class OptimizeImagesFalService
         $processedFal->updateProperties(['tx_imageopt_executed' => 1]);
         $this->falProcessedFileRepository->update($processedFal);
 
-        $this->objectManager->get(PersistenceManager::class)->persistAll();
+        $this->persistenceManager->persistAll();
 
         return $modeResults;
     }

@@ -8,16 +8,25 @@ For the full copyright and license information, please read the
 LICENSE.txt file that was distributed with this source code.
 */
 
+use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Domain\Model\ModeResult;
 use SourceBroker\Imageopt\Domain\Model\ProviderResult;
 use SourceBroker\Imageopt\Domain\Model\StepResult;
+use SourceBroker\Imageopt\Service\OptimizeImagesFalService;
 
 class CliDisplayUtility
 {
+    private Configurator $configurator;
+    private OptimizeImagesFalService $optimizeImagesFalService;
+
+    public function __construct(Configurator $configurator, OptimizeImagesFalService $optimizeImagesFalService)
+    {
+        $this->configurator = $configurator;
+    }
     /**
      * Displays optimization result in CLI window
      */
-    public static function displayOptionResult(ModeResult $modeResult, array $config): string
+    public function displayOptionResult(ModeResult $modeResult): string
     {
         $output = '---------------------------------------------------------------------' . "\n" .
             "File \t\t| In : " . $modeResult->getFileAbsolutePath() . "\n";
@@ -30,7 +39,7 @@ class CliDisplayUtility
             $output .= "Mode\t\t| Name: " . $modeResult->getName() . "\n" .
                 "\t\t| Description: " . $modeResult->getDescription() . "\n" .
                 "\t\t| Number of steps: " . $modeResult->getStepResults()->count() . "\n\n";
-            $stepProvidersInfo = self::getStepResult($modeResult, $config);
+            $stepProvidersInfo = self::getStepResult($modeResult);
             if (!empty($stepProvidersInfo)) {
                 $output .= implode("\n", $stepProvidersInfo);
             }
@@ -50,8 +59,10 @@ class CliDisplayUtility
         return $output . "\n";
     }
 
-    protected static function getStepResult(ModeResult $modeResult, array $config): array
+    protected function getStepResult(ModeResult $modeResult): array
     {
+        $config = $this->configurator->getConfig();
+
         $stepProvidersInfo = [];
         /** @var StepResult[] $stepResults */
         $stepResults = $modeResult->getStepResults()->toArray();

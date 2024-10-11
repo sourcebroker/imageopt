@@ -4,6 +4,10 @@ services:
     autoconfigure: true
     public: false
 
+  SourceBroker\Imageopt\:
+    resource: '../Classes/*'
+    exclude: '../Classes/Domain/Model/*'
+
   SourceBroker\Imageopt\Command\OptimizeFolderImages:
     tags:
       - name: 'console.command'
@@ -21,7 +25,6 @@ services:
       - name: 'console.command'
         command: 'imageopt:resetoptimizationflagforfal'
         schedulable: false
-
 
   SourceBroker\Imageopt\Command\ResetOptimizationFlagForFolders:
     tags:

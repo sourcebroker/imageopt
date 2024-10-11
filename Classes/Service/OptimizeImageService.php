@@ -22,10 +22,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class OptimizeImageService
 {
-    /**
-     * @var Configurator
-     */
-    public $configurator;
+    public Configurator $configurator;
 
     private TemporaryFileUtility $temporaryFile;
 
@@ -33,16 +30,10 @@ class OptimizeImageService
      * OptimizeImageService constructor.
      * @throws Exception
      */
-    public function __construct(array $config = null)
+    public function __construct(Configurator $configurator, TemporaryFileUtility $temporaryFile)
     {
-        if ($config === null) {
-            throw new Exception('Configuration not set for OptimizeImageService class');
-        }
-
-        $this->configurator = GeneralUtility::makeInstance(Configurator::class, $config);
-        $this->configurator->init();
-
-        $this->temporaryFile = GeneralUtility::makeInstance(TemporaryFileUtility::class);
+        $this->configurator = $configurator;
+        $this->temporaryFile = $temporaryFile;
     }
 
     /**

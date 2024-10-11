@@ -11,6 +11,7 @@ LICENSE.txt file that was distributed with this source code.
 use Exception;
 use InvalidArgumentException;
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Service\OptimizeImagesFalService;
 use SourceBroker\Imageopt\Service\OptimizeImagesFolderService;
 use SourceBroker\Imageopt\Utility\CliDisplayUtility;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,6 +23,19 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class OptimizeFolderImages extends BaseCommand
 {
+    private Configurator $configurator;
+    private OptimizeImagesFalService $optimizeImagesFalService;
+    private CliDisplayUtility $cliDisplayUtility;
+    private OptimizeImagesFolderService $optimizeImagesFolderService;
+
+    public function __construct(Configurator $configurator, OptimizeImagesFolderService $optimizeImagesFolderService, CliDisplayUtility $cliDisplayUtility)
+    {
+        $this->configurator = $configurator;
+        $this->cliDisplayUtility = $cliDisplayUtility;
+        $this->optimizeImagesFolderService = $optimizeImagesFolderService;
+        parent::__construct();
+    }
+
     public function configure(): void
     {
         $this->setDescription('Optimize images in folders')
@@ -50,25 +64,14 @@ class OptimizeFolderImages extends BaseCommand
 
         $numberOfImagesToProcess = $input->hasOption('numberOfImagesToProcess') && $input->getOption('numberOfImagesToProcess') !== null ? $input->getOption('numberOfImagesToProcess') : 50;
         $rootPageForTsConfig = $input->hasOption('rootPageForTsConfig') && $input->getOption('rootPageForTsConfig') !== null ? $input->getOption('rootPageForTsConfig') : null;
+        $this->configurator->setConfigByPage($rootPageForTsConfig);
 
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-
-        $configurator = GeneralUtility::makeInstance(Configurator::class);
-        $configurator->setConfigByPage($rootPageForTsConfig);
-        $configurator->init();
-
-        /** @var OptimizeImagesFolderService $optimizeImagesFolderService */
-        $optimizeImagesFolderService = $objectManager->get(
-            OptimizeImagesFolderService::class,
-            $configurator->getConfig()
-        );
-
-        $filesToProcess = $optimizeImagesFolderService->getFilesToOptimize($numberOfImagesToProcess);
+        $filesToProcess = $this->optimizeImagesFolderService->getFilesToOptimize($numberOfImagesToProcess);
         if (!empty($filesToProcess)) {
             foreach ($filesToProcess as $fileToProcess) {
-                $optimizationResults = $optimizeImagesFolderService->optimizeFolderFile($fileToProcess);
+                $optimizationResults = $this->optimizeImagesFolderService->optimizeFolderFile($fileToProcess);
                 foreach ($optimizationResults as $optimizationResult) {
-                    $io->write(CliDisplayUtility::displayOptionResult($optimizationResult, $configurator->getConfig()));
+                    $io->write($this->cliDisplayUtility->displayOptionResult($optimizationResult));
                 }
             }
         } elseif (!$io->isQuiet()) {
