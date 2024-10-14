@@ -10,14 +10,10 @@ LICENSE.txt file that was distributed with this source code.
 
 use Exception;
 use InvalidArgumentException;
-use SourceBroker\Imageopt\Configuration\Configurator;
-use SourceBroker\Imageopt\Service\OptimizeImagesFalService;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class ResetOptimizationFlagForFal extends BaseCommand
 {
@@ -42,17 +38,11 @@ class ResetOptimizationFlagForFal extends BaseCommand
         $io->title($this->getDescription());
         $rootPageForTsConfig = $input->hasOption('rootPageForTsConfig') && $input->getOption('rootPageForTsConfig') !== null ? $input->getOption('rootPageForTsConfig') : null;
 
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-
-        $configurator = GeneralUtility::makeInstance(Configurator::class);
-        $configurator->setConfigByPage($rootPageForTsConfig);
-        $configurator->init();
-
-        /** @var OptimizeImagesFalService $optimizeImagesFalService */
-        $optimizeImagesFalService = $objectManager->get(OptimizeImagesFalService::class, $configurator->getConfig());
+        $configurator = $this->configurationFactory->createForPage($rootPageForTsConfig);
+        $optimizeImagesFalService = $this->optimizeImageServiceFactory->createFalService($configurator);
         $optimizeImagesFalService->resetOptimizationFlag();
 
-        $io->writeln('Done succesfully.');
+        $io->writeln('Done successfully.');
         return 0;
     }
 }

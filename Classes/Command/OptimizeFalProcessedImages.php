@@ -10,8 +10,6 @@ LICENSE.txt file that was distributed with this source code.
 
 use Exception;
 use InvalidArgumentException;
-use SourceBroker\Imageopt\Configuration\Configurator;
-use SourceBroker\Imageopt\Service\OptimizeImagesFalService;
 use SourceBroker\Imageopt\Utility\CliDisplayUtility;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,16 +19,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class OptimizeFalProcessedImages extends BaseCommand
 {
-    private Configurator $configurator;
-    private OptimizeImagesFalService $optimizeImagesFalService;
-
-    public function __construct(Configurator $configurator, OptimizeImagesFalService $optimizeImagesFalService)
-    {
-        $this->configurator = $configurator;
-        $this->optimizeImagesFalService = $optimizeImagesFalService;
-        parent::__construct();
-    }
-
     public function configure(): void
     {
         $this->setDescription('Optimize FAL processed images')
@@ -64,12 +52,11 @@ class OptimizeFalProcessedImages extends BaseCommand
             ? $input->getOption('rootPageForTsConfig')
             : null;
 
-        $this->configurator->setConfigByPage($rootPageForTsConfig);
-        $this->configurator->init();
+        $configurator = $this->configurationFactory->createForPage($rootPageForTsConfig);
+        $optimizeImagesFalService = $this->optimizeImageServiceFactory->createFalService($configurator);
 
-        /** @var OptimizeImagesFalService $optimizeImagesFalService */
-        $extensions = GeneralUtility::trimExplode(',', $this->configurator->getOption('extensions'), true);
-        $filesToProcess = $this->optimizeImagesFalService->getFalProcessedFilesToOptimize(
+        $extensions = GeneralUtility::trimExplode(',', $configurator->getOption('extensions'), true);
+        $filesToProcess = $optimizeImagesFalService->getFalProcessedFilesToOptimize(
             $numberOfImagesToProcess,
             $extensions
         );
@@ -77,7 +64,7 @@ class OptimizeFalProcessedImages extends BaseCommand
             foreach ($filesToProcess as $fileToProcess) {
                 $optimizationResults = $optimizeImagesFalService->optimizeFalProcessedFile($fileToProcess);
                 foreach ($optimizationResults as $optimizationResult) {
-                    $io->write(CliDisplayUtility::displayOptionResult($optimizationResult, $this->configurator->getConfig()));
+                    $io->write(CliDisplayUtility::displayOptionResult($optimizationResult, $configurator->getConfig()));
                 }
             }
         } else {

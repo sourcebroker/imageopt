@@ -38,19 +38,17 @@ class OptimizeImagesFalService
      * @throws Exception
      */
     public function __construct(
-        array $config = null,
+        Configurator $configurator,
+        OptimizeImageService $optimizeImageService,
         ModeResultRepository $modeResultRepository,
         ProcessedFileRepository $falProcessedFileRepository,
-        OptimizeImageService $optimizeImageService,
-        Configurator $configurator,
         PersistenceManager $persistenceManager,
-        TemporaryFileUtility $temporaryFileUtility
+        TemporaryFileUtility $temporaryFileUtility,
     ) {
         $this->configurator = $configurator;
-        $this->configurator->init($config);
-        $this->falProcessedFileRepository = $falProcessedFileRepository;
         $this->optimizeImageService = $optimizeImageService;
         $this->modeResultRepository = $modeResultRepository;
+        $this->falProcessedFileRepository = $falProcessedFileRepository;
         $this->persistenceManager = $persistenceManager;
         $this->temporaryFileUtility = $temporaryFileUtility;
     }

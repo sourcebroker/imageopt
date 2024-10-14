@@ -15,8 +15,6 @@ use RegexIterator;
 use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Domain\Repository\ModeResultRepository;
 use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 /**
@@ -32,16 +30,16 @@ class OptimizeImagesFolderService
 
     private PersistenceManager $persistenceManager;
 
-    public function __construct($config = null)
-    {
-        if ($config === null) {
-            throw new Exception('Configuration not set for OptimizeImagesFolderService class');
-        }
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->configurator = $objectManager->get(Configurator::class, $config);
-        $this->optimizeImageService = $objectManager->get(OptimizeImageService::class, $config);
-        $this->modeResultRepository = $objectManager->get(ModeResultRepository::class);
-        $this->persistenceManager = $objectManager->get(PersistenceManager::class);
+    public function __construct(
+        Configurator $configurator,
+        OptimizeImageService $optimizeImageService,
+        ModeResultRepository $modeResultRepository,
+        PersistenceManager $persistenceManager
+    ) {
+        $this->configurator = $configurator;
+        $this->optimizeImageService = $optimizeImageService;
+        $this->modeResultRepository = $modeResultRepository;
+        $this->persistenceManager = $persistenceManager;
     }
 
     public function getFilesToOptimize(int $numberOfFiles = 20): array

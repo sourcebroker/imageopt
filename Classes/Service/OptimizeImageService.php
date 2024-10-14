@@ -24,16 +24,16 @@ class OptimizeImageService
 {
     public Configurator $configurator;
 
-    private TemporaryFileUtility $temporaryFile;
+    private TemporaryFileUtility $temporaryFileUtility;
 
     /**
      * OptimizeImageService constructor.
      * @throws Exception
      */
-    public function __construct(Configurator $configurator, TemporaryFileUtility $temporaryFile)
+    public function __construct(Configurator $configurator, TemporaryFileUtility $temporaryFileUtility)
     {
         $this->configurator = $configurator;
-        $this->temporaryFile = $temporaryFile;
+        $this->temporaryFileUtility = $temporaryFileUtility;
     }
 
     /**
@@ -45,7 +45,7 @@ class OptimizeImageService
     public function optimize(string $sourceFile): array
     {
         // create original image copy - it may vary (provider may overwrite original image)
-        $sourceFileTemporary = $this->temporaryFile->createTemporaryCopy($sourceFile);
+        $sourceFileTemporary = $this->temporaryFileUtility->createTemporaryCopy($sourceFile);
 
         $modeResults = [];
         foreach ((array)$this->configurator->getOption('mode') as $modeKey => $modeConfig) {
@@ -94,7 +94,7 @@ class OptimizeImageService
             }
         }
 
-        $chainImagePath = $this->temporaryFile->createTemporaryCopy($sourceFileTemporary);
+        $chainImagePath = $this->temporaryFileUtility->createTemporaryCopy($sourceFileTemporary);
 
         foreach ($modeConfig['step'] as $stepKey => $stepConfig) {
             $stepResult = GeneralUtility::makeInstance(StepResult::class)
@@ -144,7 +144,7 @@ class OptimizeImageService
         $providerEnabledCounter = 0;
 
         // work on chain image copy
-        $tmpBestImagePath = $this->temporaryFile->createTemporaryCopy($chainImagePath);
+        $tmpBestImagePath = $this->temporaryFileUtility->createTemporaryCopy($chainImagePath);
 
         foreach ($providers as $providerKey => $providerConfig) {
             $providerConfig['providerKey'] = $providerKey;
@@ -156,7 +156,7 @@ class OptimizeImageService
 
             $providerEnabledCounter++;
 
-            $tmpWorkingImagePath = $this->temporaryFile->createTemporaryCopy($chainImagePath);
+            $tmpWorkingImagePath = $this->temporaryFileUtility->createTemporaryCopy($chainImagePath);
             $optimizationProvider = GeneralUtility::makeInstance(OptimizationProvider::class);
 
             $providerResult = $optimizationProvider->optimize($tmpWorkingImagePath, $providerConfigurator);

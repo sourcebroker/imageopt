@@ -9,35 +9,21 @@ LICENSE.txt file that was distributed with this source code.
 */
 
 use Exception;
-use SourceBroker\Imageopt\Resource\PageRepository;
 use SourceBroker\Imageopt\Utility\ArrayUtility;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class Configurator implements SingletonInterface
+class Configurator
 {
     protected array $config;
 
     protected array $providers = [];
 
-    public function __construct(array $config = [])
+    public function __construct(array $config, bool $init = false)
     {
         $this->config = $config;
-    }
-
-    public function setConfig(array $config): void
-    {
-        $this->config = $config;
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function setConfigByPage(?int $pageId): void
-    {
-        $this->config = $this->getConfigForPage($pageId);
+        if ($init) {
+            $this->init();
+        }
     }
 
     public function getConfig(): array
@@ -57,7 +43,7 @@ class Configurator implements SingletonInterface
         });
     }
 
-    public function init(?array $config): void
+    protected function init(): void
     {
         if (count($this->config) === 0) {
             throw new Exception('Configuration not set for ImageOpt ext');
@@ -146,31 +132,6 @@ class Configurator implements SingletonInterface
         }
 
         return $config;
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function getConfigForPage(int $rootPageForTsConfig = null): array
-    {
-        if ($rootPageForTsConfig === null) {
-            $rootPageForTsConfigRow = GeneralUtility::makeInstance(PageRepository::class)
-                ->getRootPages();
-            if ($rootPageForTsConfigRow !== null) {
-                $rootPageForTsConfig = $rootPageForTsConfigRow['uid'];
-            } else {
-                throw new Exception('Can not detect the root page to generate page TSconfig.', 1501700792654);
-            }
-        }
-        $serviceConfig = GeneralUtility::makeInstance(TypoScriptService::class)
-            ->convertTypoScriptArrayToPlainArray(BackendUtility::getPagesTSconfig($rootPageForTsConfig));
-        if (isset($serviceConfig['tx_imageopt'])) {
-            return $serviceConfig['tx_imageopt'];
-        }
-        throw new Exception(
-            'There is no TSconfig for tx_imageopt in the root page id=' . $rootPageForTsConfig,
-            1501692752398
-        );
     }
 
     protected function isConfigBranchValid(string $branch): bool

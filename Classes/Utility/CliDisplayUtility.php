@@ -8,25 +8,16 @@ For the full copyright and license information, please read the
 LICENSE.txt file that was distributed with this source code.
 */
 
-use SourceBroker\Imageopt\Configuration\Configurator;
 use SourceBroker\Imageopt\Domain\Model\ModeResult;
 use SourceBroker\Imageopt\Domain\Model\ProviderResult;
 use SourceBroker\Imageopt\Domain\Model\StepResult;
-use SourceBroker\Imageopt\Service\OptimizeImagesFalService;
 
 class CliDisplayUtility
 {
-    private Configurator $configurator;
-    private OptimizeImagesFalService $optimizeImagesFalService;
-
-    public function __construct(Configurator $configurator, OptimizeImagesFalService $optimizeImagesFalService)
-    {
-        $this->configurator = $configurator;
-    }
     /**
      * Displays optimization result in CLI window
      */
-    public function displayOptionResult(ModeResult $modeResult): string
+    public static function displayOptionResult(ModeResult $modeResult, array $config): string
     {
         $output = '---------------------------------------------------------------------' . "\n" .
             "File \t\t| In : " . $modeResult->getFileAbsolutePath() . "\n";
@@ -39,7 +30,7 @@ class CliDisplayUtility
             $output .= "Mode\t\t| Name: " . $modeResult->getName() . "\n" .
                 "\t\t| Description: " . $modeResult->getDescription() . "\n" .
                 "\t\t| Number of steps: " . $modeResult->getStepResults()->count() . "\n\n";
-            $stepProvidersInfo = self::getStepResult($modeResult);
+            $stepProvidersInfo = self::getStepResult($modeResult, $config);
             if (!empty($stepProvidersInfo)) {
                 $output .= implode("\n", $stepProvidersInfo);
             }
@@ -59,10 +50,8 @@ class CliDisplayUtility
         return $output . "\n";
     }
 
-    protected function getStepResult(ModeResult $modeResult): array
+    protected static function getStepResult(ModeResult $modeResult, array $config): array
     {
-        $config = $this->configurator->getConfig();
-
         $stepProvidersInfo = [];
         /** @var StepResult[] $stepResults */
         $stepResults = $modeResult->getStepResults()->toArray();
@@ -75,9 +64,9 @@ class CliDisplayUtility
             foreach ($providerResults as $providerResult) {
                 if ($providerResult->isExecutedSuccessfully()) {
                     $providers[] = $providerResult->getName() . ': ' . round(
-                        $providerResult->getOptimizationPercentage(),
-                        2
-                    ) . '%';
+                            $providerResult->getOptimizationPercentage(),
+                            2
+                        ) . '%';
                     $providersScore[] = $providerResult->getOptimizationPercentage();
                 } else {
                     $error = [];
