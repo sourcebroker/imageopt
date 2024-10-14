@@ -17,6 +17,16 @@ master
     ``_processed_`` folder and truncate ``sys_file_processedfile`` table.
     You can also use backend module Maintenance->Remove Temporary Assets->Button Delete files in /fileadmin/_processed_/
 
+7.0.2
+~~~~~
+
+1) [BUGFIX] Cleanup TCA from deprecated showRecordFieldList.
+
+7.0.1
+~~~~~
+
+1) [BUGFIX] Move addStaticFile from ext_tables to TCA/Overrides for sys_template. Replace TYPO3_MODE to TYPO3.
+
 7.0.0
 ~~~~~
 
