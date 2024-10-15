@@ -1,197 +1,84 @@
 {
-  "name": "sourcebroker/imageopt",
-  "description": "Optimize images created/resized by TYPO3 so they take less space. Safe as it does not optimize original images.",
-  "license": [
-    "GPL-2.0-or-later"
-  ],
-  "type": "typo3-cms-extension",
-  "require": {
-    "php": "^8.1",
-    "ext-curl": "*",
-    "ext-json": "*",
-    "typo3/cms-core": "^12.4"
-  },
-  "require-dev": {
-    "doctrine/dbal": "^2.13.5 || ^3.6.2",
-    "ergebnis/composer-normalize": "^2.28.3",
-    "friendsofphp/php-cs-fixer": "^3.14.1",
-    "helmich/typo3-typoscript-lint": "^3.1.0",
-    "php-coveralls/php-coveralls": "^2.6.0",
-    "phpstan/extension-installer": "^1.3.1",
-    "phpstan/phpstan": "^1.10.29",
-    "phpstan/phpstan-phpunit": "^1.3.13",
-    "phpstan/phpstan-strict-rules": "^1.5.1",
-    "phpunit/phpunit": "^9.6.10",
-    "saschaegerer/phpstan-typo3": "^1.8.9",
-    "seld/jsonlint": "^1.10.0",
-    "squizlabs/php_codesniffer": "^3.7.2",
-    "symfony/dotenv": "^5.4",
-    "symfony/yaml": "^5.3.6 || ^6.2.0",
-    "typo3/cms-fluid-styled-content": "^12.4.0",
-    "typo3/coding-standards": "^0.6.1",
-    "typo3/testing-framework": "^7.0"
-  },
-  "suggest": {
-    "typo3/cms-scheduler": "^12.4"
-  },
-  "autoload": {
-    "psr-4": {
-      "SourceBroker\\Imageopt\\": "Classes/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "SourceBroker\\Imageopt\\Tests\\": "Tests"
-    }
-  },
-  "config": {
-    "allow-plugins": {
-      "ergebnis/composer-normalize": true,
-      "phpstan/extension-installer": true,
-      "typo3/class-alias-loader": true,
-      "typo3/cms-composer-installers": true
-    },
-    "bin-dir": ".Build/bin",
-    "preferred-install": {
-      "*": "dist"
-    },
-    "sort-packages": true,
-    "vendor-dir": ".Build/vendor"
-  },
-  "extra": {
-    "typo3/cms": {
-      "extension-key": "imageopt",
-      "web-dir": ".Build/Web"
-    }
-  },
-  "scripts": {
-    "post-autoload-dump": [
-      "@link-extension"
-    ],
-    "ci": [
-      "@ci:static"
-    ],
-    "ci:composer:normalize": "@composer normalize --no-check-lock --dry-run",
-    "ci:composer:psr-verify": "@composer dumpautoload --optimize --strict-psr",
-    "ci:coverage": [
-      "@ci:coverage:unit",
-      "@ci:coverage:functional"
-    ],
-    "ci:coverage:functional": [
-      "@coverage:create-directories",
-      ".Build/bin/phpunit -c .Build/vendor/typo3/testing-framework/Resources/Core/Build/FunctionalTests.xml --whitelist Classes --coverage-php=.Build/coverage/functional.cov Tests/Functional"
-    ],
-    "ci:coverage:merge": [
-      "@coverage:create-directories",
-      "@php tools/phpcov merge --clover=./.Build/logs/clover.xml ./.Build/coverage/"
-    ],
-    "ci:coverage:unit": [
-      "@coverage:create-directories",
-      ".Build/bin/phpunit -c .Build/vendor/typo3/testing-framework/Resources/Core/Build/UnitTests.xml --whitelist Classes --coverage-php=.Build/coverage/unit.cov Tests/Unit"
-    ],
-    "ci:dynamic": [
-      "@ci:tests"
-    ],
-    "ci:json:lint": "find . ! -path '*.Build/*' ! -path '*.test/*' -name '*.json' | xargs -r php .Build/bin/jsonlint -q",
-    "ci:php": [
-      "@ci:php:cs-fixer",
-      "@ci:php:lint",
-      "@ci:php:sniff",
-      "@ci:php:stan"
-    ],
-    "ci:php:cs-fixer": "php-cs-fixer fix --config .php-cs-fixer.php -v --dry-run --using-cache no --diff",
-    "ci:php:lint": "find .*.php *.php Classes Configuration Tests -name '*.php' -print0 | xargs -r -0 -n 1 -P 4 php -l",
-    "ci:php:sniff": "phpcs Classes Configuration Tests",
-    "ci:php:stan": "phpstan --no-progress",
-    "ci:static": [
-      "@ci:composer:normalize",
-      "@ci:json:lint",
-      "@ci:php:cs-fixer",
-      "@ci:php:lint",
-      "@ci:php:sniff",
-      "@ci:php:stan",
-      "@ci:ts:lint",
-      "@ci:yaml:lint"
-    ],
-    "ci:tests": [
-      "@ci:tests:unit",
-      "@ci:tests:functional"
-    ],
-    "ci:tests:functional": "find 'Tests/Functional' -wholename '*Test.php' | parallel --gnu 'echo; echo \"Running functional test suite {}\"; .Build/bin/phpunit -c .Build/vendor/typo3/testing-framework/Resources/Core/Build/FunctionalTests.xml {}';",
-    "ci:tests:unit": ".Build/bin/phpunit -c .Build/vendor/typo3/testing-framework/Resources/Core/Build/UnitTests.xml Tests/Unit",
-    "ci:ts:lint": "typoscript-lint -c Configuration/TsLint.yml --ansi -n --fail-on-warnings -vvv Configuration/TypoScript",
-    "ci:yaml:lint": "find . ! -path '*.Build/*' ! -path '*.test/*' -regextype egrep -regex '.*.ya?ml$' | xargs -r php ./.Build/bin/yaml-lint",
-    "coverage:create-directories": "mkdir -p .Build/logs .Build/coverage",
-    "docs:generate": [
-      "@docs:generate:pullimage",
-      "docker run --rm ghcr.io/t3docs/render-documentation show-shell-commands > tempfile.sh; echo 'dockrun_t3rd makehtml' >> tempfile.sh; bash tempfile.sh; rm tempfile.sh"
-    ],
-    "docs:generate:pullimage": [
-      "docker pull ghcr.io/t3docs/render-documentation",
-      "docker tag ghcr.io/t3docs/render-documentation t3docs/render-documentation"
-    ],
-    "fix:composer:normalize": "@composer normalize --no-check-lock",
-    "fix:php": [
-      "@fix:php:cs",
-      "@fix:php:sniff"
-    ],
-    "fix:php:cs": "php-cs-fixer fix --config .php-cs-fixer.php",
-    "fix:php:sniff": "phpcbf Classes Configuration Tests",
-    "link-extension": [
-      "@php -r 'is_dir($extFolder=__DIR__.\"/.Build/Web/typo3conf/ext/\") || mkdir($extFolder, 0777, true);'",
-      "@php -r 'file_exists($extFolder=__DIR__.\"/.Build/Web/typo3conf/ext/tea\") || symlink(__DIR__,$extFolder);'"
-    ],
-    "phpstan:baseline": ".Build/bin/phpstan  --generate-baseline=phpstan-baseline.neon",
-    "prepare-release": [
-      "rm .gitignore",
-      "rm -rf .Build",
-      "rm -rf .ddev",
-      "rm -rf .github",
-      "rm -rf .gitlab",
-      "rm -rf Build",
-      "rm -rf Tests",
-      "rm -rf tools",
-      "rm .editorconfig",
-      "rm .gitattributes",
-      "rm .php-cs-fixer.php",
-      "rm .eslintignore",
-      "rm .eslintrc.json",
-      "rm .prettierrc.js",
-      "rm package.json",
-      "rm stylelint.config.js",
-      "rm phive.xml",
-      "rm phpstan-baseline.neon",
-      "rm phpstan.neon",
-      "rm phpcs.xml"
-    ]
-  },
-  "scripts-descriptions": {
-    "ci": "Runs all dynamic and static code checks.",
-    "ci:composer:normalize": "Checks the composer.json.",
-    "ci:composer:psr-verify": "Verifies PSR-4 namespace correctness.",
-    "ci:coverage:functional": "Generates the code coverage report for functional tests.",
-    "ci:coverage:merge": "Merges the code coverage reports for unit and functional tests.",
-    "ci:coverage:unit": "Generates the code coverage report for unit tests.",
-    "ci:dynamic": "Runs all PHPUnit tests (unit and functional).",
-    "ci:json:lint": "Lints the JSON files.",
-    "ci:php": "Runs all static checks for the PHP files.",
-    "ci:php:cs-fixer": "Checks the code style with the PHP Coding Standards Fixer (PHP-CS-Fixer).",
-    "ci:php:lint": "Lints the PHP files for syntax errors.",
-    "ci:php:sniff": "Checks the code style with PHP_CodeSniffer (PHPCS).",
-    "ci:php:stan": "Checks the PHP types using PHPStan.",
-    "ci:static": "Runs all static code checks (syntax, style, types).",
-    "ci:tests": "Runs all PHPUnit tests (unit and functional).",
-    "ci:tests:functional": "Runs the functional tests.",
-    "ci:tests:unit": "Runs the unit tests.",
-    "ci:ts:lint": "Lints the TypoScript files.",
-    "ci:yaml:lint": "Lints the YAML files.",
-    "coverage:create-directories": "Creates the directories needed for recording and merging the code coverage reports.",
-    "docs:generate": "Renders the extension ReST documentation.",
-    "fix:composer:normalize": "Normalizes composer.json file content.",
-    "fix:php": "Runs all fixers for the PHP code.",
-    "fix:php:cs": "Fixes the code style with PHP-CS-Fixer.",
-    "fix:php:sniff": "Fixes the code style with PHP_CodeSniffer.",
-    "phpstan:baseline": "Updates the PHPStan baseline file to match the code.",
-    "prepare-release": "Removes development-only files in preparation of a TER release."
-  }
+	"name": "sourcebroker/imageopt",
+	"description": "Optimize images created/resized by TYPO3 so they take less space. Safe as it does not optimize original images.",
+	"license": [
+		"GPL-2.0-or-later"
+	],
+	"type": "typo3-cms-extension",
+	"require": {
+		"typo3/cms-core": "^12.4 || ^13.3",
+		"ext-curl": "*",
+		"ext-json": "*"
+	},
+	"require-dev": {
+		"ergebnis/composer-normalize": "^2.29.0",
+		"friendsofphp/php-cs-fixer": "^3.57.1",
+		"phpstan/extension-installer": "^1.2.0",
+		"phpstan/phpstan": "^1.10.67",
+		"phpstan/phpstan-phpunit": "^1.3.16",
+		"phpstan/phpstan-strict-rules": "^1.5.5",
+		"phpunit/phpunit": "^10.5.17",
+		"saschaegerer/phpstan-typo3": "^1.10.0",
+		"seld/jsonlint": "^1.10.2",
+		"symfony/yaml": "^5.4 || ^6.0 || ^7.0",
+		"typo3/cms-install": "^12.4.16 || ^13.3",
+		"typo3/coding-standards": "^0.8",
+		"typo3/testing-framework": "^8.2.1",
+		"symfony/dotenv":"^5 || ^6 || ^7",
+		"webmozart/assert": "^1.11.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"SourceBroker\\Imageopt\\": "Classes/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"SourceBroker\\Imageopt\\Tests\\": "Tests"
+		}
+	},
+	"replace": {
+		"typo3-ter/imageopt": "self.version"
+	},
+	"config": {
+		"allow-plugins": {
+			"ergebnis/composer-normalize": true,
+			"phpstan/extension-installer": true,
+			"typo3/class-alias-loader": true,
+			"typo3/cms-composer-installers": true
+		},
+		"bin-dir": ".Build/bin",
+		"vendor-dir": ".Build/vendor"
+	},
+	"extra": {
+		"typo3/cms": {
+			"extension-key": "imageopt",
+			"web-dir": ".Build/public"
+		}
+	},
+	"scripts": {
+		"ci": [
+			"@ci:composer:normalize",
+			"@ci:tests:unit"
+		],
+		"ci:composer:normalize": "@composer normalize --dry-run",
+		"ci:json:lint": "find ./composer.json ./Resources ./Configuration -name '*.json' | xargs -r php .Build/bin/jsonlint -q",
+		"ci:php:cs-fixer": ".Build/bin/php-cs-fixer fix --config .php-cs-fixer.php -v --dry-run --using-cache no --diff",
+		"ci:php:lint": "find . -name '*.php' -not -path './.Build/*' -not -path './.cache/*' -not -path './.ddev/*' -not -path './.test/*' -not -path './.Documentation/*'  -not -path './.Documentation-GENERATED-temp/*' -print0 | xargs -0 -n 1 -P 4 php -l > /dev/null",
+		"ci:php:stan": ".Build/bin/phpstan --no-progress",
+		"ci:tests:create-directories": "mkdir -p .Build/public/typo3temp/var/tests",
+		"ci:tests:functional": [
+			"@ci:tests:create-directories",
+			"typo3DatabaseHost=db typo3DatabaseUsername=root typo3DatabasePassword=root typo3DatabaseName=db .Build/bin/phpunit -c ./Build/phpunit/FunctionalTests.xml"
+		],
+		"ci:tests:postman": "bash ./Build/postman/run.sh",
+		"ci:tests:unit": ".Build/bin/phpunit -c ./Build/phpunit/UnitTests.xml",
+		"ci:yaml:lint": "find ./Resources ./Configuration -regextype egrep -regex '.*.ya?ml$' | xargs -r php .Build/bin/yaml-lint",
+		"fix": [
+			"@fix:php:cs-fixer",
+			"@fix:composer:normalize"
+		],
+		"fix:composer:normalize": "@composer normalize",
+		"fix:php:cs-fixer": ".Build/bin/php-cs-fixer fix --config .php-cs-fixer.php"
+	}
 }

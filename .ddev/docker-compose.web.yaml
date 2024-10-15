@@ -4,6 +4,10 @@ services:
             - EXTENSION_KEY=imageopt
             - PACKAGE_NAME=sourcebroker/imageopt
 
+            - TYPO3_VERSIONS=12 13
+            - TYPO3_VERSIONS_12_PHP=8.1 8.2 8.3
+            - TYPO3_VERSIONS_13_PHP=8.2 8.3
+
             - TYPO3_INSTALL_DB_DRIVER=mysqli
             - TYPO3_INSTALL_DB_USER=root
             - TYPO3_INSTALL_DB_PASSWORD=root
@@ -12,8 +16,7 @@ services:
             - TYPO3_INSTALL_DB_UNIX_SOCKET=
             - TYPO3_INSTALL_DB_USE_EXISTING=0
             - TYPO3_INSTALL_ADMIN_USER=admin
-            - TYPO3_INSTALL_ADMIN_PASSWORD=password
-            - TYPO3_INSTALL_SITE_NAME=EXT:imageopt Dev Environment
+            - TYPO3_INSTALL_ADMIN_PASSWORD=Password1!
+            - TYPO3_INSTALL_SITE_NAME=EXT:imageopt
             - TYPO3_INSTALL_SITE_SETUP_TYPE=site
             - TYPO3_INSTALL_WEB_SERVER_CONFIG=apache
-

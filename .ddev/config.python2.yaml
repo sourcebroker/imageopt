@@ -1,0 +1,2 @@
+#ddev-generated
+webimage_extra_packages: [build-essential, mime-support]
