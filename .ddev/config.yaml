@@ -1,7 +1,7 @@
 name: imageopt
 type: php
 docroot: .test
-php_version: "7.4"
+php_version: "8.2"
 composer_version: 2
 webserver_type: apache-fpm
 router_http_port: "80"
@@ -10,9 +10,37 @@ xdebug_enabled: false
 additional_hostnames:
     - v10.imageopt
     - v11.imageopt
+    - v12.imageopt
 additional_fqdns: []
 provider: default
 use_dns_when_possible: true
+webimage_extra_packages:
+    - mc
+    - imagemagick
+    - build-essential
+    - webp
+    - parallel
+    - jpegoptim
+    - optipng
+    - pngcrush
+    - gifsicle
+    - pngquant
+    - libjpeg-turbo-progs
+    - libperl6-slurp-perl
+    - libfile-slurp-perl
+    - cmake
+    - libtool
+    - libwebp-dev
+    - unzip
+    - autoconf
+    - automake
+    - m4
+    - nasm
+    - pkg-config
+    - libpng-dev
+    - libmagickcore-dev
+    - libmagickwand-dev
+    - pngnq
 hooks:
     post-start:
         - exec: sudo sed -i '1s/^/TERM=xterm-256color\n/' ~/.bashrc

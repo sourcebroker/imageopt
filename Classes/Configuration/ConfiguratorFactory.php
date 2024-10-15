@@ -40,7 +40,9 @@ class ConfiguratorFactory
                 throw new \Exception('Can not detect the root page to generate page TSconfig.', 1501700792654);
             }
         }
-        $serviceConfig = $this->typoScriptService->convertTypoScriptArrayToPlainArray(BackendUtility::getPagesTSconfig($rootPageForTsConfig));
+        $serviceConfig = $this->typoScriptService->convertTypoScriptArrayToPlainArray(
+            BackendUtility::getPagesTSconfig($rootPageForTsConfig)
+        );
 
         if (isset($serviceConfig['tx_imageopt'])) {
             return $serviceConfig['tx_imageopt'];

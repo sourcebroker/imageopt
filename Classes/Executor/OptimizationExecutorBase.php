@@ -28,7 +28,10 @@ class OptimizationExecutorBase implements OptimizationExecutorInterface
     public function getExecutorQuality(Configurator $configurator): string
     {
         $executorQuality = '';
-        if (!empty($configurator->getOption('options.quality.options')) && !empty($configurator->getOption('options.quality.value'))) {
+        if (
+            !empty($configurator->getOption('options.quality.options'))
+            && !empty($configurator->getOption('options.quality.value'))
+        ) {
             $quality = $configurator->getOption('options.quality.value');
             $options = $configurator->getOption('options.quality.options');
             if (isset($options[$quality])) {

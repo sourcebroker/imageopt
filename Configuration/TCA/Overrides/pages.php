@@ -1,9 +1,8 @@
 <?php
 
-defined('TYPO3') or die('Access denied.');
+defined('TYPO3') || die('Access denied.');
 
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-
 
 ExtensionManagementUtility::registerPageTSConfigFile(
     'imageopt',

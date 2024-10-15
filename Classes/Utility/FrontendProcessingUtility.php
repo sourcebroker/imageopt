@@ -21,14 +21,15 @@ class FrontendProcessingUtility
         if ($file instanceof FileReference || $file instanceof File) {
             $file = $file->getPublicUrl();
         }
-        return !empty($GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_imageopt.']['imageProcessing.']['force'])
+        $imageProcessing = $GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_imageopt.']['imageProcessing.'] ?? null;
+        return !empty($imageProcessing['force'])
             && (
-                empty($GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_imageopt.']['imageProcessing.']['exclusion.']['regexp'])
+                empty($imageProcessing['exclusion.']['regexp'])
                 || (
-                    !empty($GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_imageopt.']['imageProcessing.']['exclusion.']['regexp'])
+                    !empty($imageProcessing['exclusion.']['regexp'])
                     &&
                     !preg_match(
-                        $GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_imageopt.']['imageProcessing.']['exclusion.']['regexp'],
+                        $imageProcessing['exclusion.']['regexp'],
                         $file
                     )
                 )

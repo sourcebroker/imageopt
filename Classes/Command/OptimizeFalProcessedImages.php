@@ -26,7 +26,8 @@ class OptimizeFalProcessedImages extends BaseCommand
                 'numberOfImagesToProcess',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'The number of images to process on single task call.'
+                'The number of images to process on single task call.',
+                50
             )
             ->addOption(
                 'rootPageForTsConfig',
@@ -45,12 +46,8 @@ class OptimizeFalProcessedImages extends BaseCommand
         $io = new SymfonyStyle($input, $output);
         $io->title($this->getDescription());
 
-        $numberOfImagesToProcess = $input->hasOption('numberOfImagesToProcess') && $input->getOption('numberOfImagesToProcess') !== null
-            ? $input->getOption('numberOfImagesToProcess')
-            : 50;
-        $rootPageForTsConfig = $input->hasOption('rootPageForTsConfig') && $input->getOption('rootPageForTsConfig') !== null
-            ? $input->getOption('rootPageForTsConfig')
-            : null;
+        $numberOfImagesToProcess = $input->getOption('numberOfImagesToProcess');
+        $rootPageForTsConfig = $input->getOption('rootPageForTsConfig');
 
         $configurator = $this->configurationFactory->createForPage($rootPageForTsConfig);
         $optimizeImagesFalService = $this->optimizeImageServiceFactory->createFalService($configurator);

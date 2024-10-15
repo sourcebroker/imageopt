@@ -22,9 +22,9 @@ class ConfiguratorTest extends UnitTestCase
     {
         /** @var \SourceBroker\Imageopt\Configuration\Configurator $configurator */
         $configurator = $this->getMockBuilder(Configurator::class)
+            ->setConstructorArgs([$this->staticTsConfig()])
             ->setMethods(null)
             ->getMock();
-        $configurator->setConfig($this->staticTsConfig());
 
         self::assertEquals($expected, $configurator->getOption($given));
     }
@@ -44,7 +44,7 @@ class ConfiguratorTest extends UnitTestCase
                 null,
             ],
             'nonWorkingConfigurationArrayConfig' => [
-                ['value'],
+                'value',
                 null,
             ],
             'nonWorkingConfigurationNotExistingConfig' => [

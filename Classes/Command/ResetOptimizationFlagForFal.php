@@ -36,7 +36,7 @@ class ResetOptimizationFlagForFal extends BaseCommand
     {
         $io = new SymfonyStyle($input, $output);
         $io->title($this->getDescription());
-        $rootPageForTsConfig = $input->hasOption('rootPageForTsConfig') && $input->getOption('rootPageForTsConfig') !== null ? $input->getOption('rootPageForTsConfig') : null;
+        $rootPageForTsConfig = $input->getOption('rootPageForTsConfig');
 
         $configurator = $this->configurationFactory->createForPage($rootPageForTsConfig);
         $optimizeImagesFalService = $this->optimizeImageServiceFactory->createFalService($configurator);

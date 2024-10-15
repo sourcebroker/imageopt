@@ -34,7 +34,8 @@ class FileProcessingService extends Resource\Service\FileProcessingService
         $configuration
     ): Resource\ProcessedFile {
         if (FrontendProcessingUtility::isAllowedToForceFrontendImageProcessing($fileObject->getPublicUrl())) {
-            // Make additionalParameters at least one space to count that towards hash in order to make TYPO3 to process image even if it would not be processed without this.
+            // Make additionalParameters at least one space to count that towards hash
+            // in order to make TYPO3 to process image even if it would not be processed without this.
             $configuration['additionalParameters'] = ' ';
         }
         return parent::processFile($fileObject, $targetStorage, $taskType, $configuration);

@@ -45,29 +45,39 @@ class OptimizeImagesFolderService
     public function getFilesToOptimize(int $numberOfFiles = 20): array
     {
         $filesToOptimize = [];
-        $directories = explode(',', preg_replace('/\s+/', '', $this->configurator->getOption('directories')));
+        $directories = $this->parseDirectories();
+
         foreach ($directories as $directoryWithExtensions) {
-            if ($directoryWithExtensions !== '') {
-                if (strpos($directoryWithExtensions, '*') !== false) {
-                    list($directory, $stringExtensions) = explode('*', $directoryWithExtensions);
-                    if (is_dir(Environment::getPublicPath() . '/' . $directory)) {
-                        $directoryIterator = new RecursiveDirectoryIterator(Environment::getPublicPath() . '/' . $directory);
-                        $iterator = new RecursiveIteratorIterator($directoryIterator);
-                        $regexIterator = new RegexIterator(
-                            $iterator,
-                            '/\.(' . strtolower($stringExtensions) . '|' . strtoupper($stringExtensions) . ')$/'
-                        );
-                        foreach ($regexIterator as $file) {
-                            $perms = fileperms($file->getPathname());
-                            // Get only 6xx because 7xx are already optimized.
-                            if (!($perms & 0x0040 && (($perms & 0x0800) ? false : true))) {
-                                $filesToOptimize[] = $file->getPathname();
-                            }
-                            if (count($filesToOptimize) > $numberOfFiles) {
-                                break 2;
-                            }
-                        }
-                    }
+            if (empty($directoryWithExtensions)) {
+                continue;
+            }
+
+            if (!strpos($directoryWithExtensions, '*')) {
+                continue;
+            }
+
+            [$directory, $stringExtensions] = explode('*', $directoryWithExtensions);
+
+            if (!is_dir(Environment::getPublicPath() . '/' . $directory)) {
+                continue;
+            }
+
+            $directoryIterator = new RecursiveDirectoryIterator(
+                Environment::getPublicPath() . '/' . $directory
+            );
+            $iterator = new RecursiveIteratorIterator($directoryIterator);
+            $regexIterator = new RegexIterator(
+                $iterator,
+                '/\.(' . strtolower($stringExtensions) . '|' . strtoupper($stringExtensions) . ')$/'
+            );
+            foreach ($regexIterator as $file) {
+                $perms = fileperms($file->getPathname());
+                // Get only 6xx because 7xx are already optimized.
+                if (!($perms & 0x0040 && (($perms & 0x0800) ? false : true))) {
+                    $filesToOptimize[] = $file->getPathname();
+                }
+                if (count($filesToOptimize) > $numberOfFiles) {
+                    break 2;
                 }
             }
         }
@@ -84,7 +94,8 @@ class OptimizeImagesFolderService
         foreach ($modeResults as $modeResult) {
             if ($modeResult->isExecutedSuccessfully()) {
                 if ((int)$modeResult->getSizeBefore() > (int)$modeResult->getSizeAfter()) {
-                    // Modes can create files with different names than original like example.jpg -> example.jpg.webp, example.jpg.avif, etc.
+                    // Modes can create files with different names
+                    // than original like example.jpg -> example.jpg.webp, example.jpg.avif, etc.
                     // We need to use updateWithLocalFile only for the name that match the original file name
 
                     // Temporary resized images are created by default with permission 644.
@@ -121,5 +132,13 @@ class OptimizeImagesFolderService
                 }
             }
         }
+    }
+
+    protected function parseDirectories(): array
+    {
+        return explode(
+            ',',
+            preg_replace('/\s+/', '', $this->configurator->getOption('directories'))
+        );
     }
 }

@@ -44,73 +44,6 @@ class Configurator
         });
     }
 
-    protected function init(): void
-    {
-        if (count($this->config) === 0) {
-            throw new Exception('Configuration not set for ImageOpt ext');
-        }
-
-        if (!$this->isConfigBranchValid('providers')) {
-            throw new Exception('Providers are not defined.');
-        }
-
-        if (!$this->isConfigBranchValid('mode')) {
-            throw new Exception('Optimize modes are not defined.');
-        }
-
-        foreach ($this->config['mode'] as $name => &$optimizeMode) {
-            if (empty($optimizeMode['name'])) {
-                $optimizeMode['name'] = $name;
-            }
-        }
-        foreach ($this->config['providers'] as $providerKey => $providerValues) {
-            if ($this->isConfigBranchValid('providersDefault')) {
-                $this->config['providers'][$providerKey] = ArrayUtility::arrayMergeAsFallback(
-                    $providerValues,
-                    $this->config['providersDefault']
-                );
-            }
-            if (!is_array($providerValues['executors'])) {
-                throw new Exception('No executors defined for provider: "' . $providerKey . '""');
-            }
-            foreach ($providerValues['executors'] as $executorKey => $executorValues) {
-                if ($this->isConfigBranchValid('executorsDefault')) {
-                    $this->config['providers'][$providerKey]['executors'][$executorKey] = ArrayUtility::arrayMergeAsFallback(
-                        $executorValues,
-                        $this->config['executorsDefault']
-                    );
-                }
-            }
-        }
-
-        foreach ($this->config['providers'] as $providerKey => $providerValues) {
-            foreach (GeneralUtility::trimExplode(',', $providerValues['type']) as $type) {
-                $providerTyped = $providerValues;
-                $providerTyped['type'] = $type;
-                if (isset($providerTyped['typeOverride'][$type])) {
-                    \TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule(
-                        $providerTyped,
-                        $providerValues['typeOverride'][$type]
-                    );
-                }
-                unset($providerTyped['typeOverride']);
-                if (!isset($this->providers[$type])) {
-                    $this->providers[$type] = [];
-                }
-                $this->providers[$type][$providerKey] = $providerTyped;
-            }
-        }
-
-        foreach ($this->config['providers'] as $providerKey => $providerValues) {
-            if (empty($providerValues['type'])) {
-                throw new Exception('Provider types is not set for provider: "' . $providerKey . '"');
-            }
-            if (empty($providerValues['fileType'])) {
-                throw new Exception('File types is not set for provider: "' . $providerKey . '"');
-            }
-        }
-    }
-
     /**
      * @return array|string|null
      */
@@ -135,8 +68,95 @@ class Configurator
         return $config;
     }
 
+    protected function init(): void
+    {
+        $this->validateConfig();
+        $this->setupOptimizeModes();
+        $this->setupProviders();
+        $this->initializeTypedProviders();
+        $this->validateProviderTypes();
+    }
+
     protected function isConfigBranchValid(string $branch): bool
     {
         return !empty($this->config[$branch]) && is_array($this->config[$branch]);
+    }
+
+    protected function validateConfig(): void
+    {
+        if (count($this->config) === 0) {
+            throw new Exception('Configuration not set for ImageOpt ext');
+        }
+
+        if (!$this->isConfigBranchValid('providers')) {
+            throw new Exception('Providers are not defined.');
+        }
+
+        if (!$this->isConfigBranchValid('mode')) {
+            throw new Exception('Optimize modes are not defined.');
+        }
+    }
+
+    protected function setupOptimizeModes(): void
+    {
+        foreach ($this->config['mode'] as $name => &$optimizeMode) {
+            if (empty($optimizeMode['name'])) {
+                $optimizeMode['name'] = $name;
+            }
+        }
+    }
+
+    protected function setupProviders(): void
+    {
+        foreach ($this->config['providers'] as $providerKey => $providerValues) {
+            if ($this->isConfigBranchValid('providersDefault')) {
+                $this->config['providers'][$providerKey] = ArrayUtility::arrayMergeAsFallback(
+                    $providerValues,
+                    $this->config['providersDefault']
+                );
+            }
+            if (!is_array($providerValues['executors'])) {
+                throw new Exception('No executors defined for provider: "' . $providerKey . '""');
+            }
+            foreach ($providerValues['executors'] as $executorKey => $executorValues) {
+                if ($this->isConfigBranchValid('executorsDefault')) {
+                    $this->config['providers'][$providerKey]['executors'][$executorKey]
+                        = ArrayUtility::arrayMergeAsFallback($executorValues, $this->config['executorsDefault']);
+                }
+            }
+        }
+    }
+
+    protected function initializeTypedProviders(): void
+    {
+        foreach ($this->config['providers'] as $providerKey => $providerValues) {
+            foreach (GeneralUtility::trimExplode(',', $providerValues['type']) as $type) {
+                $providerTyped = $providerValues;
+                $providerTyped['type'] = $type;
+                if (isset($providerTyped['typeOverride'][$type])) {
+                    \TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule(
+                        $providerTyped,
+                        $providerValues['typeOverride'][$type]
+                    );
+                }
+                unset($providerTyped['typeOverride']);
+                if (!isset($this->providers[$type])) {
+                    $this->providers[$type] = [];
+                }
+                $this->providers[$type][$providerKey] = $providerTyped;
+            }
+        }
+    }
+
+    protected function validateProviderTypes(): void
+    {
+        foreach ($this->config['providers'] as $providerKey => $providerValues) {
+            if (empty($providerValues['type'])) {
+                throw new Exception('Provider types is not set for provider: "' . $providerKey . '"');
+            }
+            if (empty($providerValues['fileType'])) {
+                throw new Exception('File types is not set for provider: "' . $providerKey . '"');
+            }
+        }
     }
 }

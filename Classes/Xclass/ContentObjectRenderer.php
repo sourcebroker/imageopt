@@ -23,7 +23,9 @@ class ContentObjectRenderer extends \TYPO3\CMS\Frontend\ContentObject\ContentObj
      *      file.width = 20
      *  }
      *
-     * @param string|File|FileReference $file A "imgResource" TypoScript data type. Either a TypoScript file resource, a file or a file reference object or the string GIFBUILDER. See description above.
+     * @param string|File|FileReference $file A "imgResource" TypoScript data type.
+     * Either a TypoScript file resource, a file or a file reference object or the string GIFBUILDER.
+     * See description above.
      * @param array $fileArray TypoScript properties for the imgResource type
      * @return array|null Returns info-array
      */
@@ -35,7 +37,8 @@ class ContentObjectRenderer extends \TYPO3\CMS\Frontend\ContentObject\ContentObj
                 $fileArray['params.']
             ) : $fileArray['params'];
             unset($fileArray['params.']);
-            // Make $fileArray['params'] at least one space to count that towards hash in order to make TYPO3 to process image even if it would not be processed without this.
+            // Make $fileArray['params'] at least one space to count that towards hash
+            // in order to make TYPO3 to process image even if it would not be processed without this.
             $fileArray['params'] = $paramsValue . ' ';
         }
         return parent::getImgResource($file, $fileArray);

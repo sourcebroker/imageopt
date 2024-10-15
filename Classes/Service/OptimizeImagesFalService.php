@@ -77,8 +77,12 @@ class OptimizeImagesFalService
         $executedSuccessfully = true;
         foreach ($modeResults as $modeResult) {
             if ($modeResult->isExecutedSuccessfully()) {
-                if ($modeResult->getOutputFilename() === $sourceFile && (int)$modeResult->getSizeBefore() > (int)$modeResult->getSizeAfter()) {
-                    // Modes can create files with different names than original like example.jpg -> example.jpg.webp, example.jpg.avif, etc.
+                if (
+                    $modeResult->getOutputFilename() === $sourceFile
+                    && (int)$modeResult->getSizeBefore() > (int)$modeResult->getSizeAfter()
+                ) {
+                    // Modes can create files with different names
+                    // than original like example.jpg -> example.jpg.webp, example.jpg.avif, etc.
                     // We need to use updateWithLocalFile only for the name that match the original file name
                     $processedFal->updateWithLocalFile(
                         $this->temporaryFileUtility->createTemporaryCopy($sourceFile)

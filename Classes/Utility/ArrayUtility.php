@@ -35,7 +35,8 @@ class ArrayUtility
     {
         $root = [];
         $node =& $root;
-        while ($part = array_shift($plainArray)) {
+        $part = array_shift($plainArray);
+        while ($part !== null) {
             if (empty($plainArray)) {
                 $node = $part;
             } else {

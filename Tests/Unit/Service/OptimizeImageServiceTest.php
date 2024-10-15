@@ -37,6 +37,7 @@ class OptimizeImageServiceTest extends UnitTestCase
         foreach (glob($this->typo3WebRoot . '/typo3temp/var/transient/tx_imageopt*') as $tempFile) {
             unlink($tempFile);
         }
+        parent::tearDown();
     }
 
     /**
@@ -49,23 +50,27 @@ class OptimizeImageServiceTest extends UnitTestCase
      */
     public function allProvidersSuccessful(string $image)
     {
-        fwrite(STDOUT, "\n" . 'TEST if all providers was executed succesfully.' . "\n");
+        fwrite(STDOUT, "\n" . 'TEST if all providers was executed successfully.' . "\n");
+
+        $temporaryFileUtility = GeneralUtility::makeInstance(TemporaryFileUtility::class);
+        $configurator = $this->pluginConfigurator();
 
         /** @var OptimizeImageService $optimizeImageService */
         $optimizeImageService = $this->getMockBuilder(OptimizeImageService::class)
-            ->setConstructorArgs([$this->pluginConfig()])
+            ->setConstructorArgs([$configurator, $temporaryFileUtility])
             ->setMethods(null)
             ->getMock();
 
-        $temporaryFileUtility = GeneralUtility::makeInstance(TemporaryFileUtility::class);
-        $originalImagePath = $this->typo3WebRoot . '/typo3conf/ext/imageopt/Tests/Fixture/Unit/OptimizeImageService/' . $image;
+        $originalImagePath = $this->typo3WebRoot;
+        $originalImagePath .= '/typo3conf/ext/imageopt/Tests/Fixture/Unit/OptimizeImageService/';
+        $originalImagePath .= $image;
         $imageForTesting = $temporaryFileUtility->createTemporaryCopy($originalImagePath);
         if (is_readable($imageForTesting)) {
             /** @var ModeResult[] $optimizationResults */
             $optimizationResults = $optimizeImageService->optimize($imageForTesting);
 
             foreach ($optimizationResults as $optimizationResult) {
-                fwrite(STDOUT, CliDisplayUtility::displayOptionResult($optimizationResult, $this->pluginConfig()));
+                fwrite(STDOUT, CliDisplayUtility::displayOptionResult($optimizationResult, $configurator->getConfig()));
             }
 
             /** @var ModeResult $defaultResult */
@@ -91,14 +96,18 @@ class OptimizeImageServiceTest extends UnitTestCase
     {
         fwrite(STDOUT, "\n" . 'TEST has been optimized.' . "\n");
 
+        $temporaryFileUtility = GeneralUtility::makeInstance(TemporaryFileUtility::class);
+        $configurator = $this->pluginConfigurator();
+
         /** @var OptimizeImageService $optimizeImageService */
         $optimizeImageService = $this->getMockBuilder(OptimizeImageService::class)
-            ->setConstructorArgs([$this->pluginConfig()])
+            ->setConstructorArgs([$configurator, $temporaryFileUtility])
             ->setMethods(null)
             ->getMock();
 
-        $temporaryFileUtility = GeneralUtility::makeInstance(TemporaryFileUtility::class);
-        $originalImagePath = $this->typo3WebRoot . '/typo3conf/ext/imageopt/Tests/Fixture/Unit/OptimizeImageService/' . $image;
+        $originalImagePath = $this->typo3WebRoot;
+        $originalImagePath .= '/typo3conf/ext/imageopt/Tests/Fixture/Unit/OptimizeImageService/';
+        $originalImagePath .= $image;
         $imageForTesting = $temporaryFileUtility->createTemporaryCopy($originalImagePath);
         if (is_readable($imageForTesting)) {
             $originalFileSize = filesize($imageForTesting);
@@ -106,7 +115,7 @@ class OptimizeImageServiceTest extends UnitTestCase
             $optimizationResults = $optimizeImageService->optimize($imageForTesting);
 
             foreach ($optimizationResults as $optimizationResult) {
-                fwrite(STDOUT, CliDisplayUtility::displayOptionResult($optimizationResult, $this->pluginConfig()));
+                fwrite(STDOUT, CliDisplayUtility::displayOptionResult($optimizationResult, $configurator->getConfig()));
             }
 
             $defaultOptimizationResult = $optimizationResults['default'] ?? reset($optimizationResults);
@@ -141,17 +150,17 @@ class OptimizeImageServiceTest extends UnitTestCase
      * @return array
      * @throws Exception
      */
-    public function pluginConfig()
+    public function pluginConfigurator(): Configurator
     {
-        $configurator = GeneralUtility::makeInstance(Configurator::class);
-        $typoscriptParser = GeneralUtility::makeInstance(TypoScriptParser::class);
-        $typoscriptParser->parse(
+        $typoScriptParser = GeneralUtility::makeInstance(TypoScriptParser::class);
+        $typoScriptService = GeneralUtility::makeInstance(TypoScriptService::class);
+
+        $typoScriptParser->parse(
             file_get_contents(realpath(__DIR__ . '/../../../Configuration/TsConfig/Page/tx_imageopt.tsconfig')) . "\n" .
             file_get_contents(realpath(__DIR__ . '/../../../Configuration/TsConfig/Page/tx_imageopt__0100.tsconfig'))
         );
 
-        $rawConfig = GeneralUtility::makeInstance(TypoScriptService::class)
-            ->convertTypoScriptArrayToPlainArray($typoscriptParser->setup)['tx_imageopt'];
+        $rawConfig = $typoScriptService->convertTypoScriptArrayToPlainArray($typoScriptParser->setup)['tx_imageopt'];
         $rawConfig['providersDefault']['enabled'] = 1;
         if (file_exists(__DIR__ . '/../../../.env')) {
             $dotenv = new Dotenv();
@@ -175,8 +184,7 @@ class OptimizeImageServiceTest extends UnitTestCase
             $nestedConfig = ArrayUtility::plainToNested($plainConfig);
             \TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule($rawConfig, $nestedConfig, false);
         }
-        $configurator->setConfig($rawConfig);
-        $configurator->init();
-        return $configurator->getConfig();
+
+        return GeneralUtility::makeInstance(Configurator::class, $rawConfig, true);
     }
 }

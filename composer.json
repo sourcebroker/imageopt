@@ -6,10 +6,10 @@
   ],
   "type": "typo3-cms-extension",
   "require": {
-    "php": "~8.2.0",
-    "typo3/cms-core": "^12.4",
+    "php": "^8.1",
     "ext-curl": "*",
-    "ext-json": "*"
+    "ext-json": "*",
+    "typo3/cms-core": "^12.4"
   },
   "require-dev": {
     "doctrine/dbal": "^2.13.5 || ^3.6.2",
@@ -32,7 +32,7 @@
     "typo3/testing-framework": "^7.0"
   },
   "suggest": {
-    "typo3/cms-scheduler": "^11.5"
+    "typo3/cms-scheduler": "^12.4"
   },
   "autoload": {
     "psr-4": {
@@ -46,10 +46,10 @@
   },
   "config": {
     "allow-plugins": {
-      "typo3/cms-composer-installers": true,
-      "typo3/class-alias-loader": true,
       "ergebnis/composer-normalize": true,
-      "phpstan/extension-installer": true
+      "phpstan/extension-installer": true,
+      "typo3/class-alias-loader": true,
+      "typo3/cms-composer-installers": true
     },
     "bin-dir": ".Build/bin",
     "preferred-install": {
@@ -60,7 +60,6 @@
   },
   "extra": {
     "typo3/cms": {
-      "app-dir": ".Build",
       "extension-key": "imageopt",
       "web-dir": ".Build/Web"
     }

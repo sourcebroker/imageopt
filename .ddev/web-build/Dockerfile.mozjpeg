@@ -1,0 +1,13 @@
+ENV extension=mozjpeg
+
+RUN cd ~ && \
+    wget https://github.com/mozilla/mozjpeg/archive/v3.3.1.tar.gz && \
+    tar xf v3.3.1.tar.gz && \
+    cd mozjpeg-3.3.1 && \
+    autoreconf -fiv && \
+    mkdir build && \
+    cd build && \
+    sh ../configure --disable-shared --enable-static --prefix=/usr/local && \
+    sudo make install && \
+    sudo ln -s /usr/local/bin/cjpeg /usr/bin/mozjpeg-cjpeg && \
+    sudo ln -s /usr/local/bin/jpegtran /usr/bin/mozjpeg-jpegtran
