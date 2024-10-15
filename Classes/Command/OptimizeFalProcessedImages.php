@@ -10,15 +10,12 @@ LICENSE.txt file that was distributed with this source code.
 
 use Exception;
 use InvalidArgumentException;
-use SourceBroker\Imageopt\Configuration\Configurator;
-use SourceBroker\Imageopt\Service\OptimizeImagesFalService;
 use SourceBroker\Imageopt\Utility\CliDisplayUtility;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class OptimizeFalProcessedImages extends BaseCommand
 {
@@ -55,14 +52,9 @@ class OptimizeFalProcessedImages extends BaseCommand
             ? $input->getOption('rootPageForTsConfig')
             : null;
 
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $configurator = $this->configurationFactory->createForPage($rootPageForTsConfig);
+        $optimizeImagesFalService = $this->optimizeImageServiceFactory->createFalService($configurator);
 
-        $configurator = GeneralUtility::makeInstance(Configurator::class);
-        $configurator->setConfigByPage($rootPageForTsConfig);
-        $configurator->init();
-
-        /** @var OptimizeImagesFalService $optimizeImagesFalService */
-        $optimizeImagesFalService = $objectManager->get(OptimizeImagesFalService::class, $configurator->getConfig());
         $extensions = GeneralUtility::trimExplode(',', $configurator->getOption('extensions'), true);
         $filesToProcess = $optimizeImagesFalService->getFalProcessedFilesToOptimize(
             $numberOfImagesToProcess,

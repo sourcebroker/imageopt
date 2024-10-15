@@ -4,6 +4,15 @@ services:
     autoconfigure: true
     public: false
 
+  SourceBroker\Imageopt\:
+    resource: '../Classes/*'
+    exclude:
+      - '../Classes/Domain/Model/*'
+      - '../Classes/Configuration/Configurator.php'
+      - '../Classes/Service/OptimizeImageService.php'
+      - '../Classes/Service/OptimizeImagesFalService.php'
+      - '../Classes/Service/OptimizeImagesFolderService.php'
+
   SourceBroker\Imageopt\Command\OptimizeFolderImages:
     tags:
       - name: 'console.command'
@@ -21,7 +30,6 @@ services:
       - name: 'console.command'
         command: 'imageopt:resetoptimizationflagforfal'
         schedulable: false
-
 
   SourceBroker\Imageopt\Command\ResetOptimizationFlagForFolders:
     tags:

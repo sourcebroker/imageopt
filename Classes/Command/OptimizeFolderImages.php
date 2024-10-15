@@ -10,15 +10,12 @@ LICENSE.txt file that was distributed with this source code.
 
 use Exception;
 use InvalidArgumentException;
-use SourceBroker\Imageopt\Configuration\Configurator;
-use SourceBroker\Imageopt\Service\OptimizeImagesFolderService;
 use SourceBroker\Imageopt\Utility\CliDisplayUtility;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
+
 
 class OptimizeFolderImages extends BaseCommand
 {
@@ -51,17 +48,8 @@ class OptimizeFolderImages extends BaseCommand
         $numberOfImagesToProcess = $input->hasOption('numberOfImagesToProcess') && $input->getOption('numberOfImagesToProcess') !== null ? $input->getOption('numberOfImagesToProcess') : 50;
         $rootPageForTsConfig = $input->hasOption('rootPageForTsConfig') && $input->getOption('rootPageForTsConfig') !== null ? $input->getOption('rootPageForTsConfig') : null;
 
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-
-        $configurator = GeneralUtility::makeInstance(Configurator::class);
-        $configurator->setConfigByPage($rootPageForTsConfig);
-        $configurator->init();
-
-        /** @var OptimizeImagesFolderService $optimizeImagesFolderService */
-        $optimizeImagesFolderService = $objectManager->get(
-            OptimizeImagesFolderService::class,
-            $configurator->getConfig()
-        );
+        $configurator = $this->configurationFactory->createForPage($rootPageForTsConfig);
+        $optimizeImagesFolderService = $this->optimizeImageServiceFactory->createFolderService($configurator);
 
         $filesToProcess = $optimizeImagesFolderService->getFilesToOptimize($numberOfImagesToProcess);
         if (!empty($filesToProcess)) {

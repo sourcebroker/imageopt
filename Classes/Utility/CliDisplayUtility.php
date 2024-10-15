@@ -64,9 +64,9 @@ class CliDisplayUtility
             foreach ($providerResults as $providerResult) {
                 if ($providerResult->isExecutedSuccessfully()) {
                     $providers[] = $providerResult->getName() . ': ' . round(
-                        $providerResult->getOptimizationPercentage(),
-                        2
-                    ) . '%';
+                            $providerResult->getOptimizationPercentage(),
+                            2
+                        ) . '%';
                     $providersScore[] = $providerResult->getOptimizationPercentage();
                 } else {
                     $error = [];
