@@ -7,9 +7,9 @@
 	"type": "typo3-cms-extension",
 	"require": {
 		"php": "^8.2",
-		"typo3/cms-core": "^12.4 || ^13.3",
 		"ext-curl": "*",
-		"ext-json": "*"
+		"ext-json": "*",
+		"typo3/cms-core": "^12.4 || ^13.3"
 	},
 	"require-dev": {
 		"ergebnis/composer-normalize": "^2.29.0",
@@ -21,12 +21,15 @@
 		"phpunit/phpunit": "^10.5.17",
 		"saschaegerer/phpstan-typo3": "^1.10.0",
 		"seld/jsonlint": "^1.10.2",
+		"symfony/dotenv": "^5 || ^6 || ^7",
 		"symfony/yaml": "^5.4 || ^6.0 || ^7.0",
 		"typo3/cms-install": "^12.4.16 || ^13.3",
 		"typo3/coding-standards": "^0.8",
 		"typo3/testing-framework": "^8.2.1",
-		"symfony/dotenv": "^5 || ^6 || ^7",
 		"webmozart/assert": "^1.11.0"
+	},
+	"replace": {
+		"typo3-ter/imageopt": "self.version"
 	},
 	"autoload": {
 		"psr-4": {
@@ -37,9 +40,6 @@
 		"psr-4": {
 			"SourceBroker\\Imageopt\\Tests\\": "Tests"
 		}
-	},
-	"replace": {
-		"typo3-ter/imageopt": "self.version"
 	},
 	"config": {
 		"allow-plugins": {
@@ -72,7 +72,6 @@
 			"@ci:tests:create-directories",
 			"typo3DatabaseHost=db typo3DatabaseUsername=root typo3DatabasePassword=root typo3DatabaseName=db .Build/bin/phpunit -c ./Build/phpunit/FunctionalTests.xml"
 		],
-		"ci:tests:postman": "bash ./Build/postman/run.sh",
 		"ci:tests:unit": ".Build/bin/phpunit -c ./Build/phpunit/UnitTests.xml",
 		"ci:yaml:lint": "find ./Resources ./Configuration -regextype egrep -regex '.*.ya?ml$' | xargs -r php .Build/bin/yaml-lint",
 		"fix": [
