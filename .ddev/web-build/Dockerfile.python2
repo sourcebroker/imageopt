@@ -1,0 +1,14 @@
+#ddev-generated
+# Adapted from https://www.fadedbee.com/2024/01/18/installing-python2-on-debian-12-bookworm/
+ARG TARGETPLATFORM
+RUN debian_shapshot_url="https://snapshot.debian.org/archive/debian/20240830T023056Z/pool/main" && \
+    mkdir -p /tmp/python2 && \
+    wget -O /tmp/python2/libffi7.deb $debian_shapshot_url/libf/libffi/libffi7_3.3-6_${TARGETPLATFORM##linux/}.deb && \
+    wget -O /tmp/python2/libssl1.1.deb $debian_shapshot_url/o/openssl/libssl1.1_1.1.1w-0+deb11u1_${TARGETPLATFORM##linux/}.deb && \
+    wget -O /tmp/python2/libpython2.7-minimal.deb $debian_shapshot_url/p/python2.7/libpython2.7-minimal_2.7.18-8+deb11u1_${TARGETPLATFORM##linux/}.deb && \
+    wget -O /tmp/python2/libpython2.7-stdlib.deb $debian_shapshot_url/p/python2.7/libpython2.7-stdlib_2.7.18-8+deb11u1_${TARGETPLATFORM##linux/}.deb && \
+    wget -O /tmp/python2/python2.7-minimal.deb $debian_shapshot_url/p/python2.7/python2.7-minimal_2.7.18-8+deb11u1_${TARGETPLATFORM##linux/}.deb && \
+    wget -O /tmp/python2/python2.7.deb $debian_shapshot_url/p/python2.7/python2.7_2.7.18-8+deb11u1_${TARGETPLATFORM##linux/}.deb && \
+    dpkg -i /tmp/python2/*.deb && \
+    rm -rf /tmp/python2 && \
+    ln -s /usr/bin/python2.7 /usr/local/bin/python

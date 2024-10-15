@@ -1,9 +1,7 @@
 ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
-RUN wget https://packages.sury.org/php/apt.gpg -O /etc/apt/trusted.gpg.d/php-sury.gpg
-
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install \
+RUN DEBIAN_FRONTEND=noninteractive apt-get install \
     -y -o Dpkg::Options::="--force-confold" --no-install-recommends --no-install-suggests \
     parallel \
     jpegoptim \
@@ -15,9 +13,9 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install \
     libperl6-slurp-perl \
     libfile-slurp-perl
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install \
+RUN DEBIAN_FRONTEND=noninteractive apt-get install \
     -y -o Dpkg::Options::="--force-confold" --no-install-recommends --no-install-suggests \
-    build-essential cmake libtool libwebp-dev unzip python-dev autoconf automake m4 nasm pkg-config \
+    build-essential cmake libtool libwebp-dev unzip autoconf automake m4 nasm pkg-config \
     libpng-dev libmagickcore-dev libmagickwand-dev pngnq libtool unzip
 
 RUN cd ~ && \

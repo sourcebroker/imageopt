@@ -1,0 +1,9 @@
+name: python2
+repository: stasadev/ddev-python2
+version: v1.0.0
+install_date: "2024-10-15T11:23:33+02:00"
+project_files:
+    - config.python2.yaml
+    - web-build/Dockerfile.python2
+global_files: []
+removal_actions: []
