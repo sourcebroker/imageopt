@@ -5,9 +5,6 @@ namespace SourceBroker\Imageopt\Tests\Unit\Configuration;
 use SourceBroker\Imageopt\Configuration\Configurator;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
-/**
- * Tests for configurator
- */
 class ConfiguratorTest extends UnitTestCase
 {
     /**
@@ -20,19 +17,14 @@ class ConfiguratorTest extends UnitTestCase
      */
     public function configuratorOptionsAreCorrectlyReturned($given, $expected): void
     {
-        /** @var \SourceBroker\Imageopt\Configuration\Configurator $configurator */
-        $configurator = $this->getMockBuilder(Configurator::class)
-            ->setConstructorArgs([$this->staticTsConfig()])
-            ->setMethods(null)
-            ->getMock();
-
+        $configurator = new Configurator($this->staticTsConfig());
         self::assertEquals($expected, $configurator->getOption($given));
     }
 
     /**
      * Data provider for configuratorOptionsAreCorrectlyReturned
      */
-    public function configuratorOptionsAreCorrectlyReturnedDataProvider(): array
+    public static function configuratorOptionsAreCorrectlyReturnedDataProvider(): array
     {
         return [
             'nonWorkingConfigurationNullConfig' => [
