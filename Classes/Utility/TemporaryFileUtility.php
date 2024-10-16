@@ -30,7 +30,7 @@ class TemporaryFileUtility implements SingletonInterface
     {
         $tempFilename = GeneralUtility::tempnam(
             $this->tempFilePrefix,
-            pathinfo($originalFileAbsolutePath, PATHINFO_EXTENSION)
+            '.' . pathinfo($originalFileAbsolutePath, PATHINFO_EXTENSION)
         );
         if (!$this->isUnlinkTempFilesRegisteredAsShutdownFunction) {
             register_shutdown_function([$this, 'unlinkTempFiles']);
