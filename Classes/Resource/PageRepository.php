@@ -22,6 +22,6 @@ class PageRepository
             ->where(
                 $queryBuilder->expr()->eq('pid', 0),
                 $queryBuilder->expr()->eq('deleted', 0)
-            )->execute()->fetch();
+            )->executeQuery()->fetchAssociative();
     }
 }

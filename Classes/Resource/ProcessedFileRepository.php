@@ -37,9 +37,11 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable('sys_file_processedfile');
 
-        $extensionsQuery = array_map(function ($extension) use ($queryBuilder): string {
+        $extensionsQuery = array_map(static function ($extension) use ($queryBuilder): string {
             return $queryBuilder->expr()->like('identifier', $queryBuilder->createNamedParameter('%.' . $extension));
         }, $extensions);
+
+        $storages = array_map(static fn ($storage) => $storage['uid'], $this->getStorages());
 
         return $queryBuilder
             ->select('*')
@@ -51,11 +53,24 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
                     $queryBuilder->createNamedParameter(0, PDO::PARAM_INT)
                 ),
                 $queryBuilder->expr()->neq('task_type', $queryBuilder->createNamedParameter('Image.Preview')),
-                $queryBuilder->expr()->neq('identifier', $queryBuilder->createNamedParameter(''))
+                $queryBuilder->expr()->neq('identifier', $queryBuilder->createNamedParameter('')),
+                $queryBuilder->expr()->in('storage', $storages)
             )->andWhere(
-                $queryBuilder->expr()->orX(
+                $queryBuilder->expr()->or(
                     ...$extensionsQuery
                 )
-            )->setMaxResults($limit)->execute()->fetchAll();
+            )->setMaxResults($limit)->executeQuery()->fetchAllAssociative();
+    }
+
+    protected function getStorages(): array
+    {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable('sys_file_storage');
+
+        $queryBuilder
+            ->select('*')
+            ->from('sys_file_storage');
+
+        return $queryBuilder->executeQuery()->fetchAllAssociative();
     }
 }
