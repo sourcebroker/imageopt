@@ -9,7 +9,7 @@
 		"php": "^8.2",
 		"ext-curl": "*",
 		"ext-json": "*",
-		"typo3/cms-core": "^12.4 || ^13.3"
+		"typo3/cms-core": "^12.4"
 	},
 	"require-dev": {
 		"ergebnis/composer-normalize": "^2.29.0",
@@ -23,7 +23,7 @@
 		"seld/jsonlint": "^1.10.2",
 		"symfony/dotenv": "^5 || ^6 || ^7",
 		"symfony/yaml": "^5.4 || ^6.0 || ^7.0",
-		"typo3/cms-install": "^12.4.16 || ^13.3",
+		"typo3/cms-install": "^12.4.16",
 		"typo3/coding-standards": "^0.8",
 		"typo3/testing-framework": "^8.2.1",
 		"webmozart/assert": "^1.11.0"
