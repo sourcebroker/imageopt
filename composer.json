@@ -6,7 +6,7 @@
 	],
 	"type": "typo3-cms-extension",
 	"require": {
-		"php": "^8.2",
+		"php": ">=8.1",
 		"ext-curl": "*",
 		"ext-json": "*",
 		"typo3/cms-core": "^12.4"
