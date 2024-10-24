@@ -8,7 +8,6 @@ For the full copyright and license information, please read the
 LICENSE.txt file that was distributed with this source code.
 */
 
-use PDO;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -41,7 +40,7 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
             return $queryBuilder->expr()->like('identifier', $queryBuilder->createNamedParameter('%.' . $extension));
         }, $extensions);
 
-        $storages = array_map(static fn ($storage) => $storage['uid'], $this->getStorages());
+        $storages = array_map(static fn($storage) => $storage['uid'], $this->getStorages());
 
         return $queryBuilder
             ->select('*')
@@ -50,7 +49,7 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
                 $queryBuilder->expr()->isNotNull('name'),
                 $queryBuilder->expr()->eq(
                     'tx_imageopt_executed',
-                    $queryBuilder->createNamedParameter(0, PDO::PARAM_INT)
+                    $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)
                 ),
                 $queryBuilder->expr()->neq('task_type', $queryBuilder->createNamedParameter('Image.Preview')),
                 $queryBuilder->expr()->neq('identifier', $queryBuilder->createNamedParameter('')),
@@ -60,6 +59,16 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
                     ...$extensionsQuery
                 )
             )->setMaxResults($limit)->executeQuery()->fetchAllAssociative();
+    }
+
+    public function findNotOptimized(int $limit, array $extensions): array
+    {
+        $processedFiles = [];
+        foreach ($this->findNotOptimizedRaw($limit, $extensions) as $processedFileRaw) {
+            $processedFiles[] = $this->createDomainObject($processedFileRaw);
+        }
+
+        return $processedFiles;
     }
 
     protected function getStorages(): array

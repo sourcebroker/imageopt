@@ -10,6 +10,4 @@ For the full copyright and license information, please read the
 LICENSE.txt file that was distributed with this source code.
 */
 
-class StepResultRepository extends Repository
-{
-}
+class StepResultRepository extends Repository {}

@@ -8,7 +8,6 @@ For the full copyright and license information, please read the
 LICENSE.txt file that was distributed with this source code.
 */
 
-use InvalidArgumentException;
 use SourceBroker\Imageopt\Utility\FrontendProcessingUtility;
 use TYPO3\CMS\Core\Resource;
 use TYPO3\CMS\Core\Resource\FileInterface;
@@ -25,7 +24,7 @@ class FileProcessingService extends Resource\Service\FileProcessingService
      * @param array $configuration
      *
      * @return Resource\ProcessedFile
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function processFile(
         FileInterface $fileObject,

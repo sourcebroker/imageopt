@@ -8,8 +8,6 @@ For the full copyright and license information, please read the
 LICENSE.txt file that was distributed with this source code.
 */
 
-use Exception;
-use InvalidArgumentException;
 use SourceBroker\Imageopt\Utility\CliDisplayUtility;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -38,8 +36,8 @@ class OptimizeFalProcessedImages extends BaseCommand
     }
 
     /**
-     * @throws InvalidArgumentException
-     * @throws Exception
+     * @throws \InvalidArgumentException
+     * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

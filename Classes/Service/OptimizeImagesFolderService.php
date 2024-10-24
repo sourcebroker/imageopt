@@ -8,11 +8,8 @@ For the full copyright and license information, please read the
 LICENSE.txt file that was distributed with this source code.
 */
 
-use Exception;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use RegexIterator;
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Dto\Image;
 use SourceBroker\Imageopt\Domain\Repository\ModeResultRepository;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
@@ -62,11 +59,11 @@ class OptimizeImagesFolderService
                 continue;
             }
 
-            $directoryIterator = new RecursiveDirectoryIterator(
+            $directoryIterator = new \RecursiveDirectoryIterator(
                 Environment::getPublicPath() . '/' . $directory
             );
-            $iterator = new RecursiveIteratorIterator($directoryIterator);
-            $regexIterator = new RegexIterator(
+            $iterator = new \RecursiveIteratorIterator($directoryIterator);
+            $regexIterator = new \RegexIterator(
                 $iterator,
                 '/\.(' . strtolower($stringExtensions) . '|' . strtoupper($stringExtensions) . ')$/'
             );
@@ -85,11 +82,11 @@ class OptimizeImagesFolderService
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function optimizeFolderFile(string $absoluteFilePath): array
     {
-        $modeResults = $this->optimizeImageService->optimize($absoluteFilePath);
+        $modeResults = $this->optimizeImageService->optimize(Image::createFromPath($absoluteFilePath));
 
         foreach ($modeResults as $modeResult) {
             if ($modeResult->isExecutedSuccessfully()) {
@@ -125,7 +122,7 @@ class OptimizeImagesFolderService
     {
         $directories = explode(',', preg_replace('/\s+/', '', $this->configurator->getOption('directories')));
         foreach ($directories as $directoryWithExtensions) {
-            if (strpos($directoryWithExtensions, '*') !== false) {
+            if (str_contains($directoryWithExtensions, '*')) {
                 $directory = trim(explode('*', $directoryWithExtensions)[0], '/\\');
                 if (is_dir(Environment::getPublicPath() . '/' . $directory)) {
                     exec('find ' . Environment::getPublicPath() . '/' . $directory . ' -type f -exec chmod u-x {} \;');

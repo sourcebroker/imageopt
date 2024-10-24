@@ -18,6 +18,4 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
 /**
  * The repository for ProviderResults
  */
-class ProviderResultRepository extends Repository
-{
-}
+class ProviderResultRepository extends Repository {}

@@ -9,8 +9,13 @@ LICENSE.txt file that was distributed with this source code.
 */
 
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Dto\Image;
 use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
+use SourceBroker\Imageopt\Resource\CroppedFileRepository;
+use SourceBroker\Imageopt\Utility\GraphicalFunctionsUtility;
+use TYPO3\CMS\Core\Imaging\ImageManipulation\Area;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
 {
@@ -33,7 +38,7 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
         return $result;
     }
 
-    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): void
+    protected function process(string $inputImageAbsolutePath, Image $image, ExecutorResult $executorResult): void
     {
         $options = $this->apiOptions;
         $options['wait'] = true;
@@ -47,10 +52,25 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
                 $options[$key] = $value === 'true';
             }
         }
+
+        $resize = [];
+
+        if (!empty($this->providerSettings['processOriginalFile']) && $image->hasProcessingConfiguration()) {
+            $processingConfiguration = $image->getProcessingConfiguration();
+            if (!$this->createCroppedFile($inputImageAbsolutePath, $image, $options)) {
+                copy($image->getOriginalImagePath(), $inputImageAbsolutePath);
+            }
+
+            $resize = [
+                'resize' => $this->getResizeSettings($inputImageAbsolutePath, $processingConfiguration),
+            ];
+        }
+
         $post = [
             'file' => curl_file_create($inputImageAbsolutePath),
-            'data' => json_encode($options, JSON_THROW_ON_ERROR),
+            'data' => json_encode(array_merge($options, $resize)),
         ];
+
         $result = $this->request($post, $this->url['upload'], ['type' => 'upload']);
         $executorResult->setCommand('URL: ' . $this->url['upload'] . " \n" . 'POST: ' . $post['data']);
         if ($result['success']) {
@@ -71,6 +91,77 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
             $executorResult->setErrorMessage($result['error']);
             $executorResult->setCommandStatus('Failed');
         }
+    }
+
+    protected function getResizeSettings(string $imageFilePath, array $processingConfiguration): array
+    {
+        /** @var GraphicalFunctionsUtility $graphicalFunctions */
+        $graphicalFunctions = GeneralUtility::makeInstance(GraphicalFunctionsUtility::class);
+        $info = $graphicalFunctions->getImageDimensionsWithoutExtension($imageFilePath);
+        $data = $graphicalFunctions->getImageScale(
+            $info,
+            $processingConfiguration['width'] ?? '',
+            $processingConfiguration['height'] ?? '',
+            $graphicalFunctions->getConfigurationForImageCropScale($processingConfiguration)
+        );
+
+        [$width, $height] = $data;
+
+        if ($data['crs']) {
+            if (!$data['origW']) {
+                $data['origW'] = $data[0];
+            }
+            if (!$data['origH']) {
+                $data['origH'] = $data[1];
+            }
+
+            $finalWidth = min($width, $data['origW']);
+            $finalHeight = min($height, $data['origH']);
+
+            [$originalWidth, $originalHeight] = $info;
+
+            $originalRatio = $originalWidth / $originalHeight;
+            $finalRatio = $finalWidth / $finalHeight;
+
+            $focusX = $processingConfiguration['focusPoint']['x'] ?? 0.5;
+            $focusY = $processingConfiguration['focusPoint']['y'] ?? 0.5;
+
+            if ($originalRatio > $finalRatio) {
+                $width = $originalHeight * $finalRatio;
+                $scale = $finalWidth / $width * 100;
+                $height = $originalHeight;
+            } else {
+                $width = $originalWidth;
+                $height = $originalWidth / $finalRatio;
+                $scale = $finalHeight / $height * 100;
+            }
+
+            $offsetX = $originalWidth - $width;
+            if ($originalWidth - ($originalWidth * $focusX) >= $width / 2) {
+                $offsetX = (int)(($originalWidth * $focusX) - $width / 2);
+            }
+            $offsetX = max($offsetX, 0);
+
+            $offsetY = $originalHeight - $height;
+            if ($originalHeight - ($originalHeight * $focusY) >= $height / 2) {
+                $offsetY = (int)(($originalHeight * $focusY) - $height / 2);
+            }
+            $offsetY = max($offsetY, 0);
+
+            return [
+                'width' => $width,
+                'height' => $height,
+                'x' => $offsetX,
+                'y' => $offsetY,
+                'scale' => $scale,
+                'strategy' => 'crop',
+            ];
+        }
+        return [
+            'width' => $width,
+            'height' => $height,
+            'strategy' => 'exact',
+        ];
     }
 
     protected function request($data, string $url, array $options = []): array
@@ -114,5 +205,53 @@ class OptimizationExecutorRemoteKraken extends OptimizationExecutorRemote
             ];
         }
         return $result;
+    }
+
+    protected function createCroppedFile(string $imageFilePath, Image $image, array $requestOptions): ?string
+    {
+        $processingConfiguration = $image->getProcessingConfiguration();
+        if (!empty($processingConfiguration['crop'])) {
+            $crop = $processingConfiguration['crop'];
+            if ($crop instanceof Area) {
+                $croppedFileRepository = GeneralUtility::makeInstance(CroppedFileRepository::class);
+                $croppedFile = $croppedFileRepository->findOneByProcessedFileAndProvider($image->getProcessedFile(), 'kraken');
+
+                if ($croppedFile->isOutdated()) {
+                    $post = [
+                        'file' => curl_file_create($image->getOriginalImagePath()),
+                        'data' => json_encode(
+                            array_merge(
+                                $requestOptions,
+                                [
+                                    'resize' => [
+                                        'strategy' => 'crop',
+                                        'width' => $crop->getWidth(),
+                                        'height' => $crop->getHeight(),
+                                        'x' => $crop->getOffsetLeft(),
+                                        'y' =>  $crop->getOffsetTop(),
+                                    ],
+                                ]
+                            ),
+                            JSON_THROW_ON_ERROR
+                        ),
+                    ];
+
+                    $result = $this->request($post, $this->url['upload'], ['type' => 'upload']);
+                    if ($result['success'] && isset($result['response']['kraked_url'])) {
+                        $download = $this->getFileFromRemoteServer($imageFilePath, $result['response']['kraked_url']);
+                        if ($download) {
+                            $croppedFile->updateWithLocalFile($imageFilePath);
+                        }
+                    }
+                    $croppedFileRepository->add($croppedFile);
+                } else {
+                    copy($croppedFile->getForLocalProcessing(false), $imageFilePath);
+                }
+
+                return true;
+            }
+        }
+
+        return false;
     }
 }

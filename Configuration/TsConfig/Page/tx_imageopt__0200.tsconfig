@@ -9,6 +9,9 @@ tx_imageopt {
                 10 {
                     providerType = lossless
                     description = Kraken loosless image optimisation.
+                    providerSettings {
+                        processOriginalFile = 0
+                    }
                 }
             }
 

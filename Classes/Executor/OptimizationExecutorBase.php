@@ -9,6 +9,7 @@ LICENSE.txt file that was distributed with this source code.
 */
 
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Dto\Image;
 use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -18,7 +19,7 @@ class OptimizationExecutorBase implements OptimizationExecutorInterface
      * Optimize image using shell executable
      * Return the temporary file path
      */
-    public function optimize(string $imageAbsolutePath, Configurator $configurator): ExecutorResult
+    public function optimize(string $inputImageAbsolutePath, Image $image, Configurator $configurator): ExecutorResult
     {
         $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
         $executorResult->setExecutedSuccessfully(false);

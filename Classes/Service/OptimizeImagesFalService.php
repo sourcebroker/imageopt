@@ -8,8 +8,8 @@ For the full copyright and license information, please read the
 LICENSE.txt file that was distributed with this source code.
 */
 
-use Exception;
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Dto\Image;
 use SourceBroker\Imageopt\Domain\Repository\ModeResultRepository;
 use SourceBroker\Imageopt\Resource\ProcessedFileRepository;
 use SourceBroker\Imageopt\Utility\TemporaryFileUtility;
@@ -35,7 +35,7 @@ class OptimizeImagesFalService
 
     /**
      * OptimizeImagesFalService constructor.
-     * @throws Exception
+     * @throws \Exception
      */
     public function __construct(
         Configurator $configurator,
@@ -54,16 +54,13 @@ class OptimizeImagesFalService
     }
 
     /**
-     * @param $notOptimizedFileRaw array $notOptimizedProcessedFileRaw,
-     * @throws Exception
+     * @throws \Exception
      */
-    public function optimizeFalProcessedFile(array $notOptimizedFileRaw): array
+    public function optimizeFalProcessedFile(ProcessedFile $processedFal): array
     {
-        /** @var ProcessedFile $processedFal */
-        $processedFal = $this->falProcessedFileRepository->findByIdentifier($notOptimizedFileRaw['uid']);
         $sourceFile = $processedFal->getForLocalProcessing(false);
 
-        $modeResults = $this->optimizeImageService->optimize($sourceFile);
+        $modeResults = $this->optimizeImageService->optimize(Image::createFromProcessedFile($processedFal));
 
         foreach ($modeResults as $modeResult) {
             if ($modeResult->getFileDoesNotExist()) {
@@ -111,7 +108,7 @@ class OptimizeImagesFalService
 
     public function getFalProcessedFilesToOptimize(int $numberOfImagesToProcess, array $extensions): array
     {
-        return $this->falProcessedFileRepository->findNotOptimizedRaw($numberOfImagesToProcess, $extensions);
+        return $this->falProcessedFileRepository->findNotOptimized($numberOfImagesToProcess, $extensions);
     }
 
     public function resetOptimizationFlag(): void

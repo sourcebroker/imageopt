@@ -9,6 +9,7 @@ LICENSE.txt file that was distributed with this source code.
 */
 
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Dto\Image;
 use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -35,13 +36,15 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
 
     protected array $executorOptions = [];
 
-    public function optimize(string $imageAbsolutePath, Configurator $configurator): ExecutorResult
+    protected array $providerSettings = [];
+
+    public function optimize(string $imageAbsolutePath, Image $image, Configurator $configurator): ExecutorResult
     {
         $executorResult = GeneralUtility::makeInstance(ExecutorResult::class);
         $executorResult->setExecutedSuccessfully(false);
         if ($this->initConfiguration($configurator)) {
             $executorResult->setSizeBefore(filesize($imageAbsolutePath));
-            $this->process($imageAbsolutePath, $executorResult);
+            $this->process($imageAbsolutePath, $image, $executorResult);
             $executorResult->setSizeAfter(filesize($imageAbsolutePath));
         } else {
             $executorResult->setErrorMessage('Unable to initialize executor - check configuration');
@@ -85,12 +88,15 @@ class OptimizationExecutorRemote extends OptimizationExecutorBase
             $this->executorOptions = $options;
         }
 
+        $settings = $configurator->getOption('settings');
+        if (is_array($settings) && !empty($settings)) {
+            $this->providerSettings = $settings;
+        }
+
         return true;
     }
 
-    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): void
-    {
-    }
+    protected function process(string $inputImageAbsolutePath, Image $image, ExecutorResult $executorResult): void {}
 
     protected function request($data, string $url, array $options = []): array
     {

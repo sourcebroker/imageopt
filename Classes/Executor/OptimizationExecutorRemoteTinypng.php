@@ -9,6 +9,7 @@ LICENSE.txt file that was distributed with this source code.
 */
 
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Dto\Image;
 use SourceBroker\Imageopt\Domain\Model\ExecutorResult;
 
 class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
@@ -29,7 +30,7 @@ class OptimizationExecutorRemoteTinypng extends OptimizationExecutorRemote
     /**
      * Upload file to tinypng.com and save it if optimization will be success
      */
-    protected function process(string $inputImageAbsolutePath, ExecutorResult $executorResult): void
+    protected function process(string $inputImageAbsolutePath, Image $image, ExecutorResult $executorResult): void
     {
         $executorResult->setCommand('URL: ' . $this->url['upload']);
         $result = $this->request(file_get_contents($inputImageAbsolutePath), $this->url['upload']);

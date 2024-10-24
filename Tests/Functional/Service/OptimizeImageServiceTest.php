@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SourceBroker\Imageopt\Tests\Functional\Service;
 
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Dto\Image;
 use SourceBroker\Imageopt\Domain\Model\ModeResult;
 use SourceBroker\Imageopt\Service\OptimizeImageService;
 use SourceBroker\Imageopt\Utility\CliDisplayUtility;
@@ -21,6 +22,10 @@ class OptimizeImageServiceTest extends FunctionalTestCase
     protected array $testExtensionsToLoad = ['typo3conf/ext/imageopt'];
     protected const TEST_FILES_PATH = __DIR__ . '/../../../Tests/Fixture/Unit/OptimizeImageService/';
 
+    protected Configurator $configurator;
+    protected TemporaryFileUtility $temporaryFileUtility;
+    protected OptimizeImageService $optimizeImageService;
+
     /**
      * @throws \Exception
      */
@@ -30,7 +35,8 @@ class OptimizeImageServiceTest extends FunctionalTestCase
         $this->configurator = $this->pluginConfigurator();
         $this->temporaryFileUtility = GeneralUtility::makeInstance(TemporaryFileUtility::class);
         $this->optimizeImageService = GeneralUtility::makeInstance(
-            OptimizeImageService::class, $this->configurator,
+            OptimizeImageService::class,
+            $this->configurator,
             $this->temporaryFileUtility
         );
     }
@@ -49,11 +55,13 @@ class OptimizeImageServiceTest extends FunctionalTestCase
         $imageForTesting = $this->temporaryFileUtility->createTemporaryCopy($originalImagePath);
 
         if (is_readable($imageForTesting)) {
-            $optimizationResults = $this->optimizeImageService->optimize($imageForTesting);
+            $optimizationResults = $this->optimizeImageService->optimize(Image::createFromPath($imageForTesting));
 
             foreach ($optimizationResults as $optimizationResult) {
-                fwrite(STDOUT,
-                    CliDisplayUtility::displayOptionResult($optimizationResult, $this->configurator->getConfig()));
+                fwrite(
+                    STDOUT,
+                    CliDisplayUtility::displayOptionResult($optimizationResult, $this->configurator->getConfig())
+                );
             }
 
             /** @var ModeResult $defaultResult */
@@ -68,7 +76,6 @@ class OptimizeImageServiceTest extends FunctionalTestCase
         }
     }
 
-
     /**
      * imageIsOptimized
      * @test
@@ -82,11 +89,13 @@ class OptimizeImageServiceTest extends FunctionalTestCase
         $imageForTesting = $this->temporaryFileUtility->createTemporaryCopy($originalImagePath);
         if (is_readable($imageForTesting)) {
             $originalFileSize = filesize($imageForTesting);
-            $optimizationResults = $this->optimizeImageService->optimize($imageForTesting);
+            $optimizationResults = $this->optimizeImageService->optimize(Image::createFromPath($imageForTesting));
 
             foreach ($optimizationResults as $optimizationResult) {
-                fwrite(STDOUT,
-                    CliDisplayUtility::displayOptionResult($optimizationResult, $this->configurator->getConfig()));
+                fwrite(
+                    STDOUT,
+                    CliDisplayUtility::displayOptionResult($optimizationResult, $this->configurator->getConfig())
+                );
             }
             $defaultOptimizationResult = $optimizationResults['default'] ?? reset($optimizationResults);
             self::assertGreaterThan($defaultOptimizationResult->getSizeAfter(), $originalFileSize);
@@ -109,7 +118,6 @@ class OptimizeImageServiceTest extends FunctionalTestCase
             ],
         ];
     }
-
 
     /**
      * @throws \Exception

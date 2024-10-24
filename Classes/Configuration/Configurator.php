@@ -8,7 +8,6 @@ For the full copyright and license information, please read the
 LICENSE.txt file that was distributed with this source code.
 */
 
-use Exception;
 use SourceBroker\Imageopt\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -32,13 +31,19 @@ class Configurator
         return $this->config;
     }
 
-    public function getProviders(string $providerType, string $fileType): array
+    public function getProviders(string $providerType, string $fileType, $providerSettings = []): array
     {
-        $providers = !empty($this->providers[$providerType])
-            ? $this->providers[$providerType]
-            : [];
+        $providers = array_map(
+            static function ($provider) use ($providerSettings) {
+                $provider['executors'][10]['settings'] = $providerSettings;
+                return $provider;
+            },
+            !empty($this->providers[$providerType])
+                ? $this->providers[$providerType]
+                : []
+        );
 
-        return array_filter($providers, function ($provider) use ($fileType): bool {
+        return array_filter($providers, static function ($provider) use ($fileType): bool {
             $providerFileTypes = explode(',', $provider['fileType']);
             return in_array($fileType, $providerFileTypes, true);
         });
@@ -85,15 +90,15 @@ class Configurator
     protected function validateConfig(): void
     {
         if (count($this->config) === 0) {
-            throw new Exception('Configuration not set for ImageOpt ext');
+            throw new \Exception('Configuration not set for ImageOpt ext');
         }
 
         if (!$this->isConfigBranchValid('providers')) {
-            throw new Exception('Providers are not defined.');
+            throw new \Exception('Providers are not defined.');
         }
 
         if (!$this->isConfigBranchValid('mode')) {
-            throw new Exception('Optimize modes are not defined.');
+            throw new \Exception('Optimize modes are not defined.');
         }
     }
 
@@ -116,7 +121,7 @@ class Configurator
                 );
             }
             if (!is_array($providerValues['executors'])) {
-                throw new Exception('No executors defined for provider: "' . $providerKey . '""');
+                throw new \Exception('No executors defined for provider: "' . $providerKey . '""');
             }
             foreach ($providerValues['executors'] as $executorKey => $executorValues) {
                 if ($this->isConfigBranchValid('executorsDefault')) {
@@ -152,10 +157,10 @@ class Configurator
     {
         foreach ($this->config['providers'] as $providerKey => $providerValues) {
             if (empty($providerValues['type'])) {
-                throw new Exception('Provider types is not set for provider: "' . $providerKey . '"');
+                throw new \Exception('Provider types is not set for provider: "' . $providerKey . '"');
             }
             if (empty($providerValues['fileType'])) {
-                throw new Exception('File types is not set for provider: "' . $providerKey . '"');
+                throw new \Exception('File types is not set for provider: "' . $providerKey . '"');
             }
         }
     }

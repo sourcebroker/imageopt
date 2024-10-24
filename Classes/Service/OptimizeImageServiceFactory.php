@@ -18,8 +18,7 @@ class OptimizeImageServiceFactory
         private readonly ProcessedFileRepository $falProcessedFileRepository,
         private readonly PersistenceManager $persistenceManager,
         private readonly TemporaryFileUtility $temporaryFileUtility
-    ) {
-    }
+    ) {}
 
     public function create(Configurator $configurator): OptimizeImageService
     {

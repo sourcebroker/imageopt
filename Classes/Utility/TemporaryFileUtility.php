@@ -8,7 +8,6 @@ For the full copyright and license information, please read the
 LICENSE.txt file that was distributed with this source code.
 */
 
-use Exception;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -44,7 +43,7 @@ class TemporaryFileUtility implements SingletonInterface
 
     /**
      * Delete all temporary files of imageopt
-     * @throws Exception
+     * @throws \Exception
      */
     public function unlinkTempFiles(): void
     {

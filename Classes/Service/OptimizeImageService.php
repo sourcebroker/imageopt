@@ -8,8 +8,8 @@ For the full copyright and license information, please read the
 LICENSE.txt file that was distributed with this source code.
 */
 
-use Exception;
 use SourceBroker\Imageopt\Configuration\Configurator;
+use SourceBroker\Imageopt\Domain\Dto\Image;
 use SourceBroker\Imageopt\Domain\Model\ModeResult;
 use SourceBroker\Imageopt\Domain\Model\StepResult;
 use SourceBroker\Imageopt\Provider\OptimizationProvider;
@@ -28,7 +28,7 @@ class OptimizeImageService
 
     /**
      * OptimizeImageService constructor.
-     * @throws Exception
+     * @throws \Exception
      */
     public function __construct(Configurator $configurator, TemporaryFileUtility $temporaryFileUtility)
     {
@@ -40,47 +40,41 @@ class OptimizeImageService
      * Optimize image using chained Image Optimization Provider
      *
      * @return ModeResult[]
-     * @throws Exception
+     * @throws \Exception
      */
-    public function optimize(string $sourceFile): array
+    public function optimize(Image $image): array
     {
-        // create original image copy - it may vary (provider may overwrite original image)
-        $sourceFileTemporary = $this->temporaryFileUtility->createTemporaryCopy($sourceFile);
-
         $modeResults = [];
         foreach ((array)$this->configurator->getOption('mode') as $modeKey => $modeConfig) {
             $modeResults[$modeKey] = $this->optimizeSingleMode(
                 $modeConfig,
-                $sourceFileTemporary,
-                $sourceFile
+                $image
             );
         }
         return $modeResults;
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
-    protected function optimizeSingleMode(
-        array $modeConfig,
-        string $sourceFileTemporary,
-        string $sourceFile
-    ): ModeResult {
+    protected function optimizeSingleMode($modeConfig, Image $image): ModeResult
+    {
+
         $modeResult = GeneralUtility::makeInstance(ModeResult::class)
-            ->setFileAbsolutePath($sourceFile)
+            ->setFileAbsolutePath($image->getLocalImagePath())
             ->setName($modeConfig['name'])
             ->setDescription($modeConfig['description'])
-            ->setSizeBefore(filesize($sourceFileTemporary))
+            ->setSizeBefore(filesize($image->getLocalImagePath()))
             ->setExecutedSuccessfully(false);
 
-        if (!file_exists($sourceFile)) {
+        if (!file_exists($image->getLocalImagePath())) {
             $modeResultInfo = 'The file does not exists.';
             $modeResult->setFileDoesNotExist(true);
             $modeResult->setInfo($modeResultInfo);
             return $modeResult;
         }
 
-        if (!is_readable($sourceFile)) {
+        if (!is_readable($image->getLocalImagePath())) {
             $modeResultInfo = 'The file exists but is not readable for imageopt process.';
             $modeResult->setInfo($modeResultInfo);
             return $modeResult;
@@ -88,13 +82,13 @@ class OptimizeImageService
 
         if (isset($modeConfig['fileRegexp'])) {
             $regexp = '@' . $modeConfig['fileRegexp'] . '@';
-            if (!preg_match($regexp, $sourceFile)) {
-                $modeResult->setInfo('File does not match regexp: ' . $regexp . ' File: ' . $sourceFile);
+            if (!preg_match($regexp, $image->getLocalImagePath())) {
+                $modeResult->setInfo('File does not match regexp: ' . $regexp . ' File: ' . $image->getLocalImagePath());
                 return $modeResult;
             }
         }
 
-        $chainImagePath = $this->temporaryFileUtility->createTemporaryCopy($sourceFileTemporary);
+        $chainImagePath = $this->temporaryFileUtility->createTemporaryCopy($image->getLocalImagePath());
 
         foreach ($modeConfig['step'] as $stepKey => $stepConfig) {
             $stepResult = GeneralUtility::makeInstance(StepResult::class)
@@ -106,9 +100,10 @@ class OptimizeImageService
 
             $providers = $this->configurator->getProviders(
                 $stepConfig['providerType'],
-                strtolower(explode('/', image_type_to_mime_type(getimagesize($sourceFile)[2]))[1])
+                strtolower(explode('/', image_type_to_mime_type(getimagesize($image->getLocalImagePath())[2]))[1]),
+                $stepConfig['providerSettings'] ?? []
             );
-            $this->optimizeWithBestProvider($stepResult, $chainImagePath, $providers);
+            $this->optimizeWithBestProvider($stepResult, $chainImagePath, $image, $providers);
             $modeResult->addStepResult($stepResult);
         }
         if ($modeResult->getExecutedSuccessfullyNum() === $modeResult->getStepResults()->count()) {
@@ -118,7 +113,7 @@ class OptimizeImageService
         clearstatcache(true, $chainImagePath);
         $modeResult->setSizeAfter(filesize($chainImagePath));
 
-        $pathInfo = pathinfo($sourceFile);
+        $pathInfo = pathinfo($image->getLocalImagePath());
         $outputFile = str_replace(
             ['{dirname}', '{basename}', '{extension}', '{filename}'],
             [$pathInfo['dirname'], $pathInfo['basename'], $pathInfo['extension'], $pathInfo['filename']],
@@ -131,11 +126,12 @@ class OptimizeImageService
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     protected function optimizeWithBestProvider(
         StepResult $stepResult,
         string $chainImagePath,
+        Image $image,
         array $providers
     ): void {
         clearstatcache(true, $chainImagePath);
@@ -159,7 +155,7 @@ class OptimizeImageService
             $tmpWorkingImagePath = $this->temporaryFileUtility->createTemporaryCopy($chainImagePath);
             $optimizationProvider = GeneralUtility::makeInstance(OptimizationProvider::class);
 
-            $providerResult = $optimizationProvider->optimize($tmpWorkingImagePath, $providerConfigurator);
+            $providerResult = $optimizationProvider->optimize($tmpWorkingImagePath, $image, $providerConfigurator);
 
             if ($providerResult->isExecutedSuccessfully()) {
                 $providerExecutedSuccessfullyCounter++;

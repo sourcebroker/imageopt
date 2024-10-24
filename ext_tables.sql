@@ -63,3 +63,29 @@ CREATE TABLE tx_imageopt_domain_model_executorresult
     executed_successfully smallint(5) unsigned DEFAULT '0' NOT NULL,
     error_message         text,
 );
+
+#
+# Table structure for table 'tx_imageopt_domain_model_croppedfile'.
+# which is a "cropped" file by remote executor
+# This table does not have a TCA representation, as it is only written
+# to using direct SQL queries in the code
+#
+CREATE TABLE tx_imageopt_domain_model_croppedfile (
+    uid int(11) NOT NULL auto_increment,
+    tstamp int(11) DEFAULT '0' NOT NULL,
+    crdate int(11) DEFAULT '0' NOT NULL,
+
+    storage int(11) DEFAULT '0' NOT NULL,
+    original int(11) DEFAULT '0' NOT NULL,
+    identifier varchar(512) DEFAULT '' NOT NULL,
+    configuration_sha1 varchar(40) DEFAULT '' NOT NULL,
+    original_file_sha1 char(40) DEFAULT '' NOT NULL,
+    name tinytext,
+    processing_provider varchar(255) DEFAULT '' NOT NULL,
+    configuration blob,
+
+    PRIMARY KEY (uid),
+    KEY combined_1 (original,configuration_sha1),
+    KEY identifier (storage,identifier(180))
+);
+

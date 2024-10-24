@@ -14,8 +14,7 @@ class ConfiguratorFactory
     public function __construct(
         private readonly TypoScriptService $typoScriptService,
         private readonly PageRepository $pageRepository,
-    ) {
-    }
+    ) {}
 
     public function create(array $config): Configurator
     {

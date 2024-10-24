@@ -34,14 +34,14 @@ class ArrayUtility
     public static function plainToNested(array $plainArray): array
     {
         $root = [];
-        $node =& $root;
+        $node = & $root;
         $part = array_shift($plainArray);
         while ($part !== null) {
             if (empty($plainArray)) {
                 $node = $part;
             } else {
                 $node[$part] = [];
-                $node =& $node[$part];
+                $node = & $node[$part];
             }
         }
         return $root;

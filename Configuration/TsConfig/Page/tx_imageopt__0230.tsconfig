@@ -9,6 +9,9 @@ tx_imageopt {
                 10 {
                     providerType = lossyGood
                     description = Kraken intelligent loosy image optimisation.
+                    providerSettings {
+                        processOriginalFile = 0
+                    }
                 }
             }
 
@@ -22,6 +25,9 @@ tx_imageopt {
                 10 {
                     providerType = webp
                     description = Webp convert.
+                    providerSettings {
+                        processOriginalFile = 0
+                    }
                 }
             }
 
